@@ -23,8 +23,14 @@ def nameFromInput(das_path, tagAndProbe=False):
     label = "MC" if "SIM" in das_path[-3:] else "Data"
     if tagAndProbe:
         label += "TagAndProbe"
-    # TODO: This doesn't actually work for data!
-    label += "PreVFP" if "APV" in das_path else "PostVFP"
+    if 'Data' in label:
+        if 'HIPM' in das_path: 
+            label += "PreVFP"
+        else: 
+            label += "PostVFP"
+    else:#for MC
+        # TODO: This doesn't actually work for data!
+        label += "PreVFP" if "APV" in das_path else "PostVFP"
 
     print(label)
 

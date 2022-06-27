@@ -1,0 +1,14 @@
+Job id: 220623_173852:sroychow_crab_SingleMuon_Run2016F-21Feb2020_UL2016_WMass_MiniAODv2-v1
+Output: /eos/cms/store/cmst3/group/wmass/w-mass-13TeV/NanoAOD/SingleMuon/NanoV9DataPostVFP/Run2016F_220623_173852/
+
+2016G
+
+Job id: 220623_174036:sroychow_crab_SingleMuon_Run2016G-21Feb2020_UL2016_WMass_MiniAODv2-v1
+Output: /eos/cms/store/cmst3/group/wmass/w-mass-13TeV/NanoAOD/SingleMuon/NanoV9DataPostVFP/Run2016G_220623_174036/
+
+Block /SingleMuon/Run2016G-21Feb2020_UL2016_WMass_MiniAODv2-v1/MINIAOD#45385bbd-3e6d-4b8f-8c8a-086766fbc146 is not processed since the files are not available in a crab white listed site.
+
+2016H
+
+Job id: 220622_171421:sroychow_crab_SingleMuon_Run2016H-21Feb2020_UL2016_WMass_MiniAODv2-v4
+Output: /eos/cms/store/cmst3/group/wmass/w-mass-13TeV/NanoAOD/SingleMuon/NanoV9DataPostVFP/Run2016H_220622_171421/
