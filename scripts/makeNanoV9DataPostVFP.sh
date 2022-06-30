@@ -24,7 +24,7 @@ cmsDriver.py RECO --conditions 106X_dataRun2_v35 \
     --customise Configuration/DataProcessing/Utils.addMonitoring \
     --datatier NANOAOD \
     --era Run2_2016,run2_nanoAOD_106Xv2 \
-    --eventcontent NANOEDMAOD \
+    --eventcontent NANOAOD \
     --filein dbs:$das_name --fileout file:$outfile \
     --nThreads $nThreads \
     --no_exec \
