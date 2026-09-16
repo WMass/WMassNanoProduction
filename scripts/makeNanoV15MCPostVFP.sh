@@ -8,7 +8,7 @@ if [[ $# -lt 2 ]]; then
 fi
 
 input=$1
-if [[ "$input" != file:* ]]; then
+if [[ "$input" != file:* && "$input" != root://* ]]; then
     input=dbs:$input
 fi
 nevents=1000

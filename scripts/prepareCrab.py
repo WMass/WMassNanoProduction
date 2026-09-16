@@ -21,6 +21,9 @@ def fillTemplatedFile(template_file_name, out_file_name, template_dict):
 
 def nameFromInput(das_path, tagAndProbe=False):    
     label = "MC" if "SIM" in das_path[-3:] else "Data"
+    if 'RunIILowPU' in das_path or '/Run2017H-' in das_path:
+        # the 2017 low-PU run (2017H, 13 TeV) on the UL re-reco: scripts/make<era>{MC,Data}LowPU.sh
+        return label + "LowPU"
     if 'UL2017' in das_path or 'UL17' in das_path: #needed since pattern in data and MC names are different
         label += '2017'
     elif 'UL2018' in das_path or 'UL18' in das_path:

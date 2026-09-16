@@ -12,7 +12,13 @@ the crab template. Differences to the 10_6 production:
 * the CVH refit is multithreaded: `-j 4` (the default) instead of the old
   `-j1`, and the crab jobs get `numCores = nThreads`
 * the scripts accept `file:/path/to.root` as input for local tests
-* tag-and-probe and 2017 low-PU productions are not yet ported
+* the 2017 low-PU run (2017H) uses the UL re-reconstruction
+  (`inputs/lowPUMC_UL.txt`, `inputs/lowPUData_UL.txt`: RunIILowPUSummer20UL17MiniAODv2 and
+  Run2017H-UL2017_MiniAODv2) with `scripts/makeNanoV15{MC,Data}LowPU.sh` -- the standard
+  `run2_nanoAOD_106Xv2` path plus `nanoAOD_wmassLowPU` (HI-menu trigger objects, low-PU DeepMET
+  models), no CVH refit; `prepareCrab.py` labels these datasets `MCLowPU` / `DataLowPU`
+* the scripts also accept `root://...` inputs
+* tag-and-probe productions are not yet ported
 
 Example: `./scripts/prepareCrab.py --makeConfig -i inputs/dyMC_v9.txt -v v1 --dryRun`
 
