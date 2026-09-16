@@ -117,7 +117,7 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
     if submit[0] != 0:
         writeHistory(path, history_file, inputFile)
 
-    era = "NanoV9"
+    era = args.era
 
     for i, das in enumerate(inputs):
         if match_expr and not re.match(match_expr, das):
@@ -188,8 +188,9 @@ parser.add_argument('-i', '--inputFiles', required=True, type=str, nargs='*', he
 parser.add_argument('-m', '--filterExpr', default='', type=str, help='Expression to filter out files from the input list')
 parser.add_argument('-s', '--submit', type=int, nargs=2, help='Number of splits to make, which split to submit' \
         ' ex: 1 1 for all, 2 1 for every second file', default=(0,0))
-parser.add_argument('-j', '--nThreads', type=int, default=1, 
-    help="number of threads (make sure its consistent if you're not regenerating configs)")
+parser.add_argument('-j', '--nThreads', type=int, default=4,
+    help="number of threads (make sure its consistent if you're not regenerating configs); the CVH refit is multithreaded in CMSSW_15_0")
+parser.add_argument('--era', type=str, default='NanoV15', help='production label: selects scripts/make<era><Sample>.sh and Templates/submitCrab<era>Template (NanoV15 = CMSSW_15_0, NanoV9 = the 10_6 production)')
 parser.add_argument('--storage', default='/store/group/cmst3/group/wmass/w-mass-13TeV/NanoAOD', type=str, help='Storage path of output Ntuples(default CERN storage)')
 parser.add_argument('--site', default='T2_CH_CERN', type=str, help='Site of the output storage(default:T2_CH_CERN)')
 

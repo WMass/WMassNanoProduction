@@ -1,3 +1,21 @@
+# CMSSW_15_0 production (branch WmassNanoProd_15_0_19_patch2)
+
+The CMSSW_15_0_19_patch2 port of the custom NanoAOD (WMass/cmssw PR #46 and
+its follow-ups) is driven from the same scripts with `--era NanoV15` (the
+default on this branch): `scripts/makeNanoV15<Sample>.sh` are the cmsDriver
+recipes (stock NANO + `nanoAOD_wmassContent` + `nanoGenWmassCustomize` for
+MC + the CVH refit `nanoAOD_addCvhMuon[MC]`) and `Templates/submitCrabNanoV15Template`
+the crab template. Differences to the 10_6 production:
+
+* the area is el9 (`SCRAM_ARCH=el9_amd64_gcc12`), no container needed:
+  `bash <(curl -s https://raw.githubusercontent.com/WMass/WMassNanoProduction/WmassNanoProd_15_0_19_patch2/setup/clone_15_0.sh)`
+* the CVH refit is multithreaded: `-j 4` (the default) instead of the old
+  `-j1`, and the crab jobs get `numCores = nThreads`
+* the scripts accept `file:/path/to.root` as input for local tests
+* tag-and-probe and 2017 low-PU productions are not yet ported
+
+Example: `./scripts/prepareCrab.py --makeConfig -i inputs/dyMC_v9.txt -v v1 --dryRun`
+
 Scripts for keeping track of private nanoaod production. Auto-generates config files from cmsDriver and crab_submit files. Divides the production into X pieces and submits every Y jobs.
 
 # To clone with CMSSW setup
