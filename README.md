@@ -18,7 +18,18 @@ the crab template. Differences to the 10_6 production:
   `run2_nanoAOD_106Xv2` path plus `nanoAOD_wmassLowPU` (HI-menu trigger objects, low-PU DeepMET
   models), no CVH refit; `prepareCrab.py` labels these datasets `MCLowPU` / `DataLowPU`
 * the scripts also accept `root://...` inputs
-* tag-and-probe productions are not yet ported
+* the muon tag-and-probe nano (`--tagAndProbe`, `PhysicsTools/NanoAOD/nanoTP_cff.customizeNANOTP`):
+  one `PAT,NANO` job from AOD, `scripts/makeNanoV15{MC,Data}TagAndProbe{PreVFP,PostVFP}.sh`,
+  `makeNanoV15{MC,Data}{2017,2018}TagAndProbe.sh`, `makeNanoV15{MC,Data}LowPUTagAndProbe.sh`
+  (inputs: `dy*_TnP_v15.txt`, `data_{pre,post}VFP_TnP.txt`, `data_{2017,2018}_TnP.txt`,
+  `lowPU{MC,Data}_TnP_UL.txt`). The era is `Run2_20xx` with `--procModifiers run2_miniAOD_UL`
+  and deliberately without `run2_nanoAOD_106Xv2` (its PUPPI re-clustering / tau re-wiring is
+  circular when PAT runs in the same process). Content as in 10_6: Muon (+ `standaloneExtraIdx`,
+  `innerTrackExtraIdx`, `isStandAloneUpdatedAtVtx`, vertex-agnostic isolation), Track (generalTracks
+  pT > 8), StandAloneMuon / StandAloneMuonUpdatedAtVtx / MergedStandAloneMuon, IsoTrack, PV/SV,
+  TrigObj (with the IsoMu24/IsoTkMu24 bits), L1/HLT; MC adds GenPart/GenVtx/Pileup, the grouped LHE
+  weights and the muon gen match. No jets, MET, electrons, photons, taus. The electron low-PU T&P
+  of 10_6 is not ported.
 
 Example: `./scripts/prepareCrab.py --makeConfig -i inputs/dyMC_v9.txt -v v1 --dryRun`
 

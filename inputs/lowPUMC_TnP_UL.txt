@@ -1,0 +1,1 @@
+/DYJetsToMuMu_H2ErratumFix_PDFExt_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/RunIILowPUSummer20UL17DR-106X_mc2017_realistic_v9For2017H_v1-v2/AODSIM
