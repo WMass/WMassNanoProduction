@@ -5,7 +5,8 @@
 /CalibTracker/SiPixelESProducers/
 /CommonTools/PileupAlgos/
 /DataFormats/NanoAOD/
-/DataFormats/SiStripCluster/
+/FWCore/Services/
+/L1Trigger/L1TGlobal/
 /MagneticField/Engine/
 /MagneticField/ParametrizedEngine/
 /PhysicsTools/NanoAOD/
@@ -16,6 +17,6 @@
 /SimG4Core/GeometryProducer/
 /SimG4Core/HelpfulWatchers/
 /SimG4Core/MagneticField/
-/TrackPropagation/Geant4e/
 /TrackingTools/TransientTrack/
+/TrackPropagation/Geant4e/
 /Utilities/XrdAdaptor/
