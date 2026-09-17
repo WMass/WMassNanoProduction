@@ -2,24 +2,25 @@
 
 Scripts to run and keep track of the private W-mass NanoAOD production on the
 CMSSW_15_0_19_patch2 branch of WMass/cmssw (`WmassNanoProd_15_0_19_patch2_dev`,
-PR #46). `scripts/prepareCrab.py` generates the cmsDriver configs from
-`scripts/makeNanoV15<Sample>.sh` and the crab submit files from
+PR #46). `scripts/prepareCrab.py` generates the cmsDriver configs from the four scripts
+`scripts/makeNanoV15{MC,Data}[TagAndProbe].sh` (the campaign — 2016preVFP,
+2016postVFP, 2017, 2018, 2017LowPU — is derived from the dataset name, or passed as
+the 4th argument; the per-campaign conditions live in the scripts and
+`scripts/campaign.sh`) and the crab submit files from
 `Templates/submitCrabNanoV15Template`, splits a production between people and
 records every submission under `history/`.
 
-Workflows (one script per era and sample type, `prepareCrab.py` picks it from the
-dataset name):
+Workflows:
 
-* **W-mass nano** (`makeNanoV15{MC,Data}{PreVFP,PostVFP,2017,2018}.sh`): stock 15_0
+* **W-mass nano** (`makeNanoV15{MC,Data}.sh`): stock 15_0
   NANO on the UL MiniAODv2 + `nanoAOD_wmassContent` (+ `nanoGenWmassCustomize` for MC)
   + the CVH muon refit `nanoAOD_addCvhMuon[MC]`. The refit is multithreaded (`-j 4`,
   the default; the crab jobs get `numCores = nThreads`). Inputs: `inputs/dyMC_v15.txt`,
   `wMC_v15.txt`, `bkgMC.txt`, `data_{pre,post}VFP.txt`, `*2017*`, `*2018*`.
-* **2017 low-PU run (2017H)** on the UL re-reconstruction (`makeNanoV15{MC,Data}LowPU.sh`,
-  `inputs/lowPU{MC,Data}_UL.txt`): the standard path plus `nanoAOD_wmassLowPU` (HI-menu
+* **2017 low-PU run (2017H)** on the UL re-reconstruction (campaign `2017LowPU` of the same
+  scripts, `inputs/lowPU{MC,Data}_UL.txt`): the standard path plus `nanoAOD_wmassLowPU` (HI-menu
   trigger objects, low-PU DeepMET models), no CVH refit; labelled `MCLowPU` / `DataLowPU`.
-* **Muon tag-and-probe** (`--tagAndProbe`; `makeNanoV15{MC,Data}TagAndProbe{PreVFP,PostVFP}.sh`,
-  `makeNanoV15{MC,Data}{2017,2018}TagAndProbe.sh`, `makeNanoV15{MC,Data}LowPUTagAndProbe.sh`;
+* **Muon tag-and-probe** (`--tagAndProbe`; `makeNanoV15{MC,Data}TagAndProbe.sh`;
   inputs `dy*_TnP_v15.txt`, `data_*_TnP.txt`, `lowPU{MC,Data}_TnP_UL.txt`): one `PAT,NANO`
   job from AOD with `PhysicsTools/NanoAOD/nanoTP_cff.customizeNANOTP[LowPU]`, era `Run2_20xx`
   with `--procModifiers run2_miniAOD_UL` and deliberately without `run2_nanoAOD_106Xv2`

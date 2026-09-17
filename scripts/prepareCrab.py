@@ -19,10 +19,20 @@ def fillTemplatedFile(template_file_name, out_file_name, template_dict):
     with open(out_file_name, "w") as outFile:
         outFile.write(result)
 
+def campaignFromInput(das_path):
+    """2016preVFP | 2016postVFP | 2017 | 2018 | 2017LowPU, as scripts/campaign.sh derives it."""
+    if 'RunIILowPU' in das_path or '/Run2017H-' in das_path:
+        return "2017LowPU"
+    if 'UL2017' in das_path or 'UL17' in das_path:
+        return "2017"
+    if 'UL2018' in das_path or 'UL18' in das_path:
+        return "2018"
+    return "2016preVFP" if ('HIPM' in das_path or 'APV' in das_path) else "2016postVFP"
+
 def nameFromInput(das_path, tagAndProbe=False):    
     label = "MC" if "SIM" in das_path[-3:] else "Data"
     if 'RunIILowPU' in das_path or '/Run2017H-' in das_path:
-        # the 2017 low-PU run (2017H, 13 TeV) on the UL re-reco: scripts/make<era>{MC,Data}LowPU[TagAndProbe].sh
+        # the 2017 low-PU run (2017H, 13 TeV) on the UL re-reco
         return label + "LowPU" + ("TagAndProbe" if tagAndProbe else "")
     if 'UL2017' in das_path or 'UL17' in das_path: #needed since pattern in data and MC names are different
         label += '2017'
@@ -60,9 +70,12 @@ def hashedName(name, bits=5):
     h = hashlib.sha256(name.encode('utf-8')).hexdigest()
     return name[:(100-bits)] + h[:bits]
 
-def makeConfig(path, name, config_name, das, nThreads):
-    print([path+"/scripts/make%s.sh" % name, *das.split(" "), config_name, str(nThreads)])
-    subprocess.call(["./scripts/make%s.sh" % name, *das.split(" "), config_name, str(nThreads)], cwd=path)
+def makeConfig(path, era, das, config_name, nThreads, isData, tagAndProbe):
+    # one script per (data/MC, nano/tag-and-probe); the campaign selects the conditions inside it
+    script = "./scripts/make%s%s%s.sh" % (era, "Data" if isData else "MC", "TagAndProbe" if tagAndProbe else "")
+    cmd = [script, *das.split(" "), config_name, str(nThreads), campaignFromInput(das)]
+    print(cmd)
+    subprocess.call(cmd, cwd=path)
 
 def makeWhitelist(das):
     out = subprocess.check_output([f'dasgoclient --query="site dataset={das}" -json'], shell=True)
@@ -134,7 +147,7 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
             config_name += "_weightFix"
 
         if doConfig and config_name not in configsMade:
-            makeConfig(path, name, config_name, das, nThreads)
+            makeConfig(path, era, das, config_name, nThreads, isData, args.tagAndProbe)
             configsMade.append(config_name)
 
         config_name += "_cfg.py"
