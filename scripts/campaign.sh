@@ -1,6 +1,8 @@
 # Shared by the makeNanoV15*.sh scripts: campaign detection from the dataset
-# name and the per-campaign conditions of the CMSSW_15_0 production on the
-# UL (106X) reconstruction.
+# name and the era of each campaign. The global tags (in the four scripts) are
+# the ones of the central NanoAODv15 production (150X_*; the conditions the CVH
+# refit depends on -- tracker alignment, APE, field, CPEs, templates, Lorentz
+# angles, beam spot -- are identical to the UL 106X tags, checked with conddb).
 #
 # campaign_from_input <das path or file/root URL>
 #   -> 2016preVFP | 2016postVFP | 2017 | 2018 | 2017LowPU

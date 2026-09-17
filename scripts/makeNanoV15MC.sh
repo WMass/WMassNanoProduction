@@ -26,11 +26,11 @@ config_name=configs/${name}_cfg.py
 outfile=${name}.root
 
 case $campaign in
-    2016preVFP)  gt=106X_mcRun2_asymptotic_preVFP_v11 ;;
-    2016postVFP) gt=106X_mcRun2_asymptotic_v17 ;;
-    2017)        gt=106X_mc2017_realistic_v9 ;;
-    2018)        gt=106X_upgrade2018_realistic_v16_L1v1 ;;
-    2017LowPU)   gt=106X_mc2017_realistic_v9For2017H_v1 ;;
+    2016preVFP)  gt=150X_mcRun2_asymptotic_preVFP_v1 ;;
+    2016postVFP) gt=150X_mcRun2_asymptotic_v1 ;;
+    2017)        gt=150X_mc2017_realistic_v1 ;;
+    2018)        gt=150X_mc2018_realistic_v1 ;;
+    2017LowPU)   gt=150X_mc2017_realistic_v1 ;;   # no central low-PU v15 campaign: the 2017 MC tag
 esac
 customise=Configuration/DataProcessing/Utils.addMonitoring,PhysicsTools/NanoAOD/nano_cff.nanoAOD_wmassContent,PhysicsTools/NanoAOD/nano_cff.nanoGenWmassCustomize
 if [[ $campaign == 2017LowPU ]]; then customise=$customise,PhysicsTools/NanoAOD/nano_cff.nanoAOD_wmassLowPU

@@ -25,8 +25,7 @@ config_name=configs/${name}_cfg.py
 outfile=${name}.root
 
 case $campaign in
-    2016preVFP|2016postVFP|2017|2017LowPU) gt=106X_dataRun2_v35 ;;
-    2018)                                  gt=106X_dataRun2_v36 ;;
+    *) gt=150X_dataRun2_v1 ;;   # the central NanoAODv15 tag for every Run 2 era
 esac
 customise=Configuration/DataProcessing/Utils.addMonitoring,PhysicsTools/NanoAOD/nano_cff.nanoAOD_wmassContent
 if [[ $campaign == 2017LowPU ]]; then customise=$customise,PhysicsTools/NanoAOD/nano_cff.nanoAOD_wmassLowPU

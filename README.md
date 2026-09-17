@@ -6,7 +6,8 @@ PR #46). `scripts/prepareCrab.py` generates the cmsDriver configs from the four 
 `scripts/makeNanoV15{MC,Data}[TagAndProbe].sh` (the campaign — 2016preVFP,
 2016postVFP, 2017, 2018, 2017LowPU — is derived from the dataset name, or passed as
 the 4th argument; the per-campaign conditions live in the scripts and
-`scripts/campaign.sh`) and the crab submit files from
+`scripts/campaign.sh`; the global tags are those of the central NanoAODv15 production,
+`150X_dataRun2_v1` and `150X_mc*_v1`, equal to the UL 106X ones in everything the refit reads) and the crab submit files from
 `Templates/submitCrabNanoV15Template`, splits a production between people and
 records every submission under `history/`.
 
