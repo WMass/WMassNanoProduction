@@ -11,6 +11,9 @@ config.JobType.maxMemoryMB = ${memory}
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = '../configs/${config}'
 config.JobType.allowUndistributedCMSSW = True
+# $CMSSW_BASE/external carries the OPERA 170812 field tables (not in the 15_0
+# data package); run scripts/prepareSandbox.sh before submitting
+config.JobType.sendExternalFolder = True
 
 config.Data.inputDataset = '${input}'
 
