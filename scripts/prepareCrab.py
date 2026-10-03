@@ -135,6 +135,10 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
         das_split = das.split(" ")
         if len(das_split) > 1:
             config_name += "_weightFix"
+        # a per-sample fix (scripts/campaign.sh sample_tag/sample_customise) gets its own config
+        sampleTag = "" if isData else campaignTable("sample_tag", das_split[0])
+        if sampleTag:
+            config_name += "_" + sampleTag
 
         if doConfig and config_name not in configsMade:
             makeConfig(path, era, das, config_name, nThreads, isData, args.tagAndProbe)

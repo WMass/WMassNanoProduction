@@ -140,6 +140,58 @@ lumi_mask_of() {
     esac
 }
 
+# Per-sample fixes on top of the campaign (MC only).
+#
+# Beamspot of RunIILowPUSummer20UL17 (2017H, 13 TeV low PU): the POWHEG-MiNNLO W/Z,
+# ttbar and single-top samples were generated with the 2018 vertex smearing
+# (Realistic25ns13TeVEarly2018Collision, McM wmLHEGS requests) but reconstructed with
+# the 2017 MC beamspot of 106X_mc2017_realistic_v9For2017H_v1, so the offlineBeamSpot
+# of their MiniAOD/AOD is ~450 um off the collisions (measured genParticles:xyz0 -
+# offlineBeamSpot = +356, -276 um) and every beamspot-constrained quantity is biased
+# (CVH dimuon mass -1.9%). The nano re-makes offlineBeamSpot from the 2018 MC beamspot
+# tag for them (nano_cff.nanoAOD_beamSpotEarly2018MC). The pomflux and MinBias samples
+# of the campaign were generated with the 2017 smearing and are consistent (< 2 um).
+# The upstream primary vertices of the affected samples stay degraded.
+_lowPUBeamSpot2018=(
+    DYJetsToMuMu_H2ErratumFix_PDFExt_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+    DYJetsToEE_M-50_H2ErratumFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+    WplusJetsToMuNu_H2ErratumFix_PDFExt_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+    WminusJetsToMuNu_H2ErratumFix_PDFExt_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+    WplusJetsToENu_H2ErratumFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+    WminusJetsToENu_H2ErratumFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+    WplusJetsToTauNu_TauToMu_H2ErratumFix_PDFExt_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+    WminusJetsToTauNu_TauToMu_H2ErratumFix_PDFExt_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos
+    TTTo2L2Nu_TuneCP5_lowPU_13TeV-powheg-pythia8
+    TTToSemiLeptonic_TuneCP5_lowPU_13TeV-powheg-pythia8
+    TTToHadronic_TuneCP5_lowPU_13TeV-powheg-pythia8
+    ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_lowPU_13TeV-powheg-pythia8
+    ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_lowPU_13TeV-powheg-pythia8
+    TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8
+    ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8
+)
+_isLowPUBeamSpot2018() {
+    [[ $1 == *RunIILowPUSummer20UL17* ]] || return 1
+    local pd
+    for pd in "${_lowPUBeamSpot2018[@]}"; do
+        [[ $1 == */$pd/* ]] && return 0
+    done
+    return 1
+}
+
+# sample_customise <das path or file/root URL>: customise of the sample's per-sample fix (empty: none)
+sample_customise() {
+    if _isLowPUBeamSpot2018 "$1"; then
+        echo PhysicsTools/NanoAOD/nano_cff.nanoAOD_beamSpotEarly2018MC
+    fi
+}
+
+# sample_tag <das path or file/root URL>: tag of the sample's per-sample fix in the config name (empty: none)
+sample_tag() {
+    if _isLowPUBeamSpot2018 "$1"; then
+        echo BS2018
+    fi
+}
+
 # allow `bash campaign.sh <function> <args>` (used by prepareCrab.py)
 if [[ "${BASH_SOURCE[0]}" == "$0" && $# -gt 0 ]]; then
     "$@"

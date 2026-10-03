@@ -5,6 +5,7 @@
 # Era WITHOUT run2_nanoAOD_106Xv2 (its PUPPI re-clustering / tau re-wiring is
 # circular with PAT in the same process; see nanoTP_cff.py); PAT behaves as the
 # UL MiniAODv2 via the run2_miniAOD_UL process modifier.
+# + the sample's own fix, if any (scripts/campaign.sh sample_customise).
 # usage: makeNanoV15MCTagAndProbe <das_path or file:/root:...> <name> [nthreads] [campaign]
 #   campaign: 2016preVFP | 2016postVFP | 2017 | 2018 | 2017LowPU | 2017LowPU5TeV (default: from the dataset name)
 if [[ $# -lt 2 ]]; then
@@ -32,11 +33,12 @@ case $campaign in
 esac
 gt=$(gt_of $campaign mc) || exit 1
 tnp=PhysicsTools/NanoAOD/nanoTP_cff.customizeNANOTP; [[ $campaign == 2017LowPU* ]] && tnp=${tnp}LowPU
+fix=$(sample_customise "$1")
 
 cmsDriver.py NANO --conditions $gt \
     --datatier NANOAODSIM --eventcontent NANOAODSIM \
     --era $era --procModifiers run2_miniAOD_UL --geometry DB:Extended \
-    --customise Configuration/DataProcessing/Utils.addMonitoring,$tnp,PhysicsTools/NanoAOD/nano_cff.nanoGenWmassCustomize \
+    --customise Configuration/DataProcessing/Utils.addMonitoring,$tnp,PhysicsTools/NanoAOD/nano_cff.nanoGenWmassCustomize${fix:+,$fix} \
     --filein $input --fileout file:$outfile --nThreads $nThreads --no_exec \
     --python_filename $config_name --mc \
     --scenario pp --step PAT,NANO -n $nevents

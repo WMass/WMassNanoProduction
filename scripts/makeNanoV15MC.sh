@@ -7,6 +7,8 @@
 # (nanoAOD_addCvhMuonMC, every campaign, with the pixel edge / single-column
 # hits and their class corrections: nanoAOD_cvhPixelClassHits) + the campaign's own customise
 # (low PU: HI-menu trigger objects; 2017H also the low-PU DeepMET models).
+# + the sample's own fix, if any (scripts/campaign.sh sample_customise: the beamspot of
+# the RunIILowPUSummer20UL17 samples generated with the 2018 vertex smearing).
 # usage: makeNanoV15MC <das_path or file:/root:...> <name> [nthreads] [campaign]
 #   campaign: see scripts/campaign.sh (default: from the dataset name)
 if [[ $# -lt 2 ]]; then
@@ -33,8 +35,10 @@ customise=Configuration/DataProcessing/Utils.addMonitoring,PhysicsTools/NanoAOD/
 extra=$(campaign_customise $campaign)
 [[ -n $extra ]] && customise=$customise,$extra
 customise=$customise,PhysicsTools/NanoAOD/nano_cff.nanoAOD_addCvhMuonMC,PhysicsTools/NanoAOD/nano_cff.nanoAOD_cvhPixelClassHits
+fix=$(sample_customise "$1")
+[[ -n $fix ]] && customise=$customise,$fix
 
-echo "makeNanoV15MC: campaign $campaign, era $era, GT $gt"
+echo "makeNanoV15MC: campaign $campaign, era $era, GT $gt${fix:+, sample fix $fix}"
 cmsDriver.py NANO --conditions $gt \
     --datatier NANOAODSIM --eventcontent NANOAODSIM \
     --era $era \

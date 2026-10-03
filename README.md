@@ -55,6 +55,23 @@ or LFN), era (+ NANO modifier), global tag, campaign-specific customise and outp
 * **2017 low-PU runs**: 2017H (13 TeV, `inputs/lowPU{MC,Data}_UL.txt`) adds `nanoAOD_wmassLowPU`
   (HI-menu trigger objects, low-PU DeepMET models); 2017G (5.02 TeV, `inputs/lowPU5TeV{MC,Data}_UL.txt`)
   adds `nanoAOD_wmassLowPU5TeV` (the same HI-menu trigger objects, stock DeepMET).
+* **Per-sample fixes** (`scripts/campaign.sh` `sample_customise` / `sample_tag`; MC, nano and
+  tag-and-probe; `prepareCrab.py` gives such samples their own config, `<name>_<tag>_cfg.py`):
+  - `BS2018`: the beamspot of 15 RunIILowPUSummer20UL17 samples (all POWHEG-MiNNLO W/Z, the lowPU
+    ttbar and single top). Their GEN-SIM used the 2018 vertex smearing
+    (`Realistic25ns13TeVEarly2018Collision`, McM wmLHEGS requests) but their RECO the 2017 MC
+    beamspot of `106X_mc2017_realistic_v9For2017H_v1`, so the `offlineBeamSpot` in their AOD/MiniAOD
+    is ~450 um off the collisions (generated vertex - beamspot = +356, -276 um) and every
+    beamspot-constrained quantity is biased (CVH dimuon mass -1.9%, `Muon_bsConstrainedPt` -0.9%).
+    `nano_cff.nanoAOD_beamSpotEarly2018MC` re-makes `offlineBeamSpot` in the nano job from the 2018 MC
+    beamspot tag, which matches the generated vertices; every consumer in the job (the BeamSpot/PVBS
+    tables, `Muon_bsConstrained*`, the lepton impact points, the CVH refits incl. `Dimuon_cvh*`, ...)
+    then uses it (also PAT in the tag-and-probe job: `Muon_dxybs` recomputed). Not recoverable: the
+    primary vertices of these samples (reconstructed with the wrong beamspot: ~70 um pull, 4x worse
+    resolution, so `Muon_dxy` w.r.t. the PV is degraded) and, in the nano from MiniAOD, the dxybs
+    magnitudes stored there. The pomflux and MinBias samples of the campaign, the 5.02 TeV MC and the
+    data are consistent. Validated on DYJetsToMuMu (500 events): Dimuon CVH/reco mass median -1.9% ->
+    0.00%, `Muon_bsConstrainedPt` -0.9% -> -0.01%, PVBS - generated vertex (-353, +274) -> (-1, +3) um.
 * **Muon tag-and-probe** (`--tagAndProbe`; `makeNanoV15{MC,Data}TagAndProbe.sh`, Run 2 campaigns
   incl. 2017LowPU5TeV; inputs `dy*_TnP_v15.txt`, `data_*_TnP.txt`, `lowPU*_TnP_UL.txt`): one `PAT,NANO`
   job from AOD with `PhysicsTools/NanoAOD/nanoTP_cff.customizeNANOTP[LowPU]`, era `Run2_20xx`
