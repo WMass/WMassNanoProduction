@@ -1,8 +1,9 @@
 # WMass NanoAOD production (CMSSW_15_0_19_patch2)
 
 Scripts to run and keep track of the private W-mass NanoAOD production with CMSSW_15_0_19_patch2
-(the stable branch `WmassNanoProd_15_0_19_patch2_nanoV15` of the cmssw fork, WMass/cmssw PR #48;
-`WmassNanoProd_15_0_19_patch2_dev`, PR #46, is the development branch).
+and the WMass/cmssw branch `WmassNanoProd_15_0_19_patch2` (the stable nano v15 code, PR #48 from
+`davidwalter2:WmassNanoProd_15_0_19_patch2_nanoV15`; `WmassNanoProd_15_0_19_patch2_dev`, PR #46,
+is the development branch).
 `scripts/prepareCrab.py` generates the cmsDriver configs from the four scripts
 `scripts/makeNanoV15{MC,Data}[TagAndProbe].sh` and the crab submit files from
 `Templates/submitCrabNanoV15Template`, splits a production between people and records every
@@ -97,14 +98,25 @@ per-dataset events/sizes, the choices and the alternatives. Lines starting with 
 
 el9 host (`SCRAM_ARCH=el9_amd64_gcc12`), no container:
 ```sh
-bash <(curl -s https://raw.githubusercontent.com/WMass/WMassNanoProduction/WmassNanoProd_15_0_19_patch2/setup/clone_15_0.sh)
+bash <(curl -s https://raw.githubusercontent.com/WMass/WMassNanoProduction/main/setup/clone_15_0.sh)
 
 cd CMSSW_15_0_19_patch2/src/Configuration/WMassNanoProduction
 ```
-`setup/sparse-checkout_15_0` lists the packages the cmssw branch modifies (informational; the
-clone script uses `git cms-checkout-topic`).
+The clone script checks out and builds only the packages the cmssw branch modifies, not their
+dependents (see the comment in the script). `CMSSW_TOPIC=user:branch`, `PROD_REPO` and `PROD_BRANCH`
+override the two branches (e.g. to test a pull request). `setup/sparse-checkout_15_0` lists the
+modified packages (informational).
 
 # Running
+
+Once per build, before `prepareCrab.py` (after `cmsenv`): ```./scripts/prepareSandbox.sh```
+(`crab submit` loads the configs locally, and the data configs check that the field tables are found).
+It puts the OPERA 170812 field tables of the CVH refit of data into `$CMSSW_BASE/external` (shipped by
+CRAB with `sendExternalFolder`; downloaded from cms-data/MagneticField-Interpolation#5 at a pinned
+commit, or copied from a directory given as argument, sha1-checked), keeps the 90 MB resolution-model
+tables of the CVH development (`TrackPropagation/Geant4e/data/cvhcf_*.bin`, not used by the nano) out of
+the work tree with a sparse-checkout exclusion, and strips the debug information of the libraries, so
+that the sandbox stays below CRAB's 120 MB limit (it prints the estimate).
 
 Ex: ```./scripts/prepareCrab.py --makeConfig -i inputs/data_postVFP.txt -v v1```
 
