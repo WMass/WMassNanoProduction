@@ -73,11 +73,18 @@ per-dataset events/sizes, the choices and the alternatives. Lines starting with 
 
 * Run 2 low-PU data: only `SingleMuon/...UL2017_MiniAODv2_GT36-v2` keeps the muon tracker hits;
   DoubleMuon and HighEGJet exist only without GT36 (nano fine, no CVH values).
-* 2024 pp reference (2024J): the PromptReco MiniAOD keeps no muon tracker hits and no AOD exists,
-  so the CVH refit fills nothing; a refit would need a re-RECO from RAW.
-* 2024 (MiniAODv6, data and MC): 22-28 % of the CVH refits diverge and the rest are not usable,
-  independent of sim geometry, era and global tag (2022 and 2025 are fine) -- under investigation;
-  do not produce 2024 with the CVH refit until this is understood.
+* 2024: the strip clusters of the muon tracks are EMPTY in the 2024 MiniAODv6 (data
+  MINIv6NANOv15 and RunIII2024Summer24MiniAODv6 MC, incl. MiNNLO DY): the 15_0 re-MINI read the
+  14_0 AOD (SiStripCluster v13, split 99) through read rules ROOT does not feed for split > 1
+  (root-project/root#19773) and wrote empty clusters. Every strip hit lands on the module edge and
+  the CVH refit diverges; this is on disk and not recoverable. 14_0 inputs (2024 PromptReco, the
+  2024CDEReprocessing MiniAOD of C-E, the 140X Summer24 MiniAOD, 2024J pp-reference PromptReco) are
+  fine on disk but read empty in stock 15_0 for the same reason. Usable now: the split-1
+  2024CDEReprocessing MiniAOD (C-E) and RunIII2024Summer24MiniAOD-140X MC (era
+  Run3_2024,run3_nanoAOD_pre142X); everything else needs the SiStripCluster read-rule fix
+  (not yet in the cmssw branch). Not open yet: decision on the 2024 inputs.
+* 2024 pp reference (2024J): readable only with the read-rule fix (see above); not every run has
+  muon inner tracks (run 387396 has none).
 * 2025LowPU: the certified low-pileup physics runs 398682-398803 of Run2025G with
   `Collisions25/latest/2025_lowPU_updated.json` (set by `campaign.sh`); run with
   `--campaign 2025LowPU`. No MC with the 2025 low-PU conditions exists (`mc_2025LowPU.txt` is the
