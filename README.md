@@ -42,7 +42,10 @@ or LFN), era (+ NANO modifier), global tag, campaign-specific customise and outp
 
 * **W-mass nano** (`makeNanoV15{MC,Data}.sh`, every campaign): stock 15_0 NANO on the campaign's
   MiniAOD + `nanoAOD_wmassContent` (+ `nanoGenWmassCustomize` for MC) + the campaign's customise
-  + the CVH muon refit `nanoAOD_addCvhMuon[MC]`, which every campaign gets. The refit is
+  + the CVH muon refit `nanoAOD_addCvhMuon[MC]`, which every campaign gets. The refit keeps the
+  pixel edge and single-column hits (`nanoAOD_cvhPixelClassHits`) and exports the columns of
+  their class corrections (parmtypes 16-21, 8640 parameters appended to the catalog): the
+  calibration applied to this nano must be derived with the same setting. The refit is
   multithreaded (`-j 4`, the default; the crab jobs get `numCores = nThreads`). Its Geant4 world
   is the sim geometry of the detector era (`nano_cff._cvhSimGeometry`).
   The refit needs the muon tracker hits in the MiniAOD: the MC MiniAODv2/v4/v6 keep them; for the
