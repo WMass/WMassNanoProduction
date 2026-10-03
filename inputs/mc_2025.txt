@@ -18,7 +18,9 @@
 /TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter26MiniAODv6-150X_mcRun3_realistic_EOY25_forTSGStudies_v2-v2/MINIAODSIM
 /TTToLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter26MiniAODv6-150X_mcRun3_realistic_EOY25_forTSGStudies_v2-v2/MINIAODSIM
 # --- quarkonia: J/psi -> mumu particle-gun samples only (no Upsilon); KeepSi = tracker hits kept
-/JPsiToMuMu_PT-0to100_pythia8-gun/Run3Winter25MiniAOD-FlatPU0to120_MiniAODv6_150X_mcRun3_2025_realistic_v6-v2/MINIAODSIM
+# 15_0_6 re-MINI of the 14_2 AODSIM: EMPTY muon strip clusters on disk (ROOT issue 19773, see README);
+# no other MiniAOD version, the AODSIM parent is on tape only (T1_RU_JINR_Tape):
+# /JPsiToMuMu_PT-0to100_pythia8-gun/Run3Winter25MiniAOD-FlatPU0to120_MiniAODv6_150X_mcRun3_2025_realistic_v6-v2/MINIAODSIM
 /JPsito2Mu_Bin-PT-0to100_pythia8-gun/Run3Winter25MiniAOD-KeepSi_142X_mcRun3_2025_realistic_v7-v1/MINIAODSIM
 # --- QCD mu-enriched (only 4 pT bins, ~100k events each)
 /QCD_Bin-PT-20to30_Fil-MuEnriched_TuneCP5_13p6TeV_pythia8/Run3Winter25MiniAOD-142X_mcRun3_2025_realistic_v7-v2/MINIAODSIM

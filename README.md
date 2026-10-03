@@ -94,13 +94,20 @@ per-dataset events/sizes, the choices and the alternatives. Lines starting with 
 
 * Run 2 low-PU data: only `SingleMuon/...UL2017_MiniAODv2_GT36-v2` keeps the muon tracker hits;
   DoubleMuon and HighEGJet exist only without GT36 (nano fine, no CVH values).
-* 2024: the 15_0 MiniAODv6 (data MINIv6NANOv15, RunIII2024Summer24MiniAODv6 MC incl. the MiNNLO
-  DY) has EMPTY muon strip clusters on disk: the central 15_0 re-MINI read the 14_0 AOD
-  (SiStripCluster v13, split 99) through read rules ROOT does not feed for split > 1
-  (root-project/root#19773). The CVH refit diverges on it, so the 2024 lists use the 14_0 MiniAOD
-  instead (PromptReco B, F-I; 2024CDEReprocessing C-E; 140X Summer24 MC), which the cmssw branch
-  reads correctly with its SiStripCluster read-rule fix. 13 MC samples exist only as MiniAODv6
-  (incl. MiNNLO DY->mumu): commented out in `mc_2024.txt`, they would need a re-MINI.
+* Run 3 strip clusters: every 15_X re-MINI of an AOD from an older release has EMPTY muon strip
+  clusters on disk (no amplitudes, first strip 0, charge 0): the 15_X job read the old clusters
+  (SiStripCluster v12/v13, split 99 in AOD) through read rules ROOT does not feed for split > 1
+  (root-project/root#19773). Measured (one file each, 2026-10-03): broken are the 2024 MiniAODv6
+  (data MINIv6NANOv15, RunIII2024Summer24MiniAODv6 MC, 15_0_2) and the Run3Winter25 MiniAODv6
+  re-MINIs of the 2025 MC (15_0_6 from 14_2 AODSIM); fine on disk are 2022/2023 (MiniAODv4, 13_0),
+  2024 PromptReco/CDE/140X MC (14_0), 2024J (14_1), 2025 PromptReco data and the end-to-end 15_0
+  Run3Winter26MiniAODv6 MC. Of these, the split-99 MiniAOD (2024 and 2024J PromptReco) read EMPTY in
+  stock 15_X too; the cmssw nanoV15 branch reads them correctly (SiStripCluster read-rule fix).
+  The CVH refit diverges on files with empty clusters, so the 2024 lists use the 14_0 MiniAOD
+  instead (PromptReco B, F-I; 2024CDEReprocessing C-E; 140X Summer24 MC). 13 2024 MC samples exist
+  only as MiniAODv6 (incl. MiNNLO DY->mumu) and are commented out in `mc_2024.txt`, as is the 2025
+  J/psi gun (`mc_2025.txt`, only a Run3Winter25 MiniAODv6, AODSIM on tape); they would need a
+  re-MINI with the fixed release.
 * 2024 pp reference (2024J): 14_1 PromptReco, read correctly with the read-rule fix; not every run
   has muon inner tracks (run 387396 has none).
 * 2025LowPU: the certified low-pileup physics runs 398682-398803 of Run2025G with
