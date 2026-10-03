@@ -55,14 +55,15 @@ era_of() {
 
 # nano_era_of <campaign>: era + NANO modifier for NANO on the campaign's MiniAOD
 #   Run 2 UL MiniAODv2: run2_nanoAOD_106Xv2; Run 3 MiniAOD made before 14_2
-#   (2022/2023 MiniAODv4, the 2024J PromptReco in 14_1): run3_nanoAOD_pre142X;
-#   2024 (MiniAODv6 of the 15_0 MINIv6NANOv15 reprocessing) and 2025 (15_0
-#   PromptReco): none (Run3_2025 already contains run3_nanoAOD_2025)
+#   (2022/2023 MiniAODv4, 2024: the 14_0 PromptReco / 2024CDEReprocessing data and
+#   the 140X Summer24 MC, 2024J PromptReco in 14_1): run3_nanoAOD_pre142X;
+#   2025 (15_0 PromptReco): none (Run3_2025 already contains run3_nanoAOD_2025).
+#   The 15_0 MiniAODv6 of 2024 is NOT used: its muon strip clusters are empty.
 nano_era_of() {
     local era; era=$(era_of "$1") || return 1
     case "$1" in
         2016*|2017*|2018) echo $era,run2_nanoAOD_106Xv2 ;;
-        2022|2022EE|2023|2023BPix|2024ppRef) echo $era,run3_nanoAOD_pre142X ;;
+        2022|2022EE|2023|2023BPix|2024|2024ppRef) echo $era,run3_nanoAOD_pre142X ;;
         *) echo $era ;;
     esac
 }

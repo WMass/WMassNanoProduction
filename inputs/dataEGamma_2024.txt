@@ -1,22 +1,24 @@
-# dataEGamma_2024.txt -- 2024 13.6 TeV pp, EGamma0/EGamma1 PDs, eras B-I, MINIAOD
-# Source: DAS prod/global, queried 2026-10-03, VALID only.
-# Selection: as data_2024.txt (MINIv6NANOv15 for C-I incl. I_v2, PromptReco-v1 for B).
-# Details/alternatives: inputs/INVENTORY_261003.md
+# dataEGamma_2024.txt -- 2024 13.6 TeV pp, EGamma primary datasets: the 14_0 MiniAOD of every era (rebuilt 2026-10-03).
+# Eras C-E: /*/Run2024[CDE]-2024CDEReprocessing-v*/MINIAOD (14_0, split 1); eras B, F-I: PromptReco
+# (14_0, split 99, readable in 15_0 only with the SiStripCluster read-rule fix of the cmssw branch).
+# NOT the 15_0 MINIv6NANOv15 MiniAOD: its muon strip clusters are empty on disk (central re-MINI hit
+# root-project/root#19773), the CVH refit diverges on it. Campaign 2024 (era Run3_2024,run3_nanoAOD_pre142X).
+# Details: inputs/INVENTORY_261003.md (MINIv6 lists there are superseded by this file).
 /EGamma0/Run2024B-PromptReco-v1/MINIAOD
-/EGamma0/Run2024C-MINIv6NANOv15-v1/MINIAOD
-/EGamma0/Run2024D-MINIv6NANOv15-v1/MINIAOD
-/EGamma0/Run2024E-MINIv6NANOv15-v1/MINIAOD
-/EGamma0/Run2024F-MINIv6NANOv15-v1/MINIAOD
-/EGamma0/Run2024G-MINIv6NANOv15-v2/MINIAOD
-/EGamma0/Run2024H-MINIv6NANOv15-v2/MINIAOD
-/EGamma0/Run2024I-MINIv6NANOv15-v1/MINIAOD
-/EGamma0/Run2024I-MINIv6NANOv15_v2-v1/MINIAOD
+/EGamma0/Run2024C-2024CDEReprocessing-v2/MINIAOD
+/EGamma0/Run2024D-2024CDEReprocessing-v2/MINIAOD
+/EGamma0/Run2024E-2024CDEReprocessing-v2/MINIAOD
+/EGamma0/Run2024F-PromptReco-v1/MINIAOD
+/EGamma0/Run2024G-PromptReco-v1/MINIAOD
+/EGamma0/Run2024H-PromptReco-v1/MINIAOD
+/EGamma0/Run2024I-PromptReco-v1/MINIAOD
+/EGamma0/Run2024I-PromptReco-v2/MINIAOD
 /EGamma1/Run2024B-PromptReco-v1/MINIAOD
-/EGamma1/Run2024C-MINIv6NANOv15-v1/MINIAOD
-/EGamma1/Run2024D-MINIv6NANOv15-v1/MINIAOD
-/EGamma1/Run2024E-MINIv6NANOv15-v1/MINIAOD
-/EGamma1/Run2024F-MINIv6NANOv15-v1/MINIAOD
-/EGamma1/Run2024G-MINIv6NANOv15-v2/MINIAOD
-/EGamma1/Run2024H-MINIv6NANOv15-v1/MINIAOD
-/EGamma1/Run2024I-MINIv6NANOv15-v1/MINIAOD
-/EGamma1/Run2024I-MINIv6NANOv15_v2-v1/MINIAOD
+/EGamma1/Run2024C-2024CDEReprocessing-v2/MINIAOD
+/EGamma1/Run2024D-2024CDEReprocessing-v2/MINIAOD
+/EGamma1/Run2024E-2024CDEReprocessing-v2/MINIAOD
+/EGamma1/Run2024F-PromptReco-v1/MINIAOD
+/EGamma1/Run2024G-PromptReco-v1/MINIAOD
+/EGamma1/Run2024H-PromptReco-v1/MINIAOD
+/EGamma1/Run2024I-PromptReco-v1/MINIAOD
+/EGamma1/Run2024I-PromptReco-v2/MINIAOD
