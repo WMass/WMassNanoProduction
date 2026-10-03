@@ -6,7 +6,7 @@
 # circular with PAT in the same process; see nanoTP_cff.py); PAT behaves as the
 # UL MiniAODv2 via the run2_miniAOD_UL process modifier.
 # usage: makeNanoV15DataTagAndProbe <das_path or file:/root:...> <name> [nthreads] [campaign]
-#   campaign: 2016preVFP | 2016postVFP | 2017 | 2018 | 2017LowPU (default: from the dataset name)
+#   campaign: 2016preVFP | 2016postVFP | 2017 | 2018 | 2017LowPU | 2017LowPU5TeV (default: from the dataset name)
 if [[ $# -lt 2 ]]; then
     echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign]"
     exit 1
@@ -27,9 +27,11 @@ config_name=configs/${name}_cfg.py
 outfile=${name}.root
 
 case $campaign in
-    *) gt=150X_dataRun2_v1 ;;   # the central NanoAODv15 tag for every Run 2 era
+    2016*|2017|2018|2017LowPU|2017LowPU5TeV) ;;
+    *) echo "makeNanoV15DataTagAndProbe: the tag-and-probe nano (PAT,NANO from UL AOD) is set up for the Run 2 campaigns only, not $campaign" >&2; exit 1 ;;
 esac
-tnp=PhysicsTools/NanoAOD/nanoTP_cff.customizeNANOTP; [[ $campaign == 2017LowPU ]] && tnp=${tnp}LowPU
+gt=$(gt_of $campaign data) || exit 1
+tnp=PhysicsTools/NanoAOD/nanoTP_cff.customizeNANOTP; [[ $campaign == 2017LowPU* ]] && tnp=${tnp}LowPU
 
 cmsDriver.py NANO --conditions $gt \
     --datatier NANOAOD --eventcontent NANOAOD \

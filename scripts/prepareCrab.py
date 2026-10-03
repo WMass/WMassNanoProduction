@@ -19,38 +19,28 @@ def fillTemplatedFile(template_file_name, out_file_name, template_dict):
     with open(out_file_name, "w") as outFile:
         outFile.write(result)
 
+_CAMPAIGN_SH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "campaign.sh")
+
+def campaignTable(function, *args):
+    """scripts/campaign.sh is the one table of the campaigns (detection, era,
+    global tag, customise, label); ask it."""
+    return subprocess.check_output(["bash", _CAMPAIGN_SH, function, *args]).decode().strip()
+
 def campaignFromInput(das_path):
-    """2016preVFP | 2016postVFP | 2017 | 2018 | 2017LowPU, as scripts/campaign.sh derives it."""
-    if 'RunIILowPU' in das_path or '/Run2017H-' in das_path:
-        return "2017LowPU"
-    if 'UL2017' in das_path or 'UL17' in das_path:
-        return "2017"
-    if 'UL2018' in das_path or 'UL18' in das_path:
-        return "2018"
-    return "2016preVFP" if ('HIPM' in das_path or 'APV' in das_path) else "2016postVFP"
+    """The campaign of a dataset (--campaign overrides it), as scripts/campaign.sh derives it."""
+    if args.campaign:
+        return args.campaign
+    return campaignTable("campaign_from_input", das_path)
 
-def nameFromInput(das_path, tagAndProbe=False):    
+def nameFromInput(das_path, tagAndProbe=False):
+    """Data<label> / MC<label> (+TagAndProbe); 2016 keeps its historical order
+    (MCTagAndProbePostVFP)."""
+    campaign = campaignFromInput(das_path)
     label = "MC" if "SIM" in das_path[-3:] else "Data"
-    if 'RunIILowPU' in das_path or '/Run2017H-' in das_path:
-        # the 2017 low-PU run (2017H, 13 TeV) on the UL re-reco
-        return label + "LowPU" + ("TagAndProbe" if tagAndProbe else "")
-    if 'UL2017' in das_path or 'UL17' in das_path: #needed since pattern in data and MC names are different
-        label += '2017'
-    elif 'UL2018' in das_path or 'UL18' in das_path:
-        label += '2018'
-    if tagAndProbe:
-        label += "TagAndProbe"
-
-    if 'Data' in label and 'UL2016' in das_path:
-        if 'HIPM' in das_path: 
-            label += "PreVFP"
-        else: 
-            label += "PostVFP"
-    elif 'UL16' in das_path:#for MC 2016
-        # TODO: This doesn't actually work for data!
-        label += "PreVFP" if "APV" in das_path else "PostVFP"
-
-    return label
+    tnp = "TagAndProbe" if tagAndProbe else ""
+    if campaign.startswith("2016"):
+        return label + tnp + campaignTable("label_of", campaign)
+    return label + campaignTable("label_of", campaign) + tnp
 
 def gitHash(path):
     return subprocess.check_output(['git', 'log', '-1', '--format="%H"'], cwd=path).decode('UTF-8')
@@ -122,7 +112,7 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
     path = os.environ['CMSSW_BASE']+"/src/Configuration/WMassNanoProduction"
     if not os.path.isfile(inputFile):
         raise ValueError("Could not open file %s" % inputFile)
-    inputs = filter(lambda x: x[0] != "#", [i.strip() for i in open(inputFile).readlines()])
+    inputs = [i.strip() for i in open(inputFile).readlines() if i.strip() and not i.strip().startswith("#")]
 
     if not inputs:
         raise RuntimeError("The input dataset %s is empty" % input_path)
@@ -157,6 +147,9 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
 
         outname = "_".join(das.split("/")[1:(3 if isData else 2)])
         if isData:
+            if args.campaign:
+                # a campaign that shares its datasets with another one (2025LowPU)
+                outname += "_" + args.campaign
             if args.tagAndProbe:
                 outname += "_TagAndProbe"
         else:
@@ -182,6 +175,14 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
         
         units = 2 if not isData else 10
 
+        extra = ""
+        runRange = args.runRange or (campaignTable("run_range_of", campaignFromInput(das)) if isData else "")
+        if isData and runRange:
+            extra += f"config.Data.runRange = '{runRange}'\n"
+        lumiMask = args.lumiMask or (campaignTable("lumi_mask_of", campaignFromInput(das)) if isData else "")
+        if isData and lumiMask:
+            extra += f"config.Data.lumiMask = '{lumiMask}'\n"
+
         fillTemplatedFile("/".join([path, "Templates", "submitCrab%sTemplate" % era]),
             outfile, 
             {"era" : name, "splitting" : "LumiBased" if isData else "FileBased", 
@@ -189,7 +190,8 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
                 "input" : das, "config" : config_name, "units" : units*args.nThreads,
                 "dbs" : "global" if len(das_split) == 1 else "phys03",
                 "useParent" : "False" if len(das_split) == 1 else "True",
-                "version" : version, "outstorage" : storage, "site" : site
+                "version" : version, "outstorage" : storage, "site" : site,
+                "extra" : extra
             })
         logging.info("Wrote config file %s" % "/".join(outfile.split("/")[-2:]))
         if submit[0] >= 1 and i % submit[0] == (submit[1]-1):
@@ -209,6 +211,9 @@ parser.add_argument('-j', '--nThreads', type=int, default=4,
 parser.add_argument('--era', type=str, default='NanoV15', help='production label: selects scripts/make<era><Sample>.sh and Templates/submitCrab<era>Template')
 parser.add_argument('--storage', default='/store/group/cmst3/group/wmass/w-mass-13TeV/NanoAOD', type=str, help='Storage path of output Ntuples(default CERN storage)')
 parser.add_argument('--site', default='T2_CH_CERN', type=str, help='Site of the output storage(default:T2_CH_CERN)')
+parser.add_argument('--campaign', default='', type=str, help='campaign of every input (scripts/campaign.sh), instead of deriving it from the dataset name; needed for 2025LowPU, which shares its datasets with 2025')
+parser.add_argument('--runRange', default='', type=str, help='CRAB run range for data (default: the campaign\'s, scripts/campaign.sh run_range_of)')
+parser.add_argument('--lumiMask', default='', type=str, help='CRAB lumi mask (JSON file or URL) for data')
 
 args = parser.parse_args()
 if args.submit[1] > args.submit[0] or (args.submit[1] == 0 and args.submit[1] != args.submit[0]):
