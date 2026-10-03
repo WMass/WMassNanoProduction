@@ -1,0 +1,14 @@
+# dataEGamma_2024ppRef.txt -- 2024 pp reference run at sqrt(s)=5.36 TeV (era Run2024J, runs 387396-387721), PPRefHardProbes PDs, MINIAOD
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: PromptReco-v1 (only processing). The PPRef menu has no EGamma PD: all electron and photon triggers
+#   (HLT_PPRefEle{10,15,20,30,40,50}Gsf, HLT_PPRefDoubleEle{10,15}Gsf[Mass50], HLT_PPRefEle15Ele10Gsf[Mass50], HLT_PPRefGEDPhoton*)
+#   go to PPRefHardProbes together with the AK4 calo/PF jet triggers (verified from the HLT provenance, hltDatasetPPRefHardProbes).
+#   PPRefHardProbes0-4 are disjoint round-robin splits; all five are needed. Large (dominated by jet/photon triggers).
+# LUMI MASK: /cvmfs/cms-griddata.cern.ch/cat/metadata/DC/Collisions24/latest/Cert_Collisions2024_ppref_387474_387721_golden.json
+#   (28 runs, ~481 pb-1 recorded per OMS; Muon-only JSON in the same directory: 26 runs, ~456 pb-1). Not in the 2024 pp golden JSON.
+# Details/alternatives: inputs/INVENTORY_261003.md
+/PPRefHardProbes0/Run2024J-PromptReco-v1/MINIAOD
+/PPRefHardProbes1/Run2024J-PromptReco-v1/MINIAOD
+/PPRefHardProbes2/Run2024J-PromptReco-v1/MINIAOD
+/PPRefHardProbes3/Run2024J-PromptReco-v1/MINIAOD
+/PPRefHardProbes4/Run2024J-PromptReco-v1/MINIAOD

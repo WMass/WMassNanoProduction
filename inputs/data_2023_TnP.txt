@@ -1,0 +1,13 @@
+# data_2023_TnP.txt -- Run 2023 C muon PDs Muon0+Muon1, AOD (for T&P nano)
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: AOD parents of the MiniAOD in data_2023.txt (PromptReco-v1..v4; no AOD re-reco exists).
+# NB PromptReco-v2 lists 18 extra runs (367661-367758) with 0 events (they are in -v3): no double counting.
+# Details/alternatives: inputs/INVENTORY_261003.md
+/Muon0/Run2023C-PromptReco-v1/AOD
+/Muon0/Run2023C-PromptReco-v2/AOD
+/Muon0/Run2023C-PromptReco-v3/AOD
+/Muon0/Run2023C-PromptReco-v4/AOD
+/Muon1/Run2023C-PromptReco-v1/AOD
+/Muon1/Run2023C-PromptReco-v2/AOD
+/Muon1/Run2023C-PromptReco-v3/AOD
+/Muon1/Run2023C-PromptReco-v4/AOD

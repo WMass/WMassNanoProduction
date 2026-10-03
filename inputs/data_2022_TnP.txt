@@ -1,0 +1,9 @@
+# data_2022_TnP.txt -- Run 2022 C-D muon PDs, AOD (for T&P nano)
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: AOD parents of the MiniAOD in data_2022.txt (27Jun2023 ReReco AOD; D uses -v2, -v1 is INVALID).
+# NB /DoubleMuon/Run2022C-27Jun2023-v1/AOD is on tape only (needs a Rucio rule before CRAB).
+# Details/alternatives: inputs/INVENTORY_261003.md
+/SingleMuon/Run2022C-27Jun2023-v1/AOD
+/DoubleMuon/Run2022C-27Jun2023-v1/AOD
+/Muon/Run2022C-27Jun2023-v1/AOD
+/Muon/Run2022D-27Jun2023-v2/AOD

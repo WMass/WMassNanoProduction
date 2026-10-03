@@ -1,0 +1,9 @@
+# data_2023BPix.txt -- Run 2023 D (post-BPix) muon PDs Muon0+Muon1, MINIAOD
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: MiniAOD parents of central NanoAODv15 (22Sep2023_v1, _v2 = PromptReco-v1/-v2 of 2023D).
+# NB 22Sep2023_v2 also contains run 371225 (after the end of 2023 pp physics, 370790): rely on the golden-JSON lumi mask.
+# Details/alternatives: inputs/INVENTORY_261003.md
+/Muon0/Run2023D-22Sep2023_v1-v1/MINIAOD
+/Muon0/Run2023D-22Sep2023_v2-v1/MINIAOD
+/Muon1/Run2023D-22Sep2023_v1-v1/MINIAOD
+/Muon1/Run2023D-22Sep2023_v2-v1/MINIAOD

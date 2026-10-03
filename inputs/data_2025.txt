@@ -1,0 +1,23 @@
+# data_2025.txt -- 2025 13.6 TeV pp, single-muon PDs Muon0/Muon1, eras B-G, MINIAOD
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: PromptReco (CMSSW_15_0_x; the prompt NANOAOD is already NanoAODv15, no re-reco/re-mini exists).
+#   C and F each have two PromptReco versions covering disjoint run ranges (both needed).
+#   Run2025C-TrkRadDamage-v2 (special re-reco of runs 393087-393461) NOT used. Era A (commissioning) omitted.
+#   NB: low-pileup runs (e.g. July 2025 fills, 398682/398683/398803) are inside these datasets: lumi-mask them out.
+# Details/alternatives: inputs/INVENTORY_261003.md
+/Muon0/Run2025B-PromptReco-v1/MINIAOD
+/Muon0/Run2025C-PromptReco-v1/MINIAOD
+/Muon0/Run2025C-PromptReco-v2/MINIAOD
+/Muon0/Run2025D-PromptReco-v1/MINIAOD
+/Muon0/Run2025E-PromptReco-v1/MINIAOD
+/Muon0/Run2025F-PromptReco-v1/MINIAOD
+/Muon0/Run2025F-PromptReco-v2/MINIAOD
+/Muon0/Run2025G-PromptReco-v1/MINIAOD
+/Muon1/Run2025B-PromptReco-v1/MINIAOD
+/Muon1/Run2025C-PromptReco-v1/MINIAOD
+/Muon1/Run2025C-PromptReco-v2/MINIAOD
+/Muon1/Run2025D-PromptReco-v1/MINIAOD
+/Muon1/Run2025E-PromptReco-v1/MINIAOD
+/Muon1/Run2025F-PromptReco-v1/MINIAOD
+/Muon1/Run2025F-PromptReco-v2/MINIAOD
+/Muon1/Run2025G-PromptReco-v1/MINIAOD

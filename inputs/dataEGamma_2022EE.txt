@@ -1,0 +1,8 @@
+# dataEGamma_2022EE.txt -- Run 2022 E-G (post-EE) EGamma PD, MINIAOD
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: MiniAOD parents of central NanoAODv15 (22Sep2023 re-MiniAOD; G uses -v2, -v1 is INVALID).
+# Alternative not used: 19Dec2023 re-MiniAOD of F/G (fewer runs).
+# Details/alternatives: inputs/INVENTORY_261003.md
+/EGamma/Run2022E-22Sep2023-v1/MINIAOD
+/EGamma/Run2022F-22Sep2023-v1/MINIAOD
+/EGamma/Run2022G-22Sep2023-v2/MINIAOD

@@ -1,0 +1,23 @@
+# data_2024_TnP.txt -- 2024 13.6 TeV pp, Muon0/Muon1, eras B-I, AOD (tag-and-probe)
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: AOD parents of the MINIv6NANOv15 MINIAOD in data_2024.txt: 2024CDEReprocessing-v1 (C-E),
+#   PromptReco-v1 (B, F, G, H, I part 1), PromptReco-v2 (I part 2).
+# Details/alternatives: inputs/INVENTORY_261003.md
+/Muon0/Run2024B-PromptReco-v1/AOD
+/Muon0/Run2024C-2024CDEReprocessing-v1/AOD
+/Muon0/Run2024D-2024CDEReprocessing-v1/AOD
+/Muon0/Run2024E-2024CDEReprocessing-v1/AOD
+/Muon0/Run2024F-PromptReco-v1/AOD
+/Muon0/Run2024G-PromptReco-v1/AOD
+/Muon0/Run2024H-PromptReco-v1/AOD
+/Muon0/Run2024I-PromptReco-v1/AOD
+/Muon0/Run2024I-PromptReco-v2/AOD
+/Muon1/Run2024B-PromptReco-v1/AOD
+/Muon1/Run2024C-2024CDEReprocessing-v1/AOD
+/Muon1/Run2024D-2024CDEReprocessing-v1/AOD
+/Muon1/Run2024E-2024CDEReprocessing-v1/AOD
+/Muon1/Run2024F-PromptReco-v1/AOD
+/Muon1/Run2024G-PromptReco-v1/AOD
+/Muon1/Run2024H-PromptReco-v1/AOD
+/Muon1/Run2024I-PromptReco-v1/AOD
+/Muon1/Run2024I-PromptReco-v2/AOD

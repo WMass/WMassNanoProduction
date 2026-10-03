@@ -1,0 +1,29 @@
+# mc_2025.txt -- 2025 13.6 TeV MC, MINIAODSIM. NO full 2025 analysis MC campaign (Summer25) exists in DAS yet.
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: best available per process from the preparatory campaigns, preferring Run3Winter26MiniAODv6
+#   (150X, EOY25 = end-of-2025 detector conditions, "forTSGStudies", NanoAODv15 children exist) and falling back
+#   to Run3Winter25MiniAOD (142X, mcRun3_2025_realistic_v7/v9, beginning-of-2025 prediction).
+#   Missing entirely: W->lnu (high PU), single top, dibosons, Upsilon, MiNNLO DY.
+# Details/alternatives: inputs/INVENTORY_261003.md
+# --- DY -> mumu (powheg NLO, no MiNNLO at high PU)
+/DYto2Mu_Bin-MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter26MiniAODv6-150X_mcRun3_realistic_EOY25_forTSGStudies_v2-v2/MINIAODSIM
+/DYto2Mu_Bin-MLL-10to50_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter26MiniAODv6-150X_mcRun3_realistic_EOY25_forTSGStudies_v2-v2/MINIAODSIM
+# --- DY -> ee (powheg)
+/DYto2E_MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter26MiniAODv6-150X_mcRun3_realistic_EOY25_forTSGStudies_v2-v2/MINIAODSIM
+/DYto2E_Bin-MLL-10to50_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter26MiniAODv6-150X_mcRun3_realistic_EOY25_forTSGStudies_v2-v2/MINIAODSIM
+# --- DY -> ll inclusive (amcatnloFXFX, Winter25; also covers tautau) and DY -> tautau (mu-tauh filtered)
+/DYTo2L-2Jets_Par-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Winter25MiniAOD-142X_mcRun3_2025_realistic_v7-v2/MINIAODSIM
+/DYto2Tau-4Jets_Bin-MLL-50_Fil-MuTauh_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter26MiniAODv6-150X_mcRun3_realistic_EOY25_forTSGStudies_v2-v2/MINIAODSIM
+# --- ttbar (powheg)
+/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter26MiniAODv6-150X_mcRun3_realistic_EOY25_forTSGStudies_v2-v2/MINIAODSIM
+/TTToLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter26MiniAODv6-150X_mcRun3_realistic_EOY25_forTSGStudies_v2-v2/MINIAODSIM
+# --- quarkonia: J/psi -> mumu particle-gun samples only (no Upsilon); KeepSi = tracker hits kept
+# 15_0_6 re-MINI of the 14_2 AODSIM: EMPTY muon strip clusters on disk (ROOT issue 19773, see README);
+# no other MiniAOD version, the AODSIM parent is on tape only (T1_RU_JINR_Tape):
+# /JPsiToMuMu_PT-0to100_pythia8-gun/Run3Winter25MiniAOD-FlatPU0to120_MiniAODv6_150X_mcRun3_2025_realistic_v6-v2/MINIAODSIM
+/JPsito2Mu_Bin-PT-0to100_pythia8-gun/Run3Winter25MiniAOD-KeepSi_142X_mcRun3_2025_realistic_v7-v1/MINIAODSIM
+# --- QCD mu-enriched (only 4 pT bins, ~100k events each)
+/QCD_Bin-PT-20to30_Fil-MuEnriched_TuneCP5_13p6TeV_pythia8/Run3Winter25MiniAOD-142X_mcRun3_2025_realistic_v7-v2/MINIAODSIM
+/QCD_Bin-PT-30to50_Fil-MuEnriched_TuneCP5_13p6TeV_pythia8/Run3Winter25MiniAOD-142X_mcRun3_2025_realistic_v7-v2/MINIAODSIM
+/QCD_Bin-PT-50to80_Fil-MuEnriched_TuneCP5_13p6TeV_pythia8/Run3Winter25MiniAOD-142X_mcRun3_2025_realistic_v7-v2/MINIAODSIM
+/QCD_Bin-PT-120to170_Fil-MuEnriched_TuneCP5_13p6TeV_pythia8/Run3Winter25MiniAOD-142X_mcRun3_2025_realistic_v7-v2/MINIAODSIM

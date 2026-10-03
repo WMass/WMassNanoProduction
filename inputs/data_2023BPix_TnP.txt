@@ -1,0 +1,8 @@
+# data_2023BPix_TnP.txt -- Run 2023 D muon PDs Muon0+Muon1, AOD (for T&P nano)
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: AOD parents of the MiniAOD in data_2023BPix.txt (PromptReco-v1, -v2; no AOD re-reco exists).
+# Details/alternatives: inputs/INVENTORY_261003.md
+/Muon0/Run2023D-PromptReco-v1/AOD
+/Muon0/Run2023D-PromptReco-v2/AOD
+/Muon1/Run2023D-PromptReco-v1/AOD
+/Muon1/Run2023D-PromptReco-v2/AOD

@@ -1,0 +1,15 @@
+# data_2026LowPU_TnP.txt -- 2026 low-pileup run at 13.6 TeV (<mu>~5), muon PDs Muon0-3, AOD (tag-and-probe nano)
+# NOTE: NOT requested after the clarification (2025 low-PU only); provided because this is the largest Run-3 low-PU set. Delete if not wanted.
+# Source: DAS prod/global + OMS + DC JSONs on cvmfs, queried 2026-10-03, VALID only.
+# 52 runs 401866-403214 (Run2026B: 401866-401869; Run2026C: 402536-403214), fills 11505-11631 (Mar-Apr 2026), <mu>~5 (PU5 HLT columns), ~2.12 fb-1 recorded (OMS, certified LS).
+# LUMI MASK (MANDATORY, Run2026C also contains high-PU runs): /cvmfs/cms-griddata.cern.ch/cat/metadata/DC/Collisions26/latest/Cert_Collisions2026_lowPU.json
+# Selection: Muon0-3 PromptReco-v1 AOD. Low-PU subset is HUGE: ~290 TB (Muon0 alone: 72 TB, 18k files) -> consider a subset of PDs/runs.
+# Details/alternatives: inputs/INVENTORY_261003.md
+/Muon0/Run2026B-PromptReco-v1/AOD
+/Muon1/Run2026B-PromptReco-v1/AOD
+/Muon2/Run2026B-PromptReco-v1/AOD
+/Muon3/Run2026B-PromptReco-v1/AOD
+/Muon0/Run2026C-PromptReco-v1/AOD
+/Muon1/Run2026C-PromptReco-v1/AOD
+/Muon2/Run2026C-PromptReco-v1/AOD
+/Muon3/Run2026C-PromptReco-v1/AOD

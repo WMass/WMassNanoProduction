@@ -1,0 +1,7 @@
+# mc_2022EE_TnP.txt -- Run3Summer22EE DY->mumu, AODSIM (for T&P nano)
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: AODSIM parent of the POWHEG DYto2Mu_MLL-50to120 MiniAOD in mc_2022EE.txt; the MiNNLO DY samples have NO AODSIM (MiniAOD-only chain).
+# Optional higher-statistics alternative (DY->ll MG5_aMC FxFx, large AODSIM) given as commented '#ALT' lines.
+# Details/alternatives: inputs/INVENTORY_261003.md
+/DYto2Mu_MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EEDRPremix-124X_mcRun3_2022_realistic_postEE_v1-v2/AODSIM
+#ALT /DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EEDRPremix-124X_mcRun3_2022_realistic_postEE_v1-v5/AODSIM

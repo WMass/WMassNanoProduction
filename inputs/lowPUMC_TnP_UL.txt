@@ -1,0 +1,12 @@
+# lowPUMC_TnP_UL.txt -- 2017H low-pileup 13 TeV MC, W/Z signal (powheg MiNNLO), AODSIM for tag-and-probe
+# Source: DAS prod/global, queried 2026-10-03, VALID only. Campaign RunIILowPUSummer20UL17DR (106X_mc2017_realistic_v9For2017H_v1).
+# Each entry is the AODSIM parent of the corresponding MiniAOD in lowPUMC_UL.txt.
+# Details/alternatives: inputs/INVENTORY_261003.md
+/DYJetsToMuMu_H2ErratumFix_PDFExt_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/RunIILowPUSummer20UL17DR-106X_mc2017_realistic_v9For2017H_v1-v2/AODSIM
+/DYJetsToEE_M-50_H2ErratumFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/RunIILowPUSummer20UL17DR-106X_mc2017_realistic_v9For2017H_v1-v2/AODSIM
+/WplusJetsToMuNu_H2ErratumFix_PDFExt_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/RunIILowPUSummer20UL17DR-106X_mc2017_realistic_v9For2017H_v1-v2/AODSIM
+/WminusJetsToMuNu_H2ErratumFix_PDFExt_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/RunIILowPUSummer20UL17DR-106X_mc2017_realistic_v9For2017H_v1-v2/AODSIM
+/WplusJetsToENu_H2ErratumFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/RunIILowPUSummer20UL17DR-106X_mc2017_realistic_v9For2017H_v1-v2/AODSIM
+/WminusJetsToENu_H2ErratumFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/RunIILowPUSummer20UL17DR-106X_mc2017_realistic_v9For2017H_v1-v2/AODSIM
+/WplusJetsToTauNu_TauToMu_H2ErratumFix_PDFExt_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/RunIILowPUSummer20UL17DR-106X_mc2017_realistic_v9For2017H_v1-v2/AODSIM
+/WminusJetsToTauNu_TauToMu_H2ErratumFix_PDFExt_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/RunIILowPUSummer20UL17DR-106X_mc2017_realistic_v9For2017H_v1-v2/AODSIM

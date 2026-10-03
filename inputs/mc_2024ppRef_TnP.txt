@@ -1,0 +1,7 @@
+# mc_2024ppRef_TnP.txt -- DY->mumu AODSIM for the 2024 pp reference run at 5.36 TeV (campaign RunIIIpp5p36Winter24DR)
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: AODSIM parent of /DYToMuMu_M-50_TuneCP5_5p36TeV_powheg-pythia8/RunIIIpp5p36Winter24MiniAOD-...-v2/MINIAODSIM (with pileup).
+#   NOTE: currently TAPE-ONLY (needs a Rucio rule/recall before CRAB). Alternatives: DYToMuMu_M-10to50 (v1, tape-only), NoPU M-50 (on disk).
+#   No AOD exists for the 2024 ppRef data (see data_2024ppRef_TnP.txt).
+# Details/alternatives: inputs/INVENTORY_261003.md
+/DYToMuMu_M-50_TuneCP5_5p36TeV_powheg-pythia8/RunIIIpp5p36Winter24DR-141X_mcRun3_2024_realistic_ppRef5TeV_v7-v2/AODSIM

@@ -1,0 +1,22 @@
+# mc_2026LowPU.txt -- MC for the 2026 low-pileup run at 13.6 TeV (<mu>~5, Run2026B/C): campaign RunIII2026LowPUSummer26MiniAODv6, MINIAODSIM
+# NOTE: the 2026 low-PU run was NOT requested after the clarification (2025 low-PU only); provided because it is the largest Run-3 low-PU set (~2.1 fb-1).
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: DRLowPU_Miniv6LowPU_160X_mcRun3_2026_lowPU_v3-v2 (one version per sample; parents of the central RunIII2026LowPUSummer26NanoAODv15).
+#   W/Z only as madgraphMLM 4-jet samples (no powheg/MiNNLO in this campaign); no dibosons, no single top, no Upsilon.
+#   HT-binned QCD, gamma+jets, neutrino gun and the pilot DY: inputs/mc_2026LowPU_other.txt
+# Details/alternatives: inputs/INVENTORY_261003.md
+# --- DY / W ---
+/DYto2E-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2026LowPUSummer26MiniAODv6-DRLowPU_Miniv6LowPU_160X_mcRun3_2026_lowPU_v3-v2/MINIAODSIM
+/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2026LowPUSummer26MiniAODv6-DRLowPU_Miniv6LowPU_160X_mcRun3_2026_lowPU_v3-v2/MINIAODSIM
+/DYto2Tau-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2026LowPUSummer26MiniAODv6-DRLowPU_Miniv6LowPU_160X_mcRun3_2026_lowPU_v3-v2/MINIAODSIM
+/WtoENu-4Jets_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2026LowPUSummer26MiniAODv6-DRLowPU_Miniv6LowPU_160X_mcRun3_2026_lowPU_v3-v2/MINIAODSIM
+/WtoMuNu-4Jets_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2026LowPUSummer26MiniAODv6-DRLowPU_Miniv6LowPU_160X_mcRun3_2026_lowPU_v3-v2/MINIAODSIM
+/WtoTauNu-4Jets_TuneCP5_13p6TeV_madgraphMLM-pythia8/RunIII2026LowPUSummer26MiniAODv6-DRLowPU_Miniv6LowPU_160X_mcRun3_2026_lowPU_v3-v2/MINIAODSIM
+# --- top ---
+/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/RunIII2026LowPUSummer26MiniAODv6-DRLowPU_Miniv6LowPU_160X_mcRun3_2026_lowPU_v3-v2/MINIAODSIM
+/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2026LowPUSummer26MiniAODv6-DRLowPU_Miniv6LowPU_160X_mcRun3_2026_lowPU_v3-v2/MINIAODSIM
+/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/RunIII2026LowPUSummer26MiniAODv6-DRLowPU_Miniv6LowPU_160X_mcRun3_2026_lowPU_v3-v2/MINIAODSIM
+# --- quarkonia ---
+/Jpsito2Mu_Bin-PTJpsi-8_TuneCP5_13p6TeV_pythia8/RunIII2026LowPUSummer26MiniAODv6-DRLowPU_Miniv6LowPU_160X_mcRun3_2026_lowPU_v3-v2/MINIAODSIM
+# --- QCD (pT-flat) ---
+/QCD_Bin-PT-15to7000_Par-PT-flat2022_TuneCP5_13p6TeV_pythia8/RunIII2026LowPUSummer26MiniAODv6-DRLowPU_Miniv6LowPU_160X_mcRun3_2026_lowPU_v3-v2/MINIAODSIM

@@ -1,2 +1,0 @@
-/HighEGJet/Run2017H-17Nov2017-v1/AOD
-/SingleMuon/Run2017H-17Nov2017-v2/AOD

@@ -1,0 +1,17 @@
+# lowPU5TeVData_UL.txt -- 2017G pp reference run at 5.02 TeV (runs 306546-306826), lepton PDs, MINIAOD
+# Source: DAS prod/global, queried 2026-10-03, VALID only. Lumi mask: Cert_306546-306826_5TeV_EOY2017ReReco_Collisions17_JSON.txt
+# PDs = those carrying the 2017G HI-style lepton triggers (HLT 'datasets' PSet read from the files):
+#   SingleMuon (HLT_HIL1Mu12/16, HIL2Mu7-20, HIL3Mu7-20, HIMu12/15/17, quarkonia mu+trk), DoubleMuon (HIL1/L2/L3DoubleMu*, HIDimuon0_Jpsi/Upsilon),
+#   HighEGJet (HLT_HIEle10-40_WPLoose_Gsf, HIEle15_Ele8, HIEle20_Ele12, photons), SingleMuonTnP (HIL2Mu3/5, HIL3Mu3/5(+Track1)).
+#   Not included: LowEGJet (photons+jets), HeavyFlavor (D-meson/dijet), FSQJet1/2, SingleTrack, MinimumBias, ZeroBias.
+# SingleMuon: UL2017_MiniAODv2_GT36-v2 (AOD parent 15Feb2022_UL2017-v1): the only MiniAODv2 that keeps the muon tracker
+#   clusters (Si{Pixel,Strip}Cluster_slimmedMuonTrackExtras) needed by the CVH refit (GT36-v1, -v1, BParking-v2 do not).
+# DoubleMuon: UL2017_MiniAODv2-v1 (parent of NanoAODv15; no GT36 version) -> NO muon tracker clusters -> NO CVH refit.
+# HighEGJet: UL2017_MiniAODv2-v2 = re-reco with era Run2_2017_ppRef + GT v36 (2022); no GT36 MiniAOD version
+#   -> NO muon tracker clusters -> NO CVH refit. Alt. -v1 (era Run2_2017, 0.4% more golden LS).
+# Details/alternatives: inputs/INVENTORY_261003.md
+/SingleMuon/Run2017G-UL2017_MiniAODv2_GT36-v2/MINIAOD
+/DoubleMuon/Run2017G-UL2017_MiniAODv2-v1/MINIAOD
+/HighEGJet/Run2017G-UL2017_MiniAODv2-v2/MINIAOD
+# SingleMuonTnP exists only as UL MiniAODv1 (09Aug2019_UL2017-v1, tape only) -> needs the MiniAODv1 nano era, commented out:
+# /SingleMuonTnP/Run2017G-09Aug2019_UL2017-v1/MINIAOD
