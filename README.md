@@ -145,6 +145,10 @@ that the sandbox stays below CRAB's 120 MB limit (it prints the estimate).
 Ex: ```./scripts/prepareCrab.py --makeConfig -i inputs/data_postVFP.txt -v v1```
 
 Will make all the crab submit files for the data samples in that text file. ```--makeConfig``` generates the configs from the cmsDriver scripts in the scripts directory, in order to ensure things are up to date.  `-j` sets the threads per job (default 4; the CVH refit is multithreaded).
+`--lumisPerJob` (data) and `--filesPerJob` (MC) set the job size; the defaults (10 x threads lumis,
+2 x threads files) were sized before the CVH refit. Measured with 4 threads: 2017G data ~0.11 s
+CPU/event (30k events/lumi, so `--lumisPerJob 20` ~ 5 h), 5 TeV DY MC ~0.5 s CPU/event (86k
+events/file, so `--filesPerJob 1` ~ 3 h); aim at < 8 h jobs.
 
 Add ```--submit X Y``` to split the submission into X pieces and submit every Y sample. For example, to divide production between 3 people, ./scripts/prepareCrab.py inputs/data.txt --submit 3 i for i = 1,2,3 for the 3 different people.
 
