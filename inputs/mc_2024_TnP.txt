@@ -1,0 +1,8 @@
+# mc_2024_TnP.txt -- 2024 13.6 TeV DY->mumu MC, AODSIM (tag-and-probe)
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: the 2024 MiNNLO DY->mumu was produced MiniAODv6-only (no AODSIM exists), so the T&P uses the amcatnloFXFX
+#   DYto2Mu-2Jets samples: RunIII2024Summer24DRPremix (140X) AODSIM = parents of the MiniAODv6 in the NanoAODv15 chain.
+#   Alternative: DYto2Mu_Bin-MLL-50to120 powheg (RunIII2024Summer24DRPremix-140X_mcRun3_2024_realistic_v26-v2/AODSIM).
+# Details/alternatives: inputs/INVENTORY_261003.md
+/DYto2Mu-2Jets_Bin-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24DRPremix-140X_mcRun3_2024_realistic_v26-v6/AODSIM
+/DYto2Mu-2Jets_Bin-MLL-10to50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/RunIII2024Summer24DRPremix-140X_mcRun3_2024_realistic_v26-v2/AODSIM

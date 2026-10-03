@@ -1,0 +1,27 @@
+# mc_2025LowPU_other.txt -- remaining Run3Winter26MiniAODv6-LowPUAVE5 MINIAODSIM samples (kept so nothing is lost)
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: pomeron/photon-flux (H1FitB, PPS central-exclusive) samples with EOY25 conditions, and the QCD pT-flat sample
+#   that was produced with the 2026 GT (150X_mcRun3_2026_realistic_v5) instead of EOY25; MiNNLO W/Z Run3Summer23MiniAODv4 PUAVE1/PUAVE2 variants.
+# Details/alternatives: inputs/INVENTORY_261003.md
+# --- pomeron-flux (PPS) samples, EOY25 conditions ---
+/DiPhoton_pomflux-H1FitB_TuneCP5_13p6TeV-pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v3-v2/MINIAODSIM
+/DYtoLL_pomflux-H1FitB_TuneCP5_13p6TeV-pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v3-v2/MINIAODSIM
+/PhotonJet_pomflux-H1FitB_TuneCP5_13p6TeV-pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v3-v2/MINIAODSIM
+/QCD_pomflux_Pt-100_TuneCP5_lowPU_13p6TeV-pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v3-v2/MINIAODSIM
+/ST_t-channel-pomflux-H1FitB_TuneCP5_13p6TeV-pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v3-v2/MINIAODSIM
+/TT-pomflux-H1FitB_TuneCP5_13p6TeV-pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v3-v2/MINIAODSIM
+/WlnuGluon_pomflux-H1FitB_TuneCP5_13p6TeV-pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v3-v2/MINIAODSIM
+/Wlnu_pomflux-H1FitB_TuneCP5_13p6TeV-pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v3-v2/MINIAODSIM
+/WlnuQuark_pomflux-H1FitB_TuneCP5_13p6TeV-pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v3-v2/MINIAODSIM
+/WW_pomflux-H1FitB_TuneCP5_13p6TeV-pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v3-v2/MINIAODSIM
+/WZ_pomflux-H1FitB_TuneCP5_13p6TeV-pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v3-v2/MINIAODSIM
+/ZZ_pomflux-H1FitB_TuneCP5_13p6TeV-pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v3-v2/MINIAODSIM
+# --- QCD pT-flat, 2026 conditions (150X_mcRun3_2026_realistic_v5) ---
+/QCD_Bin-PT-15to7000_Par-PT-flat2022_TuneCP5_13p6TeV_pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_2026_realistic_v5-v2/MINIAODSIM
+# --- MiNNLO W/Z, fixed pileup 1 and 2, 2023 conditions (Run3Summer23MiniAODv4-PUAVE1/PUAVE2) ---
+/DYJetsToMuMu_H2ErratumFix_TuneCP5_13p6TeV-powhegMiNNLO-pythia8-photos/Run3Summer23MiniAODv4-PUAVE1_130X_mcRun3_2023_realistic_v15-v2/MINIAODSIM
+/DYJetsToMuMu_H2ErratumFix_TuneCP5_13p6TeV-powhegMiNNLO-pythia8-photos/Run3Summer23MiniAODv4-PUAVE2_130X_mcRun3_2023_realistic_v15-v2/MINIAODSIM
+/WminusJetsToMuNu_H2ErratumFix_TuneCP5_13p6TeV-powhegMiNNLO-pythia8-photos/Run3Summer23MiniAODv4-PUAVE1_130X_mcRun3_2023_realistic_v15-v2/MINIAODSIM
+/WminusJetsToMuNu_H2ErratumFix_TuneCP5_13p6TeV-powhegMiNNLO-pythia8-photos/Run3Summer23MiniAODv4-PUAVE2_130X_mcRun3_2023_realistic_v15-v2/MINIAODSIM
+/WplusJetsToMuNu_H2ErratumFix_TuneCP5_13p6TeV-powhegMiNNLO-pythia8-photos/Run3Summer23MiniAODv4-PUAVE1_130X_mcRun3_2023_realistic_v15-v2/MINIAODSIM
+/WplusJetsToMuNu_H2ErratumFix_TuneCP5_13p6TeV-powhegMiNNLO-pythia8-photos/Run3Summer23MiniAODv4-PUAVE2_130X_mcRun3_2023_realistic_v15-v2/MINIAODSIM

@@ -1,0 +1,7 @@
+# data_2024ppRef_TnP.txt -- 2024 pp reference run at 5.36 TeV (Run2024J), AOD for the tag-and-probe nano: NONE AVAILABLE
+# Source: DAS prod/global, queried 2026-10-03 (all dataset statuses checked).
+# Tier-0 did not write AOD for the 2024 PPRef PDs: only RAW, MINIAOD and RAW-RECO/USER skims exist for PPRefSingleMuon*/PPRefDoubleMuon*.
+#   The ZMu and MUOJME RAW-RECO skims of these PDs are EMPTY (0 events in DBS; ~2 MB per file).
+#   (For comparison, the small 2023 PPRef datasets of Run2023F / HIRun2023A do have AOD.)
+# Options: run the T&P nano on MINIAOD, or re-RECO from RAW (/PPRefSingleMuon{0..3}/Run2024J-v1/RAW, /PPRefDoubleMuon{0..3}/Run2024J-v1/RAW).
+# This file intentionally contains no dataset line. Details: inputs/INVENTORY_261003.md

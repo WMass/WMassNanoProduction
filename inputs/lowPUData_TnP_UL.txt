@@ -1,1 +1,8 @@
+# lowPUData_TnP_UL.txt -- 2017H low-pileup 13 TeV pp data (runs 306896-307082), AOD for tag-and-probe
+# Source: DAS prod/global, queried 2026-10-03, VALID only. Same PDs as lowPUData_UL.txt.
+# Each entry is the AOD parent of the MiniAOD chosen in lowPUData_UL.txt.
+# DoubleMuon and HighEGJet AOD (09Aug2019_UL2017_LowPU-v1) are on TAPE only (need a Rucio rule / CRAB tape recall).
+# Details/alternatives: inputs/INVENTORY_261003.md
 /SingleMuon/Run2017H-15Feb2022_UL2017-v1/AOD
+/DoubleMuon/Run2017H-09Aug2019_UL2017_LowPU-v1/AOD
+/HighEGJet/Run2017H-09Aug2019_UL2017_LowPU-v1/AOD

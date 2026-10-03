@@ -1,2 +1,14 @@
-/SingleMuon/Run2017H-UL2017_MiniAODv2-v1/MINIAOD
+# lowPUData_UL.txt -- 2017H low-pileup 13 TeV pp data (runs 306896-307082), lepton PDs, MINIAOD
+# Source: DAS prod/global, queried 2026-10-03, VALID only. Lumi mask: Cert_306896-307082_13TeV_PromptReco_Collisions17_JSON_LowPU.txt
+# PDs = those carrying the 2017H HI-style lepton triggers (HLT 'datasets' PSet read from the files):
+#   SingleMuon (HLT_HIMu12/15/17, HIL3Mu5, HIMu7p5+trk/L2 J/psi,Upsilon), DoubleMuon (HLT_HIDimuon0_Jpsi/Upsilon),
+#   HighEGJet (HLT_HIEle15/17/20/30/40_WPLoose_Gsf, HIEle15_Ele8, HIEle20_Ele12, HIPhoton40-60).
+#   Not included: LowEGJet (HIPhoton20/30 + jets only), FSQJet1/2, ZeroBias, HLTPhysics.
+# SingleMuon: UL2017_MiniAODv2_GT36-v2 (AOD parent 15Feb2022_UL2017-v1): the only MiniAODv2 that keeps the muon tracker
+#   clusters (Si{Pixel,Strip}Cluster_slimmedMuonTrackExtras) needed by the CVH refit. Alternatives in the inventory.
+# DoubleMuon, HighEGJet: UL2017_MiniAODv2-v1 (only MiniAODv2 version, no GT36 version exists):
+#   NO muon tracker clusters -> NO CVH refit possible for these PDs.
+# Details/alternatives: inputs/INVENTORY_261003.md
+/SingleMuon/Run2017H-UL2017_MiniAODv2_GT36-v2/MINIAOD
+/DoubleMuon/Run2017H-UL2017_MiniAODv2-v1/MINIAOD
 /HighEGJet/Run2017H-UL2017_MiniAODv2-v1/MINIAOD

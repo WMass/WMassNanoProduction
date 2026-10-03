@@ -1,0 +1,12 @@
+# data_2025LowPU.txt -- 2025 low-pileup run at 13.6 TeV (<mu>~7, LowPU1/LowPU1_Jet35 HLT prescale columns), muon PDs, MINIAOD
+# Source: DAS prod/global + OMS + DC JSONs on cvmfs, queried 2026-10-03, VALID only.
+# Runs: 398682, 398683 (fill 11230, 30 Oct 2025) and 398803 (fill 11237, 3 Nov 2025), era Run2025G, ~71.5 pb-1 recorded (OMS, certified LS).
+# LUMI MASK (MANDATORY, the datasets contain all of Run2025G):
+#   /cvmfs/cms-griddata.cern.ch/cat/metadata/DC/Collisions25/latest/2025_lowPU_updated.json = {398682:[1,42], 398683:[1,668], 398803:[1,615]}
+#   (2025_lowPU.json in the same directory is the older version without run 398803.) The 2025 golden JSON does NOT contain these runs.
+# Selection: standard Muon0/Muon1 PDs (round-robin split, both needed); PromptReco-v1 is the only processing of Run2025G.
+#   Low-PU subset: ~15.8M events, ~380 GB in ~110 files. Single-muon triggers in the LowPU columns include unprescaled HLT_Mu15/Mu17/Mu19 and HLT_IsoMu24.
+#   NOT the July-2025 VdM fills 10821-10831 (mu~0.7, zero-bias-only LumiScan menu): see inputs/INVENTORY_261003.md.
+# Electrons: inputs/dataEGamma_2025LowPU.txt; AOD: inputs/data_2025LowPU_TnP.txt
+/Muon0/Run2025G-PromptReco-v1/MINIAOD
+/Muon1/Run2025G-PromptReco-v1/MINIAOD

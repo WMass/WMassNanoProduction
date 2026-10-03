@@ -1,0 +1,7 @@
+# data_2025LowPU_TnP.txt -- 2025 low-pileup run at 13.6 TeV (<mu>~7), muon PDs, AOD (tag-and-probe nano)
+# Source: DAS prod/global + OMS + DC JSONs on cvmfs, queried 2026-10-03, VALID only.
+# Runs 398682, 398683, 398803 (Run2025G); LUMI MASK (MANDATORY): /cvmfs/cms-griddata.cern.ch/cat/metadata/DC/Collisions25/latest/2025_lowPU_updated.json
+# Selection: Muon0/Muon1 PromptReco-v1 AOD (only processing). Low-PU subset ~15.8M events, ~1.8 TB in ~450 files.
+# Details/alternatives: inputs/INVENTORY_261003.md
+/Muon0/Run2025G-PromptReco-v1/AOD
+/Muon1/Run2025G-PromptReco-v1/AOD

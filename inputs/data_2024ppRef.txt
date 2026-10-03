@@ -1,0 +1,18 @@
+# data_2024ppRef.txt -- 2024 pp reference run at sqrt(s)=5.36 TeV (era Run2024J, runs 387396-387721, fills 10287-10312), PPRef muon PDs, MINIAOD
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: PromptReco-v1 is the only processing (no re-reco, no central NanoAODv15 of the PPRef PDs exists).
+#   PPRefSingleMuon0-3 and PPRefDoubleMuon0-3 are round-robin splits (HLT prescale offsets 0..3) of the same trigger content:
+#   the four parts are disjoint and ALL are needed. SingleMuon = HLT_PPRefL{1,2,3}SingleMu*, DoubleMuon = HLT_PPRefL{1,2,3}DoubleMu*.
+#   Electron/photon triggers (HLT_PPRefEle*Gsf, HLT_PPRefDoubleEle*, HLT_PPRefGEDPhoton*) are in PPRefHardProbes0-4: inputs/dataEGamma_2024ppRef.txt
+#   Run2024J also contains PbPb-fill runs and runs at injection energy -> apply the ppRef JSON below.
+# LUMI MASK: /cvmfs/cms-griddata.cern.ch/cat/metadata/DC/Collisions24/latest/Cert_Collisions2024_ppref_387474_387721_golden.json
+#   (28 runs, ~481 pb-1 recorded per OMS; Muon-only JSON in the same directory: 26 runs, ~456 pb-1). Not in the 2024 pp golden JSON.
+# Details/alternatives: inputs/INVENTORY_261003.md
+/PPRefSingleMuon0/Run2024J-PromptReco-v1/MINIAOD
+/PPRefSingleMuon1/Run2024J-PromptReco-v1/MINIAOD
+/PPRefSingleMuon2/Run2024J-PromptReco-v1/MINIAOD
+/PPRefSingleMuon3/Run2024J-PromptReco-v1/MINIAOD
+/PPRefDoubleMuon0/Run2024J-PromptReco-v1/MINIAOD
+/PPRefDoubleMuon1/Run2024J-PromptReco-v1/MINIAOD
+/PPRefDoubleMuon2/Run2024J-PromptReco-v1/MINIAOD
+/PPRefDoubleMuon3/Run2024J-PromptReco-v1/MINIAOD

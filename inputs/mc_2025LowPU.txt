@@ -1,0 +1,31 @@
+# mc_2025LowPU.txt -- 13.6 TeV low-pileup MC closest to the 2025 low-PU run (Run2025G, <mu>~7): Run3Winter26MiniAODv6, LowPUAVE5 + EOY25 conditions, MINIAODSIM
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: all SM (non-pomeron-flux) datasets of processing Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v{2,3}
+#   (end-of-year-2025 detector conditions, average pileup 5; produced "forTSGStudies"). Only one version per sample exists; each is the
+#   parent of a central Run3Winter26NanoAODv15 dataset. CAVEATS: pileup 5 vs ~7 in data (reweight); W only as WtoLNu-4Jets MLM,
+#   no DY->ee/tautau, no dibosons in this campaign. No MC with 2025 conditions at <mu>=7 exists.
+#   PLUS the fixed-low-pileup MiNNLO W/Z samples Run3Summer23MiniAODv4-PUAVE5 and -PUAVE10 (130X_mcRun3_2023_realistic_v15, 2023 conditions),
+#   which bracket <mu>=7 and are the only MiNNLO W->munu/DY->mumu at low PU in Run 3 (PUAVE1/PUAVE2 variants in mc_2025LowPU_other.txt).
+#   Pomeron-flux (PPS) samples and the 2026-GT QCD sample: inputs/mc_2025LowPU_other.txt.
+#   The 2026 low-PU campaign RunIII2026LowPUSummer26 (2026 conditions, PU~5) is in inputs/mc_2026LowPU.txt.
+# Details/alternatives: inputs/INVENTORY_261003.md
+# --- DY / W ---
+/DYJetsToMuMu_H2ErratumFix_TuneCP5_13p6TeV-powhegMiNNLO-pythia8-photos/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v3-v2/MINIAODSIM
+/WtoLNu-4Jets_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v3-v2/MINIAODSIM
+# --- top ---
+/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v2-v2/MINIAODSIM
+/TTToLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v2-v2/MINIAODSIM
+/TT_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v2-v2/MINIAODSIM
+# --- B -> J/psi X (quarkonia) ---
+/B0ToJpsiK0s_JMM_BMuFilter_DGamma0_SoftQCDnonD_TuneCP5_13p6TeV-pythia8-evtgen/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v2-v2/MINIAODSIM
+/BsToJpsiPhi_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v3-v2/MINIAODSIM
+/ButoJpsiK_Jpsito2Mu_TuneCP5_13p6TeV_pythia8-evtgen/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v2-v2/MINIAODSIM
+# --- QCD ---
+/QCD_Pt-15to7000_TuneCP5_Flat_13p6TeV_pythia8/Run3Winter26MiniAODv6-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v2-v2/MINIAODSIM
+# --- MiNNLO W/Z, fixed pileup 5 and 10, 2023 conditions (Run3Summer23MiniAODv4-PUAVE5/PUAVE10) ---
+/DYJetsToMuMu_H2ErratumFix_TuneCP5_13p6TeV-powhegMiNNLO-pythia8-photos/Run3Summer23MiniAODv4-PUAVE10_130X_mcRun3_2023_realistic_v15-v2/MINIAODSIM
+/DYJetsToMuMu_H2ErratumFix_TuneCP5_13p6TeV-powhegMiNNLO-pythia8-photos/Run3Summer23MiniAODv4-PUAVE5_130X_mcRun3_2023_realistic_v15-v2/MINIAODSIM
+/WminusJetsToMuNu_H2ErratumFix_TuneCP5_13p6TeV-powhegMiNNLO-pythia8-photos/Run3Summer23MiniAODv4-PUAVE10_130X_mcRun3_2023_realistic_v15-v2/MINIAODSIM
+/WminusJetsToMuNu_H2ErratumFix_TuneCP5_13p6TeV-powhegMiNNLO-pythia8-photos/Run3Summer23MiniAODv4-PUAVE5_130X_mcRun3_2023_realistic_v15-v2/MINIAODSIM
+/WplusJetsToMuNu_H2ErratumFix_TuneCP5_13p6TeV-powhegMiNNLO-pythia8-photos/Run3Summer23MiniAODv4-PUAVE10_130X_mcRun3_2023_realistic_v15-v3/MINIAODSIM
+/WplusJetsToMuNu_H2ErratumFix_TuneCP5_13p6TeV-powhegMiNNLO-pythia8-photos/Run3Summer23MiniAODv4-PUAVE5_130X_mcRun3_2023_realistic_v15-v2/MINIAODSIM

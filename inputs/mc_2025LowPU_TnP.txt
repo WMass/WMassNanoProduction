@@ -1,0 +1,8 @@
+# mc_2025LowPU_TnP.txt -- DY->mumu MiNNLO AODSIM matching inputs/mc_2025LowPU.txt (Run3Winter26Reco LowPUAVE5 EOY25; Run3Summer23DR PUAVE5/PUAVE10)
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: AODSIM parents of the DYJetsToMuMu MiNNLO MINIAODSIM in inputs/mc_2025LowPU.txt: Winter26 LowPUAVE5 (EOY25 conditions)
+#   and Run3Summer23DR PUAVE5 / PUAVE10 (2023 conditions; bracket the <mu>~7 of the data).
+# Details/alternatives: inputs/INVENTORY_261003.md
+/DYJetsToMuMu_H2ErratumFix_TuneCP5_13p6TeV-powhegMiNNLO-pythia8-photos/Run3Winter26Reco-LowPUAVE5_150X_mcRun3_realistic_EOY25_forTSGStudies_v3-v2/AODSIM
+/DYJetsToMuMu_H2ErratumFix_TuneCP5_13p6TeV-powhegMiNNLO-pythia8-photos/Run3Summer23DR-PUAVE5_130X_mcRun3_2023_realistic_v15-v2/AODSIM
+/DYJetsToMuMu_H2ErratumFix_TuneCP5_13p6TeV-powhegMiNNLO-pythia8-photos/Run3Summer23DR-PUAVE10_130X_mcRun3_2023_realistic_v15-v2/AODSIM

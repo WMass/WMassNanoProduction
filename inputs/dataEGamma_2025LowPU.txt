@@ -1,0 +1,9 @@
+# dataEGamma_2025LowPU.txt -- 2025 low-pileup run at 13.6 TeV (<mu>~7), EGamma PDs, MINIAOD
+# Source: DAS prod/global + OMS + DC JSONs on cvmfs, queried 2026-10-03, VALID only.
+# Runs 398682, 398683, 398803 (Run2025G); LUMI MASK (MANDATORY): /cvmfs/cms-griddata.cern.ch/cat/metadata/DC/Collisions25/latest/2025_lowPU_updated.json
+# Selection: EGamma0-3 (round-robin split, all needed), PromptReco-v1 (only processing). Low-PU subset ~4.6M events, ~120 GB.
+# Details/alternatives: inputs/INVENTORY_261003.md
+/EGamma0/Run2025G-PromptReco-v1/MINIAOD
+/EGamma1/Run2025G-PromptReco-v1/MINIAOD
+/EGamma2/Run2025G-PromptReco-v1/MINIAOD
+/EGamma3/Run2025G-PromptReco-v1/MINIAOD

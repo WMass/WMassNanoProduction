@@ -1,0 +1,10 @@
+# lowPU5TeVData_TnP_UL.txt -- 2017G pp reference run at 5.02 TeV (runs 306546-306826), AOD for tag-and-probe
+# Source: DAS prod/global, queried 2026-10-03, VALID only. Same PDs as lowPU5TeVData_UL.txt (+ SingleMuonTnP).
+# Each entry is the AOD parent of the MiniAOD chosen in lowPU5TeVData_UL.txt.
+# Only the SingleMuon AOD (15Feb2022_UL2017-v1) is on disk; the others are on TAPE only (Rucio rule / CRAB tape recall needed).
+# Details/alternatives: inputs/INVENTORY_261003.md
+/SingleMuon/Run2017G-15Feb2022_UL2017-v1/AOD
+/DoubleMuon/Run2017G-09Aug2019_UL2017-v1/AOD
+/HighEGJet/Run2017G-09Aug2019_UL2017-v2/AOD
+# SingleMuonTnP (low-threshold single-muon triggers, J/psi T&P); only processing 09Aug2019_UL2017-v1, 53.6 TB on tape:
+/SingleMuonTnP/Run2017G-09Aug2019_UL2017-v1/AOD

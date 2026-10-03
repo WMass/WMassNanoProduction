@@ -1,0 +1,9 @@
+# data_2022.txt -- Run 2022 C-D (pre-EE) muon PDs, MINIAOD
+# Source: DAS prod/global, queried 2026-10-03, VALID only.
+# Selection: MiniAOD parents of central NanoAODv15 (22Sep2023 re-MiniAOD).
+# 2022C runs 355862-356386 are in SingleMuon/DoubleMuon, runs 356426-357482 in Muon (PD merge mid-era).
+# Details/alternatives: inputs/INVENTORY_261003.md
+/SingleMuon/Run2022C-22Sep2023-v1/MINIAOD
+/DoubleMuon/Run2022C-22Sep2023-v1/MINIAOD
+/Muon/Run2022C-22Sep2023-v1/MINIAOD
+/Muon/Run2022D-22Sep2023-v1/MINIAOD
