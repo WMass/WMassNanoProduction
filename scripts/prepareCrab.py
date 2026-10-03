@@ -81,7 +81,9 @@ def makeWhitelist(das):
     return whitelist_text
 
 def submitCrab(outfile, history_file, dryRun):
-    submit_dir = os.chdir("/".join(outfile.split("/")[:-1]))
+    # run crab from the submit-file directory without changing this process's working
+    # directory (an os.chdir here broke relative paths of the next input file)
+    submit_dir = os.path.dirname(outfile)
     command = ["crab", "submit", outfile]
     if dryRun:
         command.insert(0, "echo")
