@@ -100,7 +100,9 @@ def submitCrab(outfile, history_file, dryRun):
 
 def writeHistory(path, history_file, inputFile):
     cmssw_dir = os.environ["CMSSW_BASE"]+"/src"
-    with open(history_file, "w") as f:
+    # append: a second submission from the same input list on the same day must not
+    # overwrite the record of the first
+    with open(history_file, "a") as f:
         f.write("Submit log for inputs: %s\n" % inputFile)
         f.write("Auto-generated with command %s\n" % scriptCall())
         f.write("Script ran at %s\n" % str(datetime.datetime.now()))
