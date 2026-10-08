@@ -43,10 +43,12 @@ or LFN), era (+ NANO modifier), global tag, campaign-specific customise and outp
 
 * **W-mass nano** (`makeNanoV15{MC,Data}.sh`, every campaign): stock 15_0 NANO on the campaign's
   MiniAOD + `nanoAOD_wmassContent` (+ `nanoGenWmassCustomize` for MC) + the campaign's customise
-  + the CVH muon refit `nanoAOD_addCvhMuon[MC]`, which every campaign gets. The refit keeps the
-  pixel edge and single-column hits (`nanoAOD_cvhPixelClassHits`) and exports the columns of
-  their class corrections (parmtypes 16-21, 8640 parameters appended to the catalog): the
-  calibration applied to this nano must be derived with the same setting. The refit is
+  + the CVH muon refit `nanoAOD_addCvhMuon[MC]`, which every campaign gets, with the CMSSW
+  defaults of the WMass/cmssw branch and no further customisation. With those defaults the refit
+  keeps the pixel edge and single-column hits and exports the columns of their class corrections
+  (parmtypes 16-21, 8640 parameters appended to the catalog): the calibration applied to this nano
+  must be derived with the same setting. The dimuon two-track refit and the `Dimuon` table are off
+  by default (`nano_cff.nanoAOD_cvhDimuon` adds them). The refit is
   multithreaded (`-j 4`, the default; the crab jobs get `numCores = nThreads`). Its Geant4 world
   is the sim geometry of the detector era (`nano_cff._cvhSimGeometry`).
   The refit needs the muon tracker hits in the MiniAOD: the MC MiniAODv2/v4/v6 keep them; for the
@@ -65,12 +67,12 @@ or LFN), era (+ NANO modifier), global tag, campaign-specific customise and outp
     beamspot-constrained quantity is biased (CVH dimuon mass -1.9%, `Muon_bsConstrainedPt` -0.9%).
     `nano_cff.nanoAOD_beamSpotEarly2018MC` re-makes `offlineBeamSpot` in the nano job from the 2018 MC
     beamspot tag, which matches the generated vertices; every consumer in the job (the BeamSpot/PVBS
-    tables, `Muon_bsConstrained*`, the lepton impact points, the CVH refits incl. `Dimuon_cvh*`, ...)
+    tables, `Muon_bsConstrained*`, the lepton impact points, the CVH refits, ...)
     then uses it (also PAT in the tag-and-probe job: `Muon_dxybs` recomputed). Not recoverable: the
     primary vertices of these samples (reconstructed with the wrong beamspot: ~70 um pull, 4x worse
     resolution, so `Muon_dxy` w.r.t. the PV is degraded) and, in the nano from MiniAOD, the dxybs
     magnitudes stored there. The pomflux and MinBias samples of the campaign, the 5.02 TeV MC and the
-    data are consistent. Validated on DYJetsToMuMu (500 events): Dimuon CVH/reco mass median -1.9% ->
+    data are consistent. Validated on DYJetsToMuMu (500 events, with the `Dimuon` table on): Dimuon CVH/reco mass median -1.9% ->
     0.00%, `Muon_bsConstrainedPt` -0.9% -> -0.01%, PVBS - generated vertex (-353, +274) -> (-1, +3) um.
 * **Muon tag-and-probe** (`--tagAndProbe`; `makeNanoV15{MC,Data}TagAndProbe.sh`, Run 2 campaigns
   incl. 2017LowPU5TeV; inputs `dy*_TnP_v15.txt`, `data_*_TnP.txt`, `lowPU*_TnP_UL.txt`): one `PAT,NANO`
