@@ -192,7 +192,8 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
         runRange = args.runRange or (campaignTable("run_range_of", campaignFromInput(das)) if isData else "")
         if isData and runRange:
             extra += f"config.Data.runRange = '{runRange}'\n"
-        lumiMask = args.lumiMask or (campaignTable("lumi_mask_of", campaignFromInput(das)) if isData else "")
+        lumiMask = args.lumiMask or ((campaignTable("dataset_lumi_mask_of", das)
+                                      or campaignTable("lumi_mask_of", campaignFromInput(das))) if isData else "")
         if isData and lumiMask:
             extra += f"config.Data.lumiMask = '{lumiMask}'\n"
 

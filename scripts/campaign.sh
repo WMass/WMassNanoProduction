@@ -135,7 +135,26 @@ run_range_of() {
 # lumi_mask_of <campaign>: the CRAB lumi mask a campaign must be restricted to (empty: none)
 lumi_mask_of() {
     case "$1" in
+        # 13.6 TeV pp golden JSON. Besides the uncertified runs it drops the lumisections
+        # without tracker data (tracker HV not ready at the start of a fill, no stable
+        # beams), whose MiniAOD has empty muon-track cluster collections (no CVH refit),
+        # and the 2024 low-PU runs.
+        2024) echo /cvmfs/cms-griddata.cern.ch/cat/metadata/DC/Collisions24/latest/Cert_Collisions2024_378981_386951_Golden.json ;;
         2025LowPU) echo /cvmfs/cms-griddata.cern.ch/cat/metadata/DC/Collisions25/latest/2025_lowPU_updated.json ;;
+        *) echo "" ;;
+    esac
+}
+
+# dataset_lumi_mask_of <das path>: a lumi mask of one dataset that replaces its campaign's
+# (empty: none). The masks in inputs/lumimasks/ select the golden lumisections that dataset
+# is the only source of.
+dataset_lumi_mask_of() {
+    local dir
+    dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/inputs/lumimasks"
+    case "$1" in
+        # run 381164: 498 golden lumisections of Muon0 are missing from
+        # Run2024E-2024CDEReprocessing-v1 (690 of the run's 1192 LS); Muon1 is complete there
+        /Muon0/Run2024E-PromptReco-v1/MINIAOD) echo "$dir/Muon0_Run2024E-PromptReco-v1_381164.json" ;;
         *) echo "" ;;
     esac
 }

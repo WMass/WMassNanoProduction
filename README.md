@@ -110,6 +110,16 @@ per-dataset events/sizes, the choices and the alternatives. Lines starting with 
   only as MiniAODv6 (incl. MiNNLO DY->mumu) and are commented out in `mc_2024.txt`, as is the 2025
   J/psi gun (`mc_2025.txt`, only a Run3Winter25 MiniAODv6, AODSIM on tape); they would need a
   re-MINI with the fixed release.
+* 2024 lumi mask: `campaign.sh` restricts 2024 to the golden JSON
+  `Collisions24/latest/Cert_Collisions2024_378981_386951_Golden.json`. Besides the uncertified runs it
+  drops the lumisections without tracker data (tracker HV not ready at the start of a fill, no stable
+  beams, e.g. runs 381984-382216), whose MiniAOD has empty muon-track cluster collections: the AOD has no
+  tracker clusters or tracks there, so no re-MINI can recover them. A scan of all 709 runs of 2024 Muon0
+  (2026-10-09) found no golden lumisection affected. The mask also removes the 2024 low-PU runs.
+* 2024 Muon0 run 381164: `Run2024E-2024CDEReprocessing-v1` holds only 690 of its 1192 lumisections; the
+  498 golden ones it lacks are taken from `Run2024E-PromptReco-v1` with a lumi mask of that dataset alone
+  (`scripts/campaign.sh` `dataset_lumi_mask_of`, `inputs/lumimasks/`). Muon1 is complete in the CDE
+  reprocessing.
 * 2024 pp reference (2024J): 14_1 PromptReco, read correctly with the read-rule fix; not every run
   has muon inner tracks (run 387396 has none).
 * 2025LowPU: the certified low-pileup physics runs 398682-398803 of Run2025G with
