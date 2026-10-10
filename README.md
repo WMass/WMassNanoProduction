@@ -43,10 +43,12 @@ or LFN), era (+ NANO modifier), global tag, campaign-specific customise and outp
 
 * **W-mass nano** (`makeNanoV15{MC,Data}.sh`, every campaign): stock 15_0 NANO on the campaign's
   MiniAOD + `nanoAOD_wmassContent` (+ `nanoGenWmassCustomize` for MC) + the campaign's customise
-  + the CVH muon refit `nanoAOD_addCvhMuon[MC]`, which every campaign gets. The refit keeps the
-  pixel edge and single-column hits (`nanoAOD_cvhPixelClassHits`) and exports the columns of
-  their class corrections (parmtypes 16-21, 8640 parameters appended to the catalog): the
-  calibration applied to this nano must be derived with the same setting. The refit is
+  + the CVH muon refit `nanoAOD_addCvhMuon[MC]`, which every campaign gets, with the CMSSW
+  defaults of the WMass/cmssw branch and no further customisation. With those defaults the refit
+  keeps the pixel edge and single-column hits and exports the columns of their class corrections
+  (parmtypes 16-21, 8640 parameters appended to the catalog): the calibration applied to this nano
+  must be derived with the same setting. The dimuon two-track refit and the `Dimuon` table are off
+  by default (`nano_cff.nanoAOD_cvhDimuon` adds them). The refit is
   multithreaded (`-j 4`, the default; the crab jobs get `numCores = nThreads`). Its Geant4 world
   is the sim geometry of the detector era (`nano_cff._cvhSimGeometry`).
   The refit needs the muon tracker hits in the MiniAOD: the MC MiniAODv2/v4/v6 keep them; for the
@@ -65,12 +67,12 @@ or LFN), era (+ NANO modifier), global tag, campaign-specific customise and outp
     beamspot-constrained quantity is biased (CVH dimuon mass -1.9%, `Muon_bsConstrainedPt` -0.9%).
     `nano_cff.nanoAOD_beamSpotEarly2018MC` re-makes `offlineBeamSpot` in the nano job from the 2018 MC
     beamspot tag, which matches the generated vertices; every consumer in the job (the BeamSpot/PVBS
-    tables, `Muon_bsConstrained*`, the lepton impact points, the CVH refits incl. `Dimuon_cvh*`, ...)
+    tables, `Muon_bsConstrained*`, the lepton impact points, the CVH refits, ...)
     then uses it (also PAT in the tag-and-probe job: `Muon_dxybs` recomputed). Not recoverable: the
     primary vertices of these samples (reconstructed with the wrong beamspot: ~70 um pull, 4x worse
     resolution, so `Muon_dxy` w.r.t. the PV is degraded) and, in the nano from MiniAOD, the dxybs
     magnitudes stored there. The pomflux and MinBias samples of the campaign, the 5.02 TeV MC and the
-    data are consistent. Validated on DYJetsToMuMu (500 events): Dimuon CVH/reco mass median -1.9% ->
+    data are consistent. Validated on DYJetsToMuMu (500 events, with the `Dimuon` table on): Dimuon CVH/reco mass median -1.9% ->
     0.00%, `Muon_bsConstrainedPt` -0.9% -> -0.01%, PVBS - generated vertex (-353, +274) -> (-1, +3) um.
 * **Muon tag-and-probe** (`--tagAndProbe`; `makeNanoV15{MC,Data}TagAndProbe.sh`, Run 2 campaigns
   incl. 2017LowPU5TeV; inputs `dy*_TnP_v15.txt`, `data_*_TnP.txt`, `lowPU*_TnP_UL.txt`): one `PAT,NANO`
@@ -108,6 +110,16 @@ per-dataset events/sizes, the choices and the alternatives. Lines starting with 
   only as MiniAODv6 (incl. MiNNLO DY->mumu) and are commented out in `mc_2024.txt`, as is the 2025
   J/psi gun (`mc_2025.txt`, only a Run3Winter25 MiniAODv6, AODSIM on tape); they would need a
   re-MINI with the fixed release.
+* 2024 lumi mask: `campaign.sh` restricts 2024 to the golden JSON
+  `Collisions24/latest/Cert_Collisions2024_378981_386951_Golden.json`. Besides the uncertified runs it
+  drops the lumisections without tracker data (tracker HV not ready at the start of a fill, no stable
+  beams, e.g. runs 381984-382216), whose MiniAOD has empty muon-track cluster collections: the AOD has no
+  tracker clusters or tracks there, so no re-MINI can recover them. A scan of all 709 runs of 2024 Muon0
+  (2026-10-09) found no golden lumisection affected. The mask also removes the 2024 low-PU runs.
+* 2024 Muon0 run 381164: `Run2024E-2024CDEReprocessing-v1` holds only 690 of its 1192 lumisections; the
+  498 golden ones it lacks are taken from `Run2024E-PromptReco-v1` with a lumi mask of that dataset alone
+  (`scripts/campaign.sh` `dataset_lumi_mask_of`, `inputs/lumimasks/`). Muon1 is complete in the CDE
+  reprocessing.
 * 2024 pp reference (2024J): 14_1 PromptReco, read correctly with the read-rule fix; not every run
   has muon inner tracks (run 387396 has none).
 * 2025LowPU: the certified low-pileup physics runs 398682-398803 of Run2025G with
@@ -145,6 +157,10 @@ that the sandbox stays below CRAB's 120 MB limit (it prints the estimate).
 Ex: ```./scripts/prepareCrab.py --makeConfig -i inputs/data_postVFP.txt -v v1```
 
 Will make all the crab submit files for the data samples in that text file. ```--makeConfig``` generates the configs from the cmsDriver scripts in the scripts directory, in order to ensure things are up to date.  `-j` sets the threads per job (default 4; the CVH refit is multithreaded).
+`--lumisPerJob` (data) and `--filesPerJob` (MC) set the job size; the defaults (10 x threads lumis,
+2 x threads files) were sized before the CVH refit. Measured with 4 threads: 2017G data ~0.11 s
+CPU/event (30k events/lumi, so `--lumisPerJob 20` ~ 5 h), 5 TeV DY MC ~0.5 s CPU/event (86k
+events/file, so `--filesPerJob 1` ~ 3 h); aim at < 8 h jobs.
 
 Add ```--submit X Y``` to split the submission into X pieces and submit every Y sample. For example, to divide production between 3 people, ./scripts/prepareCrab.py inputs/data.txt --submit 3 i for i = 1,2,3 for the 3 different people.
 

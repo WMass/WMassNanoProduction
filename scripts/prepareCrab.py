@@ -81,7 +81,9 @@ def makeWhitelist(das):
     return whitelist_text
 
 def submitCrab(outfile, history_file, dryRun):
-    submit_dir = os.chdir("/".join(outfile.split("/")[:-1]))
+    # run crab from the submit-file directory without changing this process's working
+    # directory (an os.chdir here broke relative paths of the next input file)
+    submit_dir = os.path.dirname(outfile)
     command = ["crab", "submit", outfile]
     if dryRun:
         command.insert(0, "echo")
@@ -98,7 +100,9 @@ def submitCrab(outfile, history_file, dryRun):
 
 def writeHistory(path, history_file, inputFile):
     cmssw_dir = os.environ["CMSSW_BASE"]+"/src"
-    with open(history_file, "w") as f:
+    # append: a second submission from the same input list on the same day must not
+    # overwrite the record of the first
+    with open(history_file, "a") as f:
         f.write("Submit log for inputs: %s\n" % inputFile)
         f.write("Auto-generated with command %s\n" % scriptCall())
         f.write("Script ran at %s\n" % str(datetime.datetime.now()))
@@ -177,13 +181,19 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
         requestName = hashedName("_".join([outname, version]))
         outfile = "/".join([path, "crab_submit", "submit"+outname+".py"])
         
-        units = 2 if not isData else 10
+        # job size: lumis per job for data (LumiBased), files per job for MC (FileBased);
+        # the defaults scale with the threads, --lumisPerJob / --filesPerJob override them
+        if isData:
+            units = args.lumisPerJob if args.lumisPerJob > 0 else 10*args.nThreads
+        else:
+            units = args.filesPerJob if args.filesPerJob > 0 else 2*args.nThreads
 
         extra = ""
         runRange = args.runRange or (campaignTable("run_range_of", campaignFromInput(das)) if isData else "")
         if isData and runRange:
             extra += f"config.Data.runRange = '{runRange}'\n"
-        lumiMask = args.lumiMask or (campaignTable("lumi_mask_of", campaignFromInput(das)) if isData else "")
+        lumiMask = args.lumiMask or ((campaignTable("dataset_lumi_mask_of", das)
+                                      or campaignTable("lumi_mask_of", campaignFromInput(das))) if isData else "")
         if isData and lumiMask:
             extra += f"config.Data.lumiMask = '{lumiMask}'\n"
 
@@ -191,7 +201,7 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
             outfile, 
             {"era" : name, "splitting" : "LumiBased" if isData else "FileBased", 
                 "threads" : nThreads, "memory" : nThreads*2000, "name" : requestName, 
-                "input" : das, "config" : config_name, "units" : units*args.nThreads,
+                "input" : das, "config" : config_name, "units" : units,
                 "dbs" : "global" if len(das_split) == 1 else "phys03",
                 "useParent" : "False" if len(das_split) == 1 else "True",
                 "version" : version, "outstorage" : storage, "site" : site,
@@ -212,6 +222,10 @@ parser.add_argument('-s', '--submit', type=int, nargs=2, help='Number of splits 
         ' ex: 1 1 for all, 2 1 for every second file', default=(0,0))
 parser.add_argument('-j', '--nThreads', type=int, default=4,
     help="number of threads (make sure its consistent if you're not regenerating configs); the CVH refit is multithreaded in CMSSW_15_0")
+parser.add_argument('--lumisPerJob', type=int, default=0,
+    help='lumi sections per job for data (default: 10 x threads). Size by events per lumi: with the CVH refit the nano takes ~0.11 s CPU/event for 2017G data (30k events/lumi -> 20 lumis ~ 5 h with 4 threads)')
+parser.add_argument('--filesPerJob', type=int, default=0,
+    help='input files per job for MC (default: 2 x threads). MC with the CVH refits takes ~0.5 s CPU/event (5 TeV DY: 86k events/file -> 1 file ~ 3 h with 4 threads)')
 parser.add_argument('--era', type=str, default='NanoV15', help='production label: selects scripts/make<era><Sample>.sh and Templates/submitCrab<era>Template')
 parser.add_argument('--storage', default='/store/group/cmst3/group/wmass/w-mass-13TeV/NanoAOD', type=str, help='Storage path of output Ntuples(default CERN storage)')
 parser.add_argument('--site', default='T2_CH_CERN', type=str, help='Site of the output storage(default:T2_CH_CERN)')
