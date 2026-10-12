@@ -159,6 +159,29 @@ dataset_lumi_mask_of() {
     esac
 }
 
+# cpu_per_event_of <campaign> <data|mc>: grid CPU seconds per event of the custom nano with the
+# CVH refit (4 threads, cmssw WmassNanoProd_15_0_19_patch2 with PR #49), from which prepareCrab.py
+# sizes the jobs (README, "Job size").
+# - Measured on submit82 with 2016H data and DY->mumu MC, 2017G data and DY->mumu MC, and 2024G data.
+# - Scaled to the grid by 1.7: the 2017G production's grid CPU time over submit82's for the same code
+#   and inputs (MC 1.7, data 0.8; the larger factor is taken for both).
+# - MC: DY->mumu, the sample with the most refitted muons. The other samples are cheaper and get shorter
+#   jobs. With the 2017G production code W->munu took 0.5-0.6x and the samples without muons 0.2x; the
+#   faster refit narrows these differences.
+# - Campaigns not measured get the numbers of the more expensive class: 2017LowPU those of Run 2.
+#   Run 3 MC is 2016 DY x 2024/2016 data; the Run 3 MiniAODv6 MC has no usable strip clusters.
+cpu_per_event_of() {
+    case "$1:$2" in
+        2017LowPU5TeV:data)                                    echo 0.094 ;;
+        2017LowPU5TeV:mc)                                      echo 0.19 ;;
+        2016preVFP:data|2016postVFP:data|2017*:data|2018:data) echo 0.20 ;;
+        2016preVFP:mc|2016postVFP:mc|2017*:mc|2018:mc)         echo 0.23 ;;
+        *:data)                                                echo 0.24 ;;
+        *:mc)                                                  echo 0.27 ;;
+        *) echo "cpu_per_event_of: unknown sample type '$2' (data or mc)" >&2; return 1 ;;
+    esac
+}
+
 # Per-sample fixes on top of the campaign (MC only).
 #
 # Beamspot of RunIILowPUSummer20UL17 (2017H, 13 TeV low PU): the POWHEG-MiNNLO W/Z,
