@@ -3,8 +3,8 @@
 # the 2017 low-PU runs at 13 and 5.02 TeV, Run 3 incl. the 2024 pp reference and
 # the 2025 low-PU run).
 # Stock NANO on the campaign's MiniAOD + the WMass content (nanoAOD_wmassContent)
-# + the CVH muon refit (nanoAOD_addCvhMuon, every campaign, with the pixel edge /
-# single-column hits and their class corrections: nanoAOD_cvhPixelClassHits) + the campaign's own
+# + the CVH muon refit (nanoAOD_addCvhMuon, every campaign; the CMSSW defaults keep the
+# pixel edge / single-column hits with their class corrections) + the campaign's own
 # customise (low PU: HI-menu trigger objects; 2017H also the low-PU DeepMET models).
 # usage: makeNanoV15Data <das_path or file:/root:...> <name> [nthreads] [campaign]
 #   campaign: see scripts/campaign.sh (default: from the dataset name)
@@ -31,7 +31,7 @@ outfile=${name}.root
 customise=Configuration/DataProcessing/Utils.addMonitoring,PhysicsTools/NanoAOD/nano_cff.nanoAOD_wmassContent
 extra=$(campaign_customise $campaign)
 [[ -n $extra ]] && customise=$customise,$extra
-customise=$customise,PhysicsTools/NanoAOD/nano_cff.nanoAOD_addCvhMuon,PhysicsTools/NanoAOD/nano_cff.nanoAOD_cvhPixelClassHits
+customise=$customise,PhysicsTools/NanoAOD/nano_cff.nanoAOD_addCvhMuon
 
 echo "makeNanoV15Data: campaign $campaign, era $era, GT $gt"
 cmsDriver.py NANO --conditions $gt \

@@ -8,6 +8,9 @@
 /Muon0/Run2024C-2024CDEReprocessing-v1/MINIAOD
 /Muon0/Run2024D-2024CDEReprocessing-v1/MINIAOD
 /Muon0/Run2024E-2024CDEReprocessing-v1/MINIAOD
+# run 381164 only: its 498 golden lumisections missing from the CDE reprocessing above
+# (dataset lumi mask, scripts/campaign.sh dataset_lumi_mask_of)
+/Muon0/Run2024E-PromptReco-v1/MINIAOD
 /Muon0/Run2024F-PromptReco-v1/MINIAOD
 /Muon0/Run2024G-PromptReco-v1/MINIAOD
 /Muon0/Run2024H-PromptReco-v1/MINIAOD

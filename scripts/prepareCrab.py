@@ -80,8 +80,32 @@ def makeWhitelist(das):
     whitelist_text += "\nconfig.section_('Debug')\nconfig.Debug.extraJDL = ['+CMS_ALLOW_OVERFLOW=False']"
     return whitelist_text
 
+# CRAB refuses tasks with more jobs than this
+_MAX_JOBS_PER_TASK = 10000
+
+def logJobSize(das, eventsPerJob, cpuPerEvent, dbs):
+    """Print the job size and, if DAS answers, the number of jobs of the whole dataset (a lumi
+    mask or run range makes it smaller)."""
+    hours = eventsPerJob*cpuPerEvent/3600.
+    msg = "%s: %d events/job at %.3g s CPU/event = %.1f h CPU (%.1f h wall with %d threads at 90%% efficiency)" % (
+        das, eventsPerJob, cpuPerEvent, hours, hours/(0.9*args.nThreads), args.nThreads)
+    try:
+        query = "summary dataset=%s" % das + (" instance=prod/phys03" if dbs == "phys03" else "")
+        out = subprocess.check_output(["dasgoclient", "--query", query], stderr=subprocess.DEVNULL)
+        nevents = json.loads(out)[0]["nevents"]
+        njobs = -(-nevents//eventsPerJob)
+        msg += "; dataset %d events, at most ~%d jobs" % (nevents, njobs)
+        if njobs > _MAX_JOBS_PER_TASK:
+            logging.warning("%s: ~%d jobs, more than CRAB's %d per task: raise --cpuHoursPerJob or split the "
+                            "dataset with --runRange" % (das, njobs, _MAX_JOBS_PER_TASK))
+    except Exception:
+        pass
+    logging.info(msg)
+
 def submitCrab(outfile, history_file, dryRun):
-    submit_dir = os.chdir("/".join(outfile.split("/")[:-1]))
+    # run crab from the submit-file directory without changing this process's working
+    # directory (an os.chdir here broke relative paths of the next input file)
+    submit_dir = os.path.dirname(outfile)
     command = ["crab", "submit", outfile]
     if dryRun:
         command.insert(0, "echo")
@@ -98,7 +122,9 @@ def submitCrab(outfile, history_file, dryRun):
 
 def writeHistory(path, history_file, inputFile):
     cmssw_dir = os.environ["CMSSW_BASE"]+"/src"
-    with open(history_file, "w") as f:
+    # append: a second submission from the same input list on the same day must not
+    # overwrite the record of the first
+    with open(history_file, "a") as f:
         f.write("Submit log for inputs: %s\n" % inputFile)
         f.write("Auto-generated with command %s\n" % scriptCall())
         f.write("Script ran at %s\n" % str(datetime.datetime.now()))
@@ -177,21 +203,37 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
         requestName = hashedName("_".join([outname, version]))
         outfile = "/".join([path, "crab_submit", "submit"+outname+".py"])
         
-        units = 2 if not isData else 10
+        # job size: EventAwareLumiBased with the events that fill --cpuHoursPerJob CPU hours at the
+        # campaign's grid CPU time per event (scripts/campaign.sh cpu_per_event_of); --eventsPerJob
+        # sets the events directly, --lumisPerJob (data) and --filesPerJob (MC) switch to fixed
+        # LumiBased / FileBased jobs
+        if isData and args.lumisPerJob > 0:
+            splitting, units = "LumiBased", args.lumisPerJob
+        elif not isData and args.filesPerJob > 0:
+            splitting, units = "FileBased", args.filesPerJob
+        elif args.tagAndProbe and args.eventsPerJob <= 0:
+            # the tag-and-probe nano (PAT from AOD, no CVH refit) is not timed: fixed jobs as before
+            splitting, units = ("LumiBased", 10*args.nThreads) if isData else ("FileBased", 2*args.nThreads)
+        else:
+            splitting = "EventAwareLumiBased"
+            cpuPerEvent = float(campaignTable("cpu_per_event_of", campaignFromInput(das), "data" if isData else "mc"))
+            units = args.eventsPerJob if args.eventsPerJob > 0 else max(1000, int(round(args.cpuHoursPerJob*3600/cpuPerEvent, -3)))
+            logJobSize(das, units, cpuPerEvent, "phys03" if len(das_split) > 1 else "global")
 
         extra = ""
         runRange = args.runRange or (campaignTable("run_range_of", campaignFromInput(das)) if isData else "")
         if isData and runRange:
             extra += f"config.Data.runRange = '{runRange}'\n"
-        lumiMask = args.lumiMask or (campaignTable("lumi_mask_of", campaignFromInput(das)) if isData else "")
+        lumiMask = args.lumiMask or ((campaignTable("dataset_lumi_mask_of", das)
+                                      or campaignTable("lumi_mask_of", campaignFromInput(das))) if isData else "")
         if isData and lumiMask:
             extra += f"config.Data.lumiMask = '{lumiMask}'\n"
 
         fillTemplatedFile("/".join([path, "Templates", "submitCrab%sTemplate" % era]),
             outfile, 
-            {"era" : name, "splitting" : "LumiBased" if isData else "FileBased", 
+            {"era" : name, "splitting" : splitting,
                 "threads" : nThreads, "memory" : nThreads*2000, "name" : requestName, 
-                "input" : das, "config" : config_name, "units" : units*args.nThreads,
+                "input" : das, "config" : config_name, "units" : units,
                 "dbs" : "global" if len(das_split) == 1 else "phys03",
                 "useParent" : "False" if len(das_split) == 1 else "True",
                 "version" : version, "outstorage" : storage, "site" : site,
@@ -212,6 +254,15 @@ parser.add_argument('-s', '--submit', type=int, nargs=2, help='Number of splits 
         ' ex: 1 1 for all, 2 1 for every second file', default=(0,0))
 parser.add_argument('-j', '--nThreads', type=int, default=4,
     help="number of threads (make sure its consistent if you're not regenerating configs); the CVH refit is multithreaded in CMSSW_15_0")
+parser.add_argument('--cpuHoursPerJob', type=float, default=8,
+    help="CPU hours per job (all threads together): the events per job are this over the campaign's grid "
+         "CPU time per event (scripts/campaign.sh cpu_per_event_of). Default 8 h, ~2.2 h wall with 4 threads")
+parser.add_argument('--eventsPerJob', type=int, default=0,
+    help='events per job (EventAwareLumiBased) instead of the CPU budget')
+parser.add_argument('--lumisPerJob', type=int, default=0,
+    help='fixed lumi sections per job for data (LumiBased) instead of events, e.g. for recovery tasks')
+parser.add_argument('--filesPerJob', type=int, default=0,
+    help='fixed input files per job for MC (FileBased) instead of events')
 parser.add_argument('--era', type=str, default='NanoV15', help='production label: selects scripts/make<era><Sample>.sh and Templates/submitCrab<era>Template')
 parser.add_argument('--storage', default='/store/group/cmst3/group/wmass/w-mass-13TeV/NanoAOD', type=str, help='Storage path of output Ntuples(default CERN storage)')
 parser.add_argument('--site', default='T2_CH_CERN', type=str, help='Site of the output storage(default:T2_CH_CERN)')

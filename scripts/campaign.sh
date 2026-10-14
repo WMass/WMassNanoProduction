@@ -135,8 +135,50 @@ run_range_of() {
 # lumi_mask_of <campaign>: the CRAB lumi mask a campaign must be restricted to (empty: none)
 lumi_mask_of() {
     case "$1" in
+        # 13.6 TeV pp golden JSON. Besides the uncertified runs it drops the lumisections
+        # without tracker data (tracker HV not ready at the start of a fill, no stable
+        # beams), whose MiniAOD has empty muon-track cluster collections (no CVH refit),
+        # and the 2024 low-PU runs.
+        2024) echo /cvmfs/cms-griddata.cern.ch/cat/metadata/DC/Collisions24/latest/Cert_Collisions2024_378981_386951_Golden.json ;;
         2025LowPU) echo /cvmfs/cms-griddata.cern.ch/cat/metadata/DC/Collisions25/latest/2025_lowPU_updated.json ;;
         *) echo "" ;;
+    esac
+}
+
+# dataset_lumi_mask_of <das path>: a lumi mask of one dataset that replaces its campaign's
+# (empty: none). The masks in inputs/lumimasks/ select the golden lumisections that dataset
+# is the only source of.
+dataset_lumi_mask_of() {
+    local dir
+    dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/inputs/lumimasks"
+    case "$1" in
+        # run 381164: 498 golden lumisections of Muon0 are missing from
+        # Run2024E-2024CDEReprocessing-v1 (690 of the run's 1192 LS); Muon1 is complete there
+        /Muon0/Run2024E-PromptReco-v1/MINIAOD) echo "$dir/Muon0_Run2024E-PromptReco-v1_381164.json" ;;
+        *) echo "" ;;
+    esac
+}
+
+# cpu_per_event_of <campaign> <data|mc>: grid CPU seconds per event of the custom nano with the
+# CVH refit (4 threads, cmssw WmassNanoProd_15_0_19_patch2 with PR #49), from which prepareCrab.py
+# sizes the jobs (README, "Job size").
+# - Measured on submit82 with 2016H data and DY->mumu MC, 2017G data and DY->mumu MC, and 2024G data.
+# - Scaled to the grid by 1.7: the 2017G production's grid CPU time over submit82's for the same code
+#   and inputs (MC 1.7, data 0.8; the larger factor is taken for both).
+# - MC: DY->mumu, the sample with the most refitted muons. The other samples are cheaper and get shorter
+#   jobs. With the 2017G production code W->munu took 0.5-0.6x and the samples without muons 0.2x; the
+#   faster refit narrows these differences.
+# - Campaigns not measured get the numbers of the more expensive class: 2017LowPU those of Run 2.
+#   Run 3 MC is 2016 DY x 2024/2016 data; the Run 3 MiniAODv6 MC has no usable strip clusters.
+cpu_per_event_of() {
+    case "$1:$2" in
+        2017LowPU5TeV:data)                                    echo 0.094 ;;
+        2017LowPU5TeV:mc)                                      echo 0.19 ;;
+        2016preVFP:data|2016postVFP:data|2017*:data|2018:data) echo 0.20 ;;
+        2016preVFP:mc|2016postVFP:mc|2017*:mc|2018:mc)         echo 0.23 ;;
+        *:data)                                                echo 0.24 ;;
+        *:mc)                                                  echo 0.27 ;;
+        *) echo "cpu_per_event_of: unknown sample type '$2' (data or mc)" >&2; return 1 ;;
     esac
 }
 

@@ -4,8 +4,8 @@
 # the 2025 low-PU run).
 # Stock NANO on the campaign's MiniAOD + the WMass content (nanoAOD_wmassContent)
 # + the gen customisations (nanoGenWmassCustomize) + the CVH muon refit
-# (nanoAOD_addCvhMuonMC, every campaign, with the pixel edge / single-column
-# hits and their class corrections: nanoAOD_cvhPixelClassHits) + the campaign's own customise
+# (nanoAOD_addCvhMuonMC, every campaign; the CMSSW defaults keep the pixel edge /
+# single-column hits with their class corrections) + the campaign's own customise
 # (low PU: HI-menu trigger objects; 2017H also the low-PU DeepMET models).
 # + the sample's own fix, if any (scripts/campaign.sh sample_customise: the beamspot of
 # the RunIILowPUSummer20UL17 samples generated with the 2018 vertex smearing).
@@ -34,7 +34,7 @@ outfile=${name}.root
 customise=Configuration/DataProcessing/Utils.addMonitoring,PhysicsTools/NanoAOD/nano_cff.nanoAOD_wmassContent,PhysicsTools/NanoAOD/nano_cff.nanoGenWmassCustomize
 extra=$(campaign_customise $campaign)
 [[ -n $extra ]] && customise=$customise,$extra
-customise=$customise,PhysicsTools/NanoAOD/nano_cff.nanoAOD_addCvhMuonMC,PhysicsTools/NanoAOD/nano_cff.nanoAOD_cvhPixelClassHits
+customise=$customise,PhysicsTools/NanoAOD/nano_cff.nanoAOD_addCvhMuonMC
 fix=$(sample_customise "$1")
 [[ -n $fix ]] && customise=$customise,$fix
 
