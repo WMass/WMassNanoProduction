@@ -123,9 +123,11 @@ When all jobs are finished and publication is done:
 
 1. `crab report -d <dir>`: the number of events read must equal the dataset's events in DAS, which are listed in your
    issue. For a recovered task, add up the task and its `_rec` tasks.
-2. Make the output readable. The XRootD WebDAV door currently creates directories that only their owner can open:
+2. Check that the output is readable: `ls -ld /ceph/submit/data/group/cms/store/group/zmass/NanoAOD/<PD>/<output tag>`
+   must show `drwxr-sr-x`. Since 2026-10-16 the XRootD WebDAV door on submit55 creates directories readable by
+   everyone, so nothing needs to be done. If a directory is still owner-only (`drwx--S---`), open it:
    ```sh
-   find /ceph/submit/data/group/cms/store/group/zmass/NanoAOD/<PD>/<output tag> -user $USER -type d -exec chmod 2775 {} +
+   find /ceph/submit/data/group/cms/store/group/zmass/NanoAOD/<PD>/<output tag> -user $USER -type d -exec chmod 2755 {} +
    ```
 3. Commit your history files on a branch (`history-NanoV15_v1.0-$USER`), push it to your fork and open a PR to
    `WMass/WMassNanoProduction` `main`.
