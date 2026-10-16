@@ -130,6 +130,20 @@ per-dataset events/sizes, the choices and the alternatives. Lines starting with 
   MC were produced with CMSSW_16_0 and cannot be read by this 15_0 setup; lists kept for reference.
 * Tag-and-probe nano: Run 2 campaigns only, without the CVH refit.
 
+# Versions and productions
+
+A production version is a tag of the same name in both repositories (WMass/cmssw and this one), `NanoV15_vX.Y`:
+- **X** changes when the output changes (a bug fix, an improvement of the track fit);
+- **Y** changes when existing outputs stay valid (e.g. new datasets or new scripts).
+
+The CRAB label is `vXpY` (`prepareCrab.py -v v1p0`), so the output tags read `NanoV15MCPostVFP_v1p0`. Set up an area
+at a version with `CMSSW_TOPIC=WMass:<tag> PROD_BRANCH=<tag>` in front of the clone script. Each production has a
+runbook and handoffs in `production/<tag>/`.
+
+| tag | date | content |
+|---|---|---|
+| `NanoV15_v1.0` | 2026-10-16 | 2016 postVFP data and MC; [`production/NanoV15_v1.0/`](production/NanoV15_v1.0/README.md), issue #26 |
+
 # To clone with CMSSW setup
 
 el9 host (`SCRAM_ARCH=el9_amd64_gcc12`), no container:
