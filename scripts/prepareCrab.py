@@ -32,11 +32,24 @@ def campaignFromInput(das_path):
         return args.campaign
     return campaignTable("campaign_from_input", das_path)
 
+def isAlcaReco(das_path):
+    """An AlCaReco input: the AlCaReco nano (makeNanoV15AlcaReco*.sh) refits its muon tracks."""
+    return das_path.split(" ")[0].endswith("/ALCARECO")
+
+def isMCInput(das_path):
+    """MC: a *SIM tier (of the last dataset of the line: a weight-fix line ends with the MINIAODSIM), or an
+    ALCARECO of an MC campaign (the processed datasets of data start with the run era, Run2016F-...)."""
+    return "SIM" in das_path[-3:] or (isAlcaReco(das_path) and not re.match(r"Run20\d\d", das_path.split("/")[2]))
+
+def alcarecoSkim(das_path):
+    """The AlCaReco skim of the input (TkAlJpsiMuMu, TkAlUpsilonMuMu), whose tracks the AlCaReco nano refits."""
+    return campaignTable("alcareco_skim_of", das_path.split(" ")[0])
+
 def nameFromInput(das_path, tagAndProbe=False):
     """Data<label> / MC<label> (+TagAndProbe); 2016 keeps its historical order
     (MCTagAndProbePostVFP)."""
     campaign = campaignFromInput(das_path)
-    label = "MC" if "SIM" in das_path[-3:] else "Data"
+    label = "MC" if isMCInput(das_path) else "Data"
     tnp = "TagAndProbe" if tagAndProbe else ""
     if campaign.startswith("2016"):
         return label + tnp + campaignTable("label_of", campaign)
@@ -61,8 +74,10 @@ def hashedName(name, bits=5):
     return name[:(100-bits)] + h[:bits]
 
 def makeConfig(path, era, das, config_name, nThreads, isData, tagAndProbe):
-    # one script per (data/MC, nano/tag-and-probe); the campaign selects the conditions inside it
-    script = "./scripts/make%s%s%s.sh" % (era, "Data" if isData else "MC", "TagAndProbe" if tagAndProbe else "")
+    # one script per (nano/AlCaReco nano, data/MC, nano/tag-and-probe); the campaign selects the
+    # conditions inside it, the AlCaReco scripts also the skim
+    script = "./scripts/make%s%s%s%s.sh" % (era, "AlcaReco" if isAlcaReco(das) else "", "Data" if isData else "MC",
+                                            "TagAndProbe" if tagAndProbe else "")
     cmd = [script, *das.split(" "), config_name, str(nThreads), campaignFromInput(das)]
     print(cmd)
     subprocess.call(cmd, cwd=path)
@@ -155,8 +170,12 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
         if match_expr and not re.match(match_expr, das):
             continue
 
-        name = era+nameFromInput(das, args.tagAndProbe)
-        isData = "Data" in name
+        alcareco = isAlcaReco(das)
+        if alcareco and args.tagAndProbe:
+            raise ValueError("%s: the tag-and-probe nano runs on AOD, not on an AlCaReco" % das)
+        # the AlCaReco nano: the skim in the config and output names, NanoV15TkAlJpsiMuMuDataPostVFP
+        name = era + (alcarecoSkim(das) if alcareco else "") + nameFromInput(das, args.tagAndProbe)
+        isData = not isMCInput(das)
         config_name = name 
         das_split = das.split(" ")
         if len(das_split) > 1:
@@ -183,6 +202,8 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
             if args.tagAndProbe:
                 outname += "_TagAndProbe"
         else:
+            if alcareco:
+                outname += "_" + alcarecoSkim(das)
             outname += "_"+nameFromInput(das)
             # check if it is extension samples, where we need to add the extension number to the label
             matched = re.search("_ext(\d+)", das.split('/')[2])
@@ -216,7 +237,8 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
             splitting, units = ("LumiBased", 10*args.nThreads) if isData else ("FileBased", 2*args.nThreads)
         else:
             splitting = "EventAwareLumiBased"
-            cpuPerEvent = float(campaignTable("cpu_per_event_of", campaignFromInput(das), "data" if isData else "mc"))
+            cpuPerEvent = float(campaignTable("cpu_per_event_of", campaignFromInput(das), "data" if isData else "mc",
+                                              "alcareco" if alcareco else "nano"))
             units = args.eventsPerJob if args.eventsPerJob > 0 else max(1000, int(round(args.cpuHoursPerJob*3600/cpuPerEvent, -3)))
             logJobSize(das, units, cpuPerEvent, "phys03" if len(das_split) > 1 else "global")
 
