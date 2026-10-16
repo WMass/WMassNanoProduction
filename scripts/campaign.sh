@@ -159,9 +159,9 @@ dataset_lumi_mask_of() {
     esac
 }
 
-# cpu_per_event_of <campaign> <data|mc>: grid CPU seconds per event of the custom nano with the
-# CVH refit (4 threads, cmssw WmassNanoProd_15_0_19_patch2 with PR #49), from which prepareCrab.py
-# sizes the jobs (README, "Job size").
+# cpu_per_event_of <campaign> <data|mc> [nano|alcareco]: grid CPU seconds per event of the custom nano
+# with the CVH refit (nano, the default) or of the AlCaReco nano (alcareco), 4 threads, cmssw
+# WmassNanoProd_15_0_19_patch2 with PR #49, from which prepareCrab.py sizes the jobs (README, "Job size").
 # - Measured on submit82 with 2016H data and DY->mumu MC, 2017G data and DY->mumu MC, and 2024G data.
 # - Scaled to the grid by 1.7: the 2017G production's grid CPU time over submit82's for the same code
 #   and inputs (MC 1.7, data 0.8; the larger factor is taken for both).
@@ -170,7 +170,18 @@ dataset_lumi_mask_of() {
 #   faster refit narrows these differences.
 # - Campaigns not measured get the numbers of the more expensive class: 2017LowPU those of Run 2.
 #   Run 3 MC is 2016 DY x 2024/2016 data; the Run 3 MiniAODv6 MC has no usable strip clusters.
+# - AlCaReco nano (Run 2 only), measured on submit82 with central files: J/psi 2016H 0.050, J/psi 2017C
+#   0.052, Upsilon 2017C 0.045 s/event (data); UL16 J/psi Pt0to8 0.111, Pt8toInf 0.098 s/event (MC, two
+#   refits). Two refitted muons per event; same scaling.
 cpu_per_event_of() {
+    if [[ ${3:-nano} == alcareco ]]; then
+        case "$2" in
+            data) echo 0.09 ;;
+            mc)   echo 0.19 ;;
+            *) echo "cpu_per_event_of: unknown sample type '$2' (data or mc)" >&2; return 1 ;;
+        esac
+        return
+    fi
     case "$1:$2" in
         2017LowPU5TeV:data)                                    echo 0.094 ;;
         2017LowPU5TeV:mc)                                      echo 0.19 ;;
@@ -179,6 +190,16 @@ cpu_per_event_of() {
         *:data)                                                echo 0.24 ;;
         *:mc)                                                  echo 0.27 ;;
         *) echo "cpu_per_event_of: unknown sample type '$2' (data or mc)" >&2; return 1 ;;
+    esac
+}
+
+# alcareco_skim_of <das path or file/root URL>: the tracker-alignment AlCaReco skim of an
+# ALCARECO input, whose muon tracks the AlCaReco nano refits (makeNanoV15AlcaReco*.sh)
+alcareco_skim_of() {
+    case "$1" in
+        *TkAlJpsiMuMu*)    echo TkAlJpsiMuMu ;;
+        *TkAlUpsilonMuMu*) echo TkAlUpsilonMuMu ;;
+        *) echo "alcareco_skim_of: no supported AlCaReco skim (TkAlJpsiMuMu, TkAlUpsilonMuMu) in '$1'" >&2; return 1 ;;
     esac
 }
 

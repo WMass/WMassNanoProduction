@@ -1,0 +1,9 @@
+# AlCaReco nano (scripts/makeNanoV15AlcaRecoMC.sh), 2016 postVFP MC of AN-21-131 (v9),
+# RunIISummer20UL16RECO: J/psi (TkAlJpsiMuMu) and Upsilon (TkAlUpsilonMuMu, multi-resonance filter).
+/JPsiToMuMu_Pt0to8-pythia8/RunIISummer20UL16RECO-TkAlJpsiMuMu-106X_mcRun2_asymptotic_v13-v2/ALCARECO
+/JPsiToMuMu_Pt0to8-pythia8/RunIISummer20UL16RECO-TkAlJpsiMuMu-106X_mcRun2_asymptotic_v13_ext1-v3/ALCARECO
+/JPsiToMuMu_Pt8toInf-pythia8/RunIISummer20UL16RECO-TkAlJpsiMuMu-106X_mcRun2_asymptotic_v13-v2/ALCARECO
+/JPsiToMuMu_Pt8toInf-pythia8/RunIISummer20UL16RECO-TkAlJpsiMuMu-106X_mcRun2_asymptotic_v13_ext1-v3/ALCARECO
+/Upsilon_MultiResonanceFilter_Pt0to8-pythia8/RunIISummer20UL16RECO-TkAlUpsilonMuMu-106X_mcRun2_asymptotic_v13-v2/ALCARECO
+/Upsilon_MultiResonanceFilter_Pt8to13-pythia8/RunIISummer20UL16RECO-TkAlUpsilonMuMu-106X_mcRun2_asymptotic_v13-v2/ALCARECO
+/Upsilon_MultiResonanceFilter_Pt13toInf-pythia8/RunIISummer20UL16RECO-TkAlUpsilonMuMu-106X_mcRun2_asymptotic_v13-v2/ALCARECO
