@@ -89,7 +89,30 @@ Check once or twice a day. CRAB retries failed jobs automatically. For jobs in `
 | 50664 | wall-clock limit (20.8 h) | resubmit once; if it happens again, recover (step 5) |
 | 60307, 60326 | stage-out to T3_US_MIT | `crab resubmit -d <dir>`; if it repeats at one site, add `--siteblacklist=<site>` (in 2017G: T2_US_Vanderbilt) |
 | 8001, 8028 | reading an input file | `crab resubmit -d <dir>`; if it repeats, report the file in your issue |
+| 8901 | `UnexpectedJobTermination`: a data job that spans a run boundary, see below | **do not resubmit**; needs the code fix (WMass/cmssw#52) |
 | other | | `crab resubmit -d <dir>`; if it repeats, report it in your issue with the `crab status --long` lines |
+
+### 8901 on data: a job that spans a run boundary (fixed in WMass/cmssw#52)
+
+In the first 2016 postVFP data submission, **1311 of 2368 jobs (55 %) failed with exit code 8901**,
+`Error while running CMSSW: UnexpectedJobTermination`, i.e. a `cmsRun` segmentation violation. It is
+not a site problem (the rate was flat: T2_CH_CERN 55.5 %, T2_BE_UCL 49.4 %, T1_FR_CCIN2P3 64.3 %) and
+**resubmitting does not help** — the job straddles the same run boundary again.
+
+`IdealMagneticFieldRecord` changes IOV at every run transition in data, which re-runs the producers
+in that record. `cms::DDDetector` has no destructor, so rebuilding the DD4hep MF geometry re-adds an
+extension to the instance built the first time and segfaults in `dd4hep::ObjectExtensions::addExtension`;
+behind it, the rebuilt field object trips `CvhMasterThread`'s "the magnetic-field product changed
+after the G4 world was built" guard, because G4 holds the raw field pointer for the whole job.
+MC is immune (one IOV per sample), and a 100-event test cannot cross a run boundary, which is why
+neither showed up in the pre-production checks.
+
+To recognise it: every failed job's log ends on the first event of a *second* run, and the faulting
+frame is `DDDetectorESProducer::produceMagField`. Confirmed on Run2016F by pulling all 19 job logs —
+11/11 failed jobs span two runs, 8/8 finished jobs cover exactly one.
+
+Output written before the fix stays valid: those jobs ran inside a single run, so they never rebuilt
+anything. Recover the missing lumis with step 5 rather than resubmitting the whole dataset.
 
 Several datasets are on disk at one site only, so their jobs may wait there. Do not use `--ignoreLocality` without
 asking in the issue: in the 2017G production, reading remotely brought the CPU efficiency down to 0.4.
