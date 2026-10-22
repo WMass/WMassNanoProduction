@@ -111,8 +111,9 @@ or LFN), era (+ NANO modifier), global tag, campaign-specific customise and outp
     - its global-fit payload (the gradient and the factored Hessian wrt the global parameters, their indices,
       d(mass)/d(parms), the per-leg Jacobians) and the selection quantities of the calibration fit;
     - the parameter catalog in the Runs tree (`CvhParm_*`).
-    It is read by `aggregategrads.py` of MuonMomentumScaleCalibration. It costs 3.8x the CPU of the default
-    version and 38 kB/event instead of 3.6. Output tags get `Calib`, e.g. `NanoV15TkAlJpsiMuMuCalibRun2016HDataPostVFP`.
+    It is read by `aggregategrads.py` of MuonMomentumScaleCalibration. It costs 3.8x (data) and 2.4x (MC) the CPU
+    of the default version, and about 37 kB/event (data) and 43 kB/event (MC) instead of 2.1 and 4.4. Output tags
+    get `Calib`, e.g. `NanoV15TkAlJpsiMuMuCalibRun2016HDataPostVFP`.
   - The central AlCaReco files store the strip clusters at split level 99; the cmssw branch reads them
     correctly (3000 Run2016F events: all 652 branches bit-identical to the output from a split-1 copy).
 
@@ -242,7 +243,7 @@ the 2017G production:
 | other Run 2 (2016preVFP, 2016postVFP, 2017, 2017LowPU, 2018) | 0.20 | 0.23 | 144k / 125k |
 | Run 3 | 0.24 | 0.27 | 120k / 107k |
 | AlCaReco nano (Run 2) | 0.09 | 0.19 | 320k / 152k |
-| AlCaReco nano, calibration version (J/psi) | 0.34 | 0.44 | 85k / 65k |
+| AlCaReco nano, calibration version (J/psi) | 0.34 | 0.46 | 85k / 63k |
 
 How the table was obtained (all on submit82 with 4 threads; the timing runs are in
 `prevalid_nanoV15_261012/jobsize/` of the validation area):
@@ -259,8 +260,8 @@ How the table was obtained (all on submit82 with 4 threads; the timing runs are 
   (timing runs in `alcareco_nano_261016/jobsize/` of the validation area); two refitted muons per event,
   1.7–2.1 GB at 4 threads.
 - AlCaReco nano, calibration version: 3.8x the AlCaReco nano on the same 2281 J/psi 2016H events (0.137 vs
-  0.036 s/event on submit82, timing runs in `alcareco_calib_261022/` of the validation area), 2.2 GB at 4 threads.
-  MC is not measured: the AlCaReco nano's MC value plus the same increment.
+  0.036 s/event on submit82) and 2.41x on the same 2000 UL16 J/psi Pt8toInf events (0.184 vs 0.076 s/event), timing
+  runs in `alcareco_calib_261022/` of the validation area; 2.1–2.2 GB at 4 threads.
 
 The MC values are for DY→μμ, the sample with the most refitted muons; other MC samples get shorter jobs. With the
 2017G production code, W→μν took 0.5–0.6x and the samples without muons 0.2x of DY→μμ. After the first task of a

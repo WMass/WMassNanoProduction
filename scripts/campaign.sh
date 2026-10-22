@@ -175,15 +175,15 @@ dataset_lumi_mask_of() {
 #   0.052, Upsilon 2017C 0.045 s/event (data); UL16 J/psi Pt0to8 0.111, Pt8toInf 0.098 s/event (MC, two
 #   refits). Two refitted muons per event; same scaling.
 # - AlCaReco nano, calibration version (J/psi, also the two-track refit with the global-fit payload): 3.8x the
-#   AlCaReco nano on the same 2281 J/psi 2016H events on submit82 (0.137 vs 0.036 s/event), so 0.34 for data.
-#   MC is not measured: the AlCaReco nano's MC value plus the same increment, 0.44.
+#   AlCaReco nano on the same 2281 J/psi 2016H events on submit82 (0.137 vs 0.036 s/event), so 0.34 for data;
+#   2.41x on the same 2000 UL16 J/psi Pt8toInf events (0.184 vs 0.076 s/event), so 0.46 for MC.
 cpu_per_event_of() {
     if [[ ${3:-nano} == alcareco || ${3:-nano} == alcarecocalib ]]; then
         case "$3:$2" in
             alcareco:data)      echo 0.09 ;;
             alcareco:mc)        echo 0.19 ;;
             alcarecocalib:data) echo 0.34 ;;
-            alcarecocalib:mc)   echo 0.44 ;;
+            alcarecocalib:mc)   echo 0.46 ;;
             *) echo "cpu_per_event_of: unknown sample type '$2' (data or mc)" >&2; return 1 ;;
         esac
         return
