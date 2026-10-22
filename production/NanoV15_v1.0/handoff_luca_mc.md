@@ -96,16 +96,19 @@ W (`inputs/wMC_v15.txt`): 2.62B events, 20982 jobs, about 16.7 TB.
 | `/WminusJetsToTauNu_TauToMu_H2ErratumFix_PDFExt_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM` | 104,298,567 | 835 | T2_UK_London_IC |
 | `/WminusJetsToTauNu_TauToMu_H2ErratumFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM` | 34,767,637 | 279 | T1_FR_CCIN2P3_Disk |
 
-Other backgrounds (`inputs/bkgMC.txt`, QCD μ-enriched, γγ→μμ and γγ→ℓℓ, qg→Wq, qg→DYq): 266M events, 2133 jobs, about 1.7 TB.
+Other backgrounds (`inputs/bkgMC.txt`, QCD μ-enriched, γγ→μμ and γγ→ℓℓ, qg→Wq and qg→DYq with the decays to leptons and to muons): 279M events, 2237 jobs, about 1.8 TB.
 
 | dataset | events (DAS) | jobs | on disk at |
 |---|---|---|---|
 | `/QCD_Pt-20_MuEnrichedPt15_TuneCP5_13TeV-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17_ext2-v2/MINIAODSIM` | 212,511,764 | 1701 | T1_DE_KIT_Disk, T2_CH_CERN |
 | `/QCD_Pt-20_MuEnrichedPt15_TuneCP5_13TeV-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17_ext1-v2/MINIAODSIM` | 40,584,743 | 325 | T1_FR_CCIN2P3_Disk |
+| `/GGToLL_M-5To50_TuneCP5_13TeV-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM` | 8,943,660 | 72 | T1_FR_CCIN2P3_Disk |
 | `/QCD_Pt-20_MuEnrichedPt15_TuneCP5_13TeV-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM` | 8,884,250 | 72 | T1_US_FNAL_Disk |
+| `/QGToWQToMuNu_TuneCP5_13TeV-pythia8-photos/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM` | 3,441,183 | 28 | T1_US_FNAL_Disk, T2_CH_CERN |
 | `/GGToMuMu_M-5To50_TuneCP5_13TeV-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v4/MINIAODSIM` | 1,985,152 | 16 | T1_ES_PIC_Disk, T2_US_Wisconsin |
 | `/GGToLL_TuneCP5_13TeV-pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM` | 1,200,000 | 10 | T2_BE_UCL |
 | `/QGToWQToLNu_TuneCP5_13TeV-pythia8-photos/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM` | 1,000,000 | 8 | T2_DE_RWTH |
+| `/QGToDYQTo2Mu_TuneCP5_13TeV-pythia8-photos/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM` | 395,773 | 4 | T2_DE_DESY, T2_US_Caltech |
 | `/QGToDYQTo2L_TuneCP5_13TeV-pythia8-photos/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM` | 100,000 | 1 | T2_UK_SGrid_RALPP |
 
 ## For every phase
