@@ -73,12 +73,12 @@ def hashedName(name, bits=5):
     h = hashlib.sha256(name.encode('utf-8')).hexdigest()
     return name[:(100-bits)] + h[:bits]
 
-def makeConfig(path, era, das, config_name, nThreads, isData, tagAndProbe):
+def makeConfig(path, era, das, config_name, nThreads, isData, tagAndProbe, calib=False):
     # one script per (nano/AlCaReco nano, data/MC, nano/tag-and-probe); the campaign selects the
-    # conditions inside it, the AlCaReco scripts also the skim
+    # conditions inside it, the AlCaReco scripts also the skim, and calib their calibration version
     script = "./scripts/make%s%s%s%s.sh" % (era, "AlcaReco" if isAlcaReco(das) else "", "Data" if isData else "MC",
                                             "TagAndProbe" if tagAndProbe else "")
-    cmd = [script, *das.split(" "), config_name, str(nThreads), campaignFromInput(das)]
+    cmd = [script, *das.split(" "), config_name, str(nThreads), campaignFromInput(das)] + (["calib"] if calib else [])
     print(cmd)
     subprocess.call(cmd, cwd=path)
 
@@ -173,8 +173,12 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
         alcareco = isAlcaReco(das)
         if alcareco and args.tagAndProbe:
             raise ValueError("%s: the tag-and-probe nano runs on AOD, not on an AlCaReco" % das)
-        # the AlCaReco nano: the skim in the config and output names, NanoV15TkAlJpsiMuMuDataPostVFP
-        name = era + (alcarecoSkim(das) if alcareco else "") + nameFromInput(das, args.tagAndProbe)
+        if args.calib and not (alcareco and alcarecoSkim(das) == "TkAlJpsiMuMu"):
+            raise ValueError("%s: --calib is the calibration version of the J/psi AlCaReco nano (TkAlJpsiMuMu)" % das)
+        # the AlCaReco nano: the skim in the config and output names, NanoV15TkAlJpsiMuMuDataPostVFP, and
+        # Calib for its calibration version, NanoV15TkAlJpsiMuMuCalibDataPostVFP
+        calibLabel = "Calib" if args.calib else ""
+        name = era + (alcarecoSkim(das) + calibLabel if alcareco else "") + nameFromInput(das, args.tagAndProbe)
         isData = not isMCInput(das)
         config_name = name 
         das_split = das.split(" ")
@@ -186,7 +190,7 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
             config_name += "_" + sampleTag
 
         if doConfig and config_name not in configsMade:
-            makeConfig(path, era, das, config_name, nThreads, isData, args.tagAndProbe)
+            makeConfig(path, era, das, config_name, nThreads, isData, args.tagAndProbe, args.calib)
             configsMade.append(config_name)
 
         config_name += "_cfg.py"
@@ -201,9 +205,11 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
                 outname += "_" + args.campaign
             if args.tagAndProbe:
                 outname += "_TagAndProbe"
+            if args.calib:
+                outname += "_Calib"
         else:
             if alcareco:
-                outname += "_" + alcarecoSkim(das)
+                outname += "_" + alcarecoSkim(das) + calibLabel
             outname += "_"+nameFromInput(das)
             # check if it is extension samples, where we need to add the extension number to the label
             matched = re.search("_ext(\d+)", das.split('/')[2])
@@ -238,7 +244,7 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
         else:
             splitting = "EventAwareLumiBased"
             cpuPerEvent = float(campaignTable("cpu_per_event_of", campaignFromInput(das), "data" if isData else "mc",
-                                              "alcareco" if alcareco else "nano"))
+                                              ("alcarecocalib" if args.calib else "alcareco") if alcareco else "nano"))
             units = args.eventsPerJob if args.eventsPerJob > 0 else max(1000, int(round(args.cpuHoursPerJob*3600/cpuPerEvent, -3)))
             logJobSize(das, units, cpuPerEvent, "phys03" if len(das_split) > 1 else "global")
 
@@ -270,6 +276,10 @@ parser.add_argument('-v', '--version', type=str, required=True, help='Version la
 parser.add_argument('--dryRun', action='store_true', help='print submit commands rather than executing them')
 parser.add_argument('--makeConfig', action='store_true', help='run cmsDriver to build config file')
 parser.add_argument('--tagAndProbe', action='store_true', help='Submit tag and probe nano')
+parser.add_argument('--calib', action='store_true',
+    help='the calibration version of the J/psi AlCaReco nano (TkAlJpsiMuMu inputs only): also the two-track '
+         'J/psi refit with the payload from which the module-level corrections are derived; the config, output '
+         'tag and request name get Calib')
 parser.add_argument('-i', '--inputFiles', required=True, type=str, nargs='*', help='inputFiles to process')
 parser.add_argument('-m', '--filterExpr', default='', type=str, help='Expression to filter out files from the input list')
 parser.add_argument('-s', '--submit', type=int, nargs=2, help='Number of splits to make, which split to submit' \

@@ -6,11 +6,13 @@
 # instead of the stock nano (alcarecoNanoSequenceMC: also the ideal-geometry refit, the gen
 # match and the gen tables); nanoAOD_alcareco<skim> selects the skim's tracks. The refit of
 # MC keeps the default field, the field of the simulation, as in the W-mass nano.
-# usage: makeNanoV15AlcaRecoMC <das_path or file:/root:...> <name> [nthreads] [campaign]
+# usage: makeNanoV15AlcaRecoMC <das_path or file:/root:...> <name> [nthreads] [campaign] [calib]
 #   campaign: see scripts/campaign.sh (default: from the dataset name)
 #   the skim comes from the dataset name or file path (scripts/campaign.sh alcareco_skim_of)
+#   calib: the calibration version (TkAlJpsiMuMu only), alcareco_nano_cff calib=True: also the two-track
+#   J/psi refit with the payload from which the module-level corrections are derived
 if [[ $# -lt 2 ]]; then
-    echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign]"
+    echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign] [calib]"
     exit 1
 fi
 source "$(dirname "$0")/campaign.sh"
@@ -30,6 +32,14 @@ esac
 era=$(nano_era_of $campaign) || exit 1
 gt=$(gt_of $campaign mc) || exit 1
 skim=$(alcareco_skim_of "$1") || exit 1
+custom=nanoAOD_alcareco$skim
+if [[ -n ${5:-} ]]; then
+    if [[ $5 != calib || $skim != TkAlJpsiMuMu ]]; then
+        echo "makeNanoV15AlcaRecoMC: the 5th argument is 'calib', for TkAlJpsiMuMu only (got '$5', skim $skim)" >&2
+        exit 1
+    fi
+    custom=${custom}Calib
+fi
 
 config_name=configs/${name}_cfg.py
 outfile=${name}.root
@@ -39,7 +49,7 @@ cmsDriver.py NANO --conditions $gt \
     --datatier NANOAODSIM --eventcontent NANOAODSIM \
     --era $era \
     --step NANO:PhysicsTools/NanoAOD/alcareco_nano_cff.alcarecoNanoSequenceMC \
-    --customise Configuration/DataProcessing/Utils.addMonitoring,PhysicsTools/NanoAOD/alcareco_nano_cff.nanoAOD_alcareco$skim \
+    --customise Configuration/DataProcessing/Utils.addMonitoring,PhysicsTools/NanoAOD/alcareco_nano_cff.$custom \
     --filein $input --fileout file:$outfile --nThreads $nThreads --no_exec \
     --python_filename $config_name --mc \
     --scenario pp -n $nevents
