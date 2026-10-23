@@ -81,3 +81,21 @@
 - Versioning: AlcaRecoGun_v1.1 on both forks. v1.1 == v1.0 in output content by
   construction (only submission tooling/labels/docs changed; cfgs, plugin, GT,
   filters untouched) so v13/v14 pilot outputs stay valid.
+
+## v1.2 tag: gate release area (2026-10-23)
+- pmlugato's v1.1 setup review found the last ALCArequest dependency: the
+  assembler's exit gate (tests/test_workflow.sh) still cd'd into
+  /work/submit/emanca/zmass/ALCArequest/CMSSW_10_6_17_patch1/src for the scram
+  runtime driving the seed-difference proof. Not a rule-0 violation (2a does not
+  submit), but it put the gate on the one path we had just declared world-mutable
+  and made 2a unrunnable for anyone without read access to that /work tree.
+- FIXED: tests/test_workflow.sh takes the release area as an optional argument and
+  otherwise resolves it as step-2b build_area beside the campaign dir -> ephemeral
+  `scram project` in its own temp dir. Precedence is argument > build_area >
+  ephemeral; the activated CMSSW_VERSION is asserted against the expected release.
+  On a first setup 2a precedes 2b so the ephemeral path is the normal one, and the
+  gate can be re-run on tag-matched binaries with
+  `campaign/tests/test_workflow.sh build_area/CMSSW_10_6_17_patch1`.
+- Versioning: AlcaRecoGun_v1.2 on both forks (cmssw side re-tagged at the same
+  commit as v1.0/v1.1, no cmssw content change). Tooling-only => Y bump; v1.0-v1.2
+  are identical in output content, so v13/v14 pilot outputs stay valid.

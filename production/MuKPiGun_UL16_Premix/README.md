@@ -11,10 +11,10 @@ Coordination rules: [`coordination.md`](coordination.md). Decisions log:
 
 ## 0. What is produced
 
-- **Code:** tag `AlcaRecoGun_v1.1` on **both forks** (until PR #36 and the cmssw-side
-  PR are merged into WMass/*; then the same tag is made centrally). v1.1 is identical
-  to v1.0 in output content — only submission tooling (labels, area protocol, runbook)
-  changed.
+- **Code:** tag `AlcaRecoGun_v1.2` on **both forks** (until PR #36 and the cmssw-side
+  PR are merged into WMass/*; then the same tag is made centrally). v1.1 and v1.2 are
+  identical to v1.0 in output content — only submission tooling (labels, area protocol,
+  runbook, gate) changed.
   - `emanca/WMassNanoProduction`, branch `NanoV9_CMSSW_10_6` (this repo),
   - `emanca/cmssw`, branch `from-CMSSW_10_6_17_patch1`
     (plugins `GunAlcaReco/GenTrackMatch` + fragments `Configuration/GenProduction/python/`
@@ -53,7 +53,7 @@ ever used for submission (see `coordination.md`).
 
 ```sh
 mkdir -p /work/submit/$USER/AlcaRecoGun && cd /work/submit/$USER/AlcaRecoGun
-TAG=AlcaRecoGun_v1.1
+TAG=AlcaRecoGun_v1.2
 git clone --branch $TAG https://github.com/emanca/cmssw.git cmssw-src
 git clone --branch $TAG https://github.com/emanca/WMassNanoProduction.git nanoproduction
 ```
@@ -75,6 +75,16 @@ bash nanoproduction/production/MuKPiGun_UL16_Premix/assemble_campaign.sh \
   content pin is the clean-tree tag check above.
 - It ends with `tests/test_workflow.sh` — must print `ALL CHECKS OK` before anyone
   submits. `campaign/history/` is created for the submission logs (step 6).
+- The gate's seed-difference proof needs a CMSSW runtime, and takes it from, in order:
+  the area passed as its first argument, else the step-2b `build_area` sitting beside
+  the campaign dir, else an ephemeral `scram project` in its own temp dir. No shared or
+  pre-existing area is ever used (rule 0), so the gate runs for anyone holding the two
+  tags. On a first setup 2a precedes 2b, so the ephemeral path is the normal one; to
+  re-run the gate afterwards on the tag-matched binaries:
+
+  ```sh
+  campaign/tests/test_workflow.sh build_area/CMSSW_10_6_17_patch1
+  ```
 
 **2b. Fresh build area at the tag** (slc7 work runs in the EL7 container; run 2a
 first — 2a is the tag gate; the container git cannot even read the checkouts):

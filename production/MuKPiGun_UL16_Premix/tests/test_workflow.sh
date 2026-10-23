@@ -3,6 +3,7 @@
 # Mirrors tests/test_workflow.sh of the D* e2e campaign: rebuilds the payload,
 # verifies reference hashes, checks shell/Python syntax, and proves that two
 # different job IDs produce different deterministic GENSIM seeds.
+# Usage: tests/test_workflow.sh [release-area]   (see step 2a of the runbook)
 set -Eeuo pipefail
 CAMPAIGN_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")/..")"
 cd "$CAMPAIGN_DIR"
@@ -34,12 +35,40 @@ echo "payload contents OK"
 
 # Seed-difference proof: drive stage_runner main() against the MuGun GENSIM
 # cfg at job 17 vs job 18 and require the resulting seeds to differ.
+#
+# Release area for the proof, in order of precedence (coordination.md rule 0:
+# never a shared or pre-existing area):
+#   1. the area passed as $1;
+#   2. the step-2b build area beside this campaign dir, once it exists;
+#   3. an ephemeral `scram project` inside this test's own temp dir -- the case
+#      on a fresh setup, where 2a necessarily runs before 2b.
+RELEASE="CMSSW_10_6_17_patch1"
 TMPDIR_TEST="$(mktemp -d)"
 trap 'rm -rf "$TMPDIR_TEST"' EXIT
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 export SCRAM_ARCH=slc7_amd64_gcc700
-cd /work/submit/emanca/zmass/ALCArequest/CMSSW_10_6_17_patch1/src
+
+is_release_area() { [ -d "$1/.SCRAM" ] && [ -d "$1/src" ]; }
+
+RELEASE_AREA="${1:-}"
+if [ -n "$RELEASE_AREA" ]; then
+    RELEASE_AREA="$(readlink -f "$RELEASE_AREA")"
+    is_release_area "$RELEASE_AREA" \
+        || { echo "ERROR: not a CMSSW release area: $RELEASE_AREA" >&2; exit 1; }
+    echo "seed proof: release area from argument ($RELEASE_AREA)"
+elif is_release_area "$(dirname "$CAMPAIGN_DIR")/build_area/$RELEASE"; then
+    RELEASE_AREA="$(readlink -f "$(dirname "$CAMPAIGN_DIR")/build_area/$RELEASE")"
+    echo "seed proof: release area from step 2b ($RELEASE_AREA)"
+else
+    (cd "$TMPDIR_TEST" && scram project CMSSW "$RELEASE" >/dev/null)
+    RELEASE_AREA="$TMPDIR_TEST/$RELEASE"
+    echo "seed proof: ephemeral $RELEASE (no step-2b area yet)"
+fi
+
+cd "$RELEASE_AREA/src"
 eval "$(scramv1 runtime -sh)"
+[ "${CMSSW_VERSION:-}" = "$RELEASE" ] \
+    || { echo "ERROR: expected $RELEASE, activated ${CMSSW_VERSION:-unset}" >&2; exit 1; }
 cd "$TMPDIR_TEST"
 export CAMPAIGN_DIR
 for jid in 17 18; do

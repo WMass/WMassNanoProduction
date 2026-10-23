@@ -15,6 +15,10 @@ fi
 trap '[ "$trek_rewriter" = 1 ] && rm -f runtime/rewrite_fjr_paths.py || true' EXIT
 find cfgs runtime -type f -not -path '*/__pycache__/*' | sort | xargs sha256sum > REFERENCE_SHA256SUMS
 sha256sum -c REFERENCE_SHA256SUMS >/dev/null
-tar czf payload.tar.gz REFERENCE_SHA256SUMS cfgs runtime
+# __pycache__ is excluded from the hash list above, so it must be excluded from
+# the tar too: otherwise re-running the gate in a campaign dir that has already
+# been used ships the host's .pyc files and the payload stops being a function
+# of the tag alone.
+tar czf payload.tar.gz --exclude='__pycache__' REFERENCE_SHA256SUMS cfgs runtime
 ls -la payload.tar.gz
 tar tzf payload.tar.gz | wc -l
