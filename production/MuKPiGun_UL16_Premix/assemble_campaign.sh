@@ -19,8 +19,9 @@ DEST="$3"
 EXPECTED_TAG="AlcaRecoGun_v1.1"
 
 for repo in "$NANOPROD" "$CMSSW_SRC"; do
-    tag="$(git -C "$repo" describe --tags --exact-match 2>/dev/null || echo none)"
-    [ "$tag" = "$EXPECTED_TAG" ] || { echo "ERROR: $repo not at tag $EXPECTED_TAG (got $tag)" >&2; exit 1; }
+    head="$(git -C "$repo" rev-parse HEAD)"
+    tagged="$(git -C "$repo" rev-parse --verify "$EXPECTED_TAG^{commit}" 2>/dev/null || echo none)"
+    [ "$head" = "$tagged" ] || { echo "ERROR: $repo HEAD is not at tag $EXPECTED_TAG" >&2; exit 1; }
     git -C "$repo" diff --quiet && git -C "$repo" diff --cached --quiet \
         || { echo "ERROR: $repo worktree is dirty (uncommitted changes would break the content pin)" >&2; exit 1; }
 done

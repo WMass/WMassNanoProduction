@@ -14,8 +14,9 @@ CMSSW_SRC="$(readlink -f "$1")"
 DEST="$(readlink -f "$2" 2>/dev/null || echo "$2")"
 EXPECTED_TAG="AlcaRecoGun_v1.1"
 
-tag="$(git -C "$CMSSW_SRC" describe --tags --exact-match 2>/dev/null || echo none)"
-[ "$tag" = "$EXPECTED_TAG" ] || { echo "ERROR: $CMSSW_SRC not at tag $EXPECTED_TAG (got $tag)" >&2; exit 1; }
+head="$(git -C "$CMSSW_SRC" rev-parse HEAD)"
+tagged="$(git -C "$CMSSW_SRC" rev-parse --verify "$EXPECTED_TAG^{commit}" 2>/dev/null || echo none)"
+[ "$head" = "$tagged" ] || { echo "ERROR: $CMSSW_SRC HEAD is not at tag $EXPECTED_TAG" >&2; exit 1; }
 git -C "$CMSSW_SRC" diff --quiet && git -C "$CMSSW_SRC" diff --cached --quiet \
     || { echo "ERROR: $CMSSW_SRC worktree is dirty" >&2; exit 1; }
 [ ! -e "$DEST" ] || { echo "ERROR: destination exists: $DEST" >&2; exit 1; }
