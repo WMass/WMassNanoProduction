@@ -192,7 +192,10 @@ touch "$STAGE_ROWS"
 if [[ "$LOCAL_MODE" -eq 1 ]]; then
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     PAYLOAD_DIR="$SCRIPT_DIR"
-    LOCAL_RELEASE_DIR="${CHAIN_CMSSW_DIR:-/work/submit/emanca/zmass/ALCArequest/CMSSW_10_6_17_patch1}"
+    # No default: rule 0 forbids reusing shared/legacy areas (in particular the
+    # ALCArequest area). In local mode the release area must be named explicitly.
+    [[ -n "${CHAIN_CMSSW_DIR:-}" ]] || die "local mode requires CHAIN_CMSSW_DIR set to a release area"
+    LOCAL_RELEASE_DIR="$CHAIN_CMSSW_DIR"
 else
     [[ -s "$INITIAL_DIR/payload.tar.gz" ]] || die "payload.tar.gz is missing from the CRAB sandbox"
     PAYLOAD_DIR="$WORK_DIR/payload"

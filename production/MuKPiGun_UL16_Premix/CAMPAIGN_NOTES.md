@@ -99,3 +99,5 @@
 - Versioning: AlcaRecoGun_v1.2 on both forks (cmssw side re-tagged at the same
   commit as v1.0/v1.1, no cmssw content change). Tooling-only => Y bump; v1.0-v1.2
   are identical in output content, so v13/v14 pilot outputs stay valid.
+- run_chain.sh local mode: ALCArequest default for LOCAL_RELEASE_DIR dropped;
+  local=1 now requires CHAIN_CMSSW_DIR explicitly (decision from #37 review round).
