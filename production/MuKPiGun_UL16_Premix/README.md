@@ -58,20 +58,7 @@ git clone --branch $TAG https://github.com/emanca/cmssw.git cmssw-src
 git clone --branch $TAG https://github.com/emanca/WMassNanoProduction.git nanoproduction
 ```
 
-**2a. Fresh build area at the tag** (slc7 work runs in the EL7 container):
-
-```sh
-SINGULARITY_BIND=/work,/scratch,/tmp /cvmfs/cms.cern.ch/common/cmssw-el7 \
-  --command-to-run bash nanoproduction/production/MuKPiGun_UL16_Premix/build_area.sh \
-  $PWD/cmssw-src $PWD/build_area
-```
-
-`build_area.sh` does `cmsrel CMSSW_10_6_17_patch1` in `$PWD/build_area`, copies only
-`GunAlcaReco/GenTrackMatch` from the tagged cmssw clone into the area `src`, runs
-`scram b -j8`, and fails unless `edmPluginHelp -p GenMatchedTrackFilter` finds the
-plugin (stream::EDFilter). From clean, this takes a few minutes.
-
-**2b. Campaign area from the tags:**
+**2a. Campaign area from the tags (host-side tag gate):**
 
 ```sh
 bash nanoproduction/production/MuKPiGun_UL16_Premix/assemble_campaign.sh \
@@ -89,6 +76,20 @@ bash nanoproduction/production/MuKPiGun_UL16_Premix/assemble_campaign.sh \
 - It ends with `tests/test_workflow.sh` — must print `ALL CHECKS OK` before anyone
   submits. `campaign/history/` is created for the submission logs (step 6).
 
+**2b. Fresh build area at the tag** (slc7 work runs in the EL7 container; run 2a
+first — 2a is the tag gate; the container git cannot even read the checkouts):
+
+```sh
+SINGULARITY_BIND=/work,/scratch,/tmp /cvmfs/cms.cern.ch/common/cmssw-el7 \
+  --command-to-run bash nanoproduction/production/MuKPiGun_UL16_Premix/build_area.sh \
+  $PWD/cmssw-src $PWD/build_area
+```
+
+`build_area.sh` does `cmsrel CMSSW_10_6_17_patch1` in `$PWD/build_area`, copies only
+`GunAlcaReco/GenTrackMatch` from the tagged cmssw clone into the area `src`, runs
+`scram b -j8`, and fails unless `edmPluginHelp -p GenMatchedTrackFilter` finds the
+plugin (stream::EDFilter). From clean, this takes a few minutes.
+
 **2c. CRAB environment** (el9: enter the build area and `cmsenv` FIRST — bare
 `PYTHONPATH` alone gives `No module named 'past'`):
 
@@ -102,7 +103,7 @@ crab checkwrite --site=T3_US_MIT --lfn=/store/group/zmass/   # must print Succes
 
 ## 3. Submit (pilot first, always)
 
-Submissions run **from your own fresh build area of step 2a** (2c env active).
+Submissions run **from your own fresh build area of step 2b** (2c env active).
 The area is part of the provenance: identical tag -> identical binaries, and the
 job's sandbox ships that area's products. Never submit from someone else's area,
 from any legacy/shared area, and specifically never from the ALCArequest area —
