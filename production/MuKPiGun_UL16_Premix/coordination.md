@@ -51,8 +51,9 @@ keep both forks remotes handy and both must be able to:
 ## Issue protocol
 
 - One issue per campaign round on `WMass/WMassNanoProduction`, template as in the
-  runbook (task table + checklist like the NanoV15 issues). Before PR #36 merges,
-  the same format is kept as comments on PR #36.
+  runbook (task table + checklist like the NanoV15 issues). The issue is the
+  coordination venue from day one, including before PR #36 merges; the PR is for
+  code review only and carries no production status.
 - Comment at submission, ~daily while running, at completion; the completion
   comment carries `crab report` numbers, output dir listing, and the readback note.
 - Anything uncertain goes in the issue, including "I broke X, here is what

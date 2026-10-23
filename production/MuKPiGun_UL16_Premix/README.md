@@ -3,8 +3,9 @@
 Shared production of muon/pion/kaon gun MC at ALCARECO level for the Z-mass
 calibration soaks. Owners (equal responsibility, no fixed roles): **@emanca** and
 **@pmlugato**. Tracking: one issue per campaign round on
-[WMass/WMassNanoProduction](https://github.com/WMass/WMassNanoProduction/issues),
-opened once PR #36 is merged; before that, status pinned in PR #36.
+[WMass/WMassNanoProduction](https://github.com/WMass/WMassNanoProduction/issues) —
+the issue is the coordination venue from day one (= today), independent of PR #36,
+which is code-review only.
 Coordination rules: [`coordination.md`](coordination.md). Decisions log:
 [`CAMPAIGN_NOTES.md`](CAMPAIGN_NOTES.md).
 
