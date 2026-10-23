@@ -16,14 +16,13 @@ fi
 NANOPROD="$(readlink -f "$1")"
 CMSSW_SRC="$(readlink -f "$2")"
 DEST="$3"
-EXPECTED_TAG="AlcaRecoGun_v1.0"
+EXPECTED_TAG="AlcaRecoGun_v1.1"
 
 for repo in "$NANOPROD" "$CMSSW_SRC"; do
-    tag="$(git -C "$repo" describe --tags --always 2>/dev/null || echo none)"
-    if [ "$tag" != "$EXPECTED_TAG" ] && ! git -C "$repo" describe --tags --exact-match "$EXPECTED_TAG" >/dev/null 2>&1; then
-        echo "ERROR: $repo is not at tag $EXPECTED_TAG (got $tag)" >&2
-        exit 1
-    fi
+    tag="$(git -C "$repo" describe --tags --exact-match 2>/dev/null || echo none)"
+    [ "$tag" = "$EXPECTED_TAG" ] || { echo "ERROR: $repo not at tag $EXPECTED_TAG (got $tag)" >&2; exit 1; }
+    git -C "$repo" diff --quiet && git -C "$repo" diff --cached --quiet \
+        || { echo "ERROR: $repo worktree is dirty (uncommitted changes would break the content pin)" >&2; exit 1; }
 done
 
 if [ -e "$DEST" ]; then
@@ -34,10 +33,11 @@ mkdir -p "$DEST"
 
 SRC_NP="$NANOPROD/production/MuKPiGun_UL16_Premix"
 cp "$SRC_NP"/README.md "$SRC_NP"/CAMPAIGN_NOTES.md "$SRC_NP"/coordination.md "$DEST/"
-cp "$SRC_NP"/run_chain.sh "$SRC_NP"/prepare_payload.sh "$DEST/"
+cp "$SRC_NP"/run_chain.sh "$SRC_NP"/prepare_payload.sh "$SRC_NP"/build_area.sh "$DEST/"
 cp "$SRC_NP"/crab_pilot_guns.py "$SRC_NP"/crab_pset.py "$DEST/"
 cp "$SRC_NP"/crab_MuGun.py "$SRC_NP"/crab_PiGun.py "$SRC_NP"/crab_KGun.py "$DEST/"
-chmod +x "$DEST/run_chain.sh" "$DEST/prepare_payload.sh"
+chmod +x "$DEST/run_chain.sh" "$DEST/prepare_payload.sh" "$DEST/build_area.sh"
+mkdir -p "$DEST/history"    # submission logs land here (runbook step 6)
 
 cp -r "$SRC_NP/runtime" "$DEST/runtime"
 cp -r "$SRC_NP/tests" "$DEST/tests"
@@ -53,4 +53,5 @@ cd "$DEST"
 
 echo
 echo "Campaign area ready: $DEST"
-echo "Next: set up CRAB (runbook step 2) and submit with 'crab submit -c crab_<Species>.py' (step 3)."
+echo "Next: build the submission area (step 2a: build_area.sh), then submit"
+echo "from that area with 'crab submit -c $DEST/crab_<Species>.py' (step 3)."

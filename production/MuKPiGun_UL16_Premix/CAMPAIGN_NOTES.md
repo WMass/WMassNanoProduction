@@ -63,3 +63,21 @@
   numberOfThreads=8) caused the crash. numberOfThreads=8 KEPT (user policy);
   streams left AT DEFAULT (single). Local 1-event validation: PREMIX-1EVT-RC=0.
 - Resubmitted as v7 (same knobs otherwise, T3_US_MIT, group/zmass LFN).
+
+## v1.1 tag: issue #37 review round (2026-10-23)
+- pmlugato's setup review (issue WMass/WMassNanoProduction#37) found:
+  (1) labels at the v1.0 tag were still v14_genfilter; outLFNDirBase template
+  hardcoded "_pilot", making the issue-header LFN unreachable. FIXED:
+  VERSION=v1p0_pilot_20261023, CAMPAIGN=v1p0_pilot, template is now
+  MuKPiGun_UL16_Premix_{CAMPAIGN}. No output-content change.
+  (2) Binary provenance follows the submission area under scriptExe; Pietro's
+  and emanca's areas diverge (51 vs 11 libs). RESOLVED the stricter way: each
+  owner submits from their own FRESH area built at the round tag (build_area.sh,
+  cmsrel + GunAlcaReco/GenTrackMatch only, scram b, edmPluginHelp gate).
+  ALCArequest area is explicitly FORBIDDEN for submission (mutable legacy state).
+  (3) minors accepted: cmsenv-before-CRAB-env on el9 (past/future import chain),
+  campaign/history/ created by the assembler, REFERENCE_SHA256SUMS regen labelled
+  honestly as payload self-consistency (true pin = exact-tag + clean worktree).
+- Versioning: AlcaRecoGun_v1.1 on both forks. v1.1 == v1.0 in output content by
+  construction (only submission tooling/labels/docs changed; cfgs, plugin, GT,
+  filters untouched) so v13/v14 pilot outputs stay valid.

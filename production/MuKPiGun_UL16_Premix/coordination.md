@@ -9,7 +9,7 @@ the loop on this campaign.
 ## Source of truth
 
 Until PR #36 (WMassNanoProduction) and the cmssw-side PR merge into `WMass/*`,
-the truth lives on the two forks, both tagged `AlcaRecoGun_v1.0`:
+the truth lives on the two forks, tagged together per round (`AlcaRecoGun_v1.1` now):
 
 - `emanca/cmssw : from-CMSSW_10_6_17_patch1` - plugins, fragments, campaign cfgs
   (`Generation/GunAlcaReco/Production/MuKPiGun_UL16_Premix/`).
@@ -25,6 +25,11 @@ keep both forks remotes handy and both must be able to:
 
 ## Rules
 
+0. **Submission areas.** Each owner submits from their own fresh CMSSW_10_6_17_patch1
+   area built at the campaign tag of the round (`build_area.sh`): identical tag, so
+   identical binaries — the job sandbox ships that area's products, and tags pin both.
+   Pre-existing esp. mutable shared areas are forbidden for submission; the
+   ALCArequest area in particular is off-limits (world-mutable legacy state).
 1. **Report first, act second.** Anything grid-facing is posted in the issue
    before it is done: kills, resubmits with changed options, new sandboxes,
    site blacklists/whitelists, parameter or cfg changes, recoveries.

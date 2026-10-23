@@ -7,9 +7,9 @@ from CRABClient.UserUtilities import config as crab_config
 
 EVENTS_PER_JOB = 1000
 JOBS_PER_SPECIES = 2
-VERSION = "v14_genfilter_20261021"
+VERSION = "v1p0_pilot_20261023"
 SPECIES = ["MuGun", "PiGun", "KGun"]
-CAMPAIGN = "v14_genfilter"
+CAMPAIGN = "v1p0_pilot"
 
 
 def make_config(species):
@@ -50,7 +50,7 @@ def make_config(species):
     cfg.Data.publication = False
     cfg.Data.publishDBS = "phys03"
     cfg.Data.outputPrimaryDataset = primary
-    cfg.Data.outLFNDirBase = "/store/group/zmass/MuKPiGun_UL16_Premix_pilot_{0}/{1}".format(CAMPAIGN, tag)
+    cfg.Data.outLFNDirBase = "/store/group/zmass/MuKPiGun_UL16_Premix_{0}/{1}".format(CAMPAIGN, tag)
 
     cfg.Site.storageSite = "T3_US_MIT"
     return cfg

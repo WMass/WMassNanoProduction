@@ -11,8 +11,10 @@ Coordination rules: [`coordination.md`](coordination.md). Decisions log:
 
 ## 0. What is produced
 
-- **Code:** tag `AlcaRecoGun_v1.0` on **both forks** (until PR #36 and the cmssw-side
-  PR are merged into WMass/*; then the same tag is made centrally):
+- **Code:** tag `AlcaRecoGun_v1.1` on **both forks** (until PR #36 and the cmssw-side
+  PR are merged into WMass/*; then the same tag is made centrally). v1.1 is identical
+  to v1.0 in output content — only submission tooling (labels, area protocol, runbook)
+  changed.
   - `emanca/WMassNanoProduction`, branch `NanoV9_CMSSW_10_6` (this repo),
   - `emanca/cmssw`, branch `from-CMSSW_10_6_17_patch1`
     (plugins `GunAlcaReco/GenTrackMatch` + fragments `Configuration/GenProduction/python/`
@@ -40,41 +42,75 @@ Coordination rules: [`coordination.md`](coordination.md). Decisions log:
 - Submit account in `submit-cms`; grid certificate with CMS VO; proxy
   `voms-proxy-init -voms cms -rfc -valid 168:00` at `/tmp/x509up_u$UID` before every CRAB day.
 - `git config --global user.github <login>`.
-- El9 submit node access; campaign area with ~5 GB free
-  (e.g. `/work/submit/$USER/AlcaRecoGun_v1.0`).
+- El9 submit node access; campaign area with ~8 GB free
+  (e.g. `/work/submit/$USER/AlcaRecoGun`).
 
 ## 2. Setup at the tag
 
+Everything happens in one fresh workspace per owner, rebuilt from the tags.
+Two checkouts plus one fresh CMSSW area — no pre-existing CMSSW areas are
+ever used for submission (see `coordination.md`).
+
 ```sh
-mkdir -p /work/submit/$USER/AlcaRecoGun_v1.0 && cd /work/submit/$USER/AlcaRecoGun_v1.0
-git clone --branch AlcaRecoGun_v1.0 https://github.com/emanca/cmssw.git cmssw-src
-git clone --branch AlcaRecoGun_v1.0 https://github.com/emanca/WMassNanoProduction.git nanoproduction
+mkdir -p /work/submit/$USER/AlcaRecoGun && cd /work/submit/$USER/AlcaRecoGun
+TAG=AlcaRecoGun_v1.1
+git clone --branch $TAG https://github.com/emanca/cmssw.git cmssw-src
+git clone --branch $TAG https://github.com/emanca/WMassNanoProduction.git nanoproduction
+```
+
+**2a. Fresh build area at the tag** (slc7 work runs in the EL7 container):
+
+```sh
+SINGULARITY_BIND=/work,/scratch,/tmp /cvmfs/cms.cern.ch/common/cmssw-el7 \
+  --command-to-run bash nanoproduction/production/MuKPiGun_UL16_Premix/build_area.sh \
+  $PWD/cmssw-src $PWD/build_area
+```
+
+`build_area.sh` does `cmsrel CMSSW_10_6_17_patch1` in `$PWD/build_area`, copies only
+`GunAlcaReco/GenTrackMatch` from the tagged cmssw clone into the area `src`, runs
+`scram b -j8`, and fails unless `edmPluginHelp -p GenMatchedTrackFilter` finds the
+plugin (stream::EDFilter). From clean, this takes a few minutes.
+
+**2b. Campaign area from the tags:**
+
+```sh
 bash nanoproduction/production/MuKPiGun_UL16_Premix/assemble_campaign.sh \
     nanoproduction cmssw-src campaign
 ```
 
-- `assemble_campaign.sh` composes `campaign/` from the two tags: cfgs from
-  `cmssw-src/Generation/GunAlcaReco/Production/MuKPiGun_UL16_Premix/cfgs/`, runtime and
-  chain scripts from this repo (`runtime/`, `run_chain.sh`, `crab_*.py`, `tests/`), the
-  shared `production/common/rewrite_fjr_paths.py`, then runs `prepare_payload.sh`.
-- It ends with `sha256sum -c REFERENCE_SHA256SUMS` and `tests/test_workflow.sh` —
-  both must print OK before anyone submits.
-- The GenTrackMatch plugin + library must be built in the CMSSW_10_6_17_patch1 area
-  that the payload's `cmssw_setup` uses (today: the shared ALCArequest area); a fresh
-  area build is `scram b -j8` over `GunAlcaReco/GenTrackMatch`.
-- CRAB environment (this cluster needs the bypass, not `crab-setup.sh`):
-  ```sh
-  export PYTHONPATH=/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.260630.00/lib:${PYTHONPATH}
-  unset RUCIO_HOME
-  alias crab='python3 /cvmfs/cms.cern.ch/share/cms/crab-prod/v3.260630.00/bin/crab.py'
-  crab checkwrite --site=T3_US_MIT --lfn=/store/group/zmass/   # must print Success
-  ```
+- `assemble_campaign.sh` requires **exactly** the expected tag and a **clean
+  worktree** on both checkouts (that is what makes the hash content a real pin
+  to the tag). It composes `campaign/` from the two tags: cfgs from
+  `cmssw-src/Generation/GunAlcaReco/Production/MuKPiGun_UL16_Premix/cfgs/`, runtime
+  and chain scripts from this repo, the shared `production/common/`,
+  then `prepare_payload.sh`. Note what the payload step proves:
+  REFERENCE_SHA256SUMS regeneration + check is payload self-consistency; the true
+  content pin is the clean-tree tag check above.
+- It ends with `tests/test_workflow.sh` — must print `ALL CHECKS OK` before anyone
+  submits. `campaign/history/` is created for the submission logs (step 6).
+
+**2c. CRAB environment** (el9: enter the build area and `cmsenv` FIRST — bare
+`PYTHONPATH` alone gives `No module named 'past'`):
+
+```sh
+cd build_area/CMSSW_10_6_17_patch1/src && cmsenv && cd -
+export PYTHONPATH=/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.260630.00/lib:${PYTHONPATH}
+unset RUCIO_HOME
+alias crab='python3 /cvmfs/cms.cern.ch/share/cms/crab-prod/v3.260630.00/bin/crab.py'
+crab checkwrite --site=T3_US_MIT --lfn=/store/group/zmass/   # must print Success
+```
 
 ## 3. Submit (pilot first, always)
 
+Submissions run **from your own fresh build area of step 2a** (2c env active).
+The area is part of the provenance: identical tag -> identical binaries, and the
+job's sandbox ships that area's products. Never submit from someone else's area,
+from any legacy/shared area, and specifically never from the ALCArequest area —
+it is world-mutable legacy state, not campaign provenance.
+
 ```sh
-cd campaign
-for sp in MuGun PiGun KGun; do crab submit -c crab_${sp}.py; done
+cd build_area/CMSSW_10_6_17_patch1/src
+crab submit -c /work/submit/$USER/AlcaRecoGun/campaign/crab_MuGun.py   # species per the issue table
 ```
 
 - Edit `VERSION` / `CAMPAIGN` in `crab_pilot_guns.py` **before every round**
