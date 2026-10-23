@@ -4,6 +4,15 @@
 # listed in REFERENCE_SHA256SUMS; run_chain.sh verifies it at job start.
 set -Eeuo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
+# The FJR path rewriter is shared with the D* e2e campaign; its canonical copy
+# lives in production/common/. Stage it into runtime/ so the payload layout
+# (runtime/rewrite_fjr_paths.py, consumed by run_chain.sh) is unchanged.
+trek_rewriter=0
+if [ ! -f runtime/rewrite_fjr_paths.py ]; then
+    cp ../common/rewrite_fjr_paths.py runtime/rewrite_fjr_paths.py
+    trek_rewriter=1
+fi
+trap '[ "$trek_rewriter" = 1 ] && rm -f runtime/rewrite_fjr_paths.py || true' EXIT
 find cfgs runtime -type f -not -path '*/__pycache__/*' | sort | xargs sha256sum > REFERENCE_SHA256SUMS
 sha256sum -c REFERENCE_SHA256SUMS >/dev/null
 tar czf payload.tar.gz REFERENCE_SHA256SUMS cfgs runtime
