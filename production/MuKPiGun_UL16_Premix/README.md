@@ -11,10 +11,10 @@ Coordination rules: [`coordination.md`](coordination.md). Decisions log:
 
 ## 0. What is produced
 
-- **Code:** tag `AlcaRecoGun_v1.2` on **both forks** (until PR #36 and the cmssw-side
-  PR are merged into WMass/*; then the same tag is made centrally). v1.1 and v1.2 are
-  identical to v1.0 in output content — only submission tooling (labels, area protocol,
-  runbook, gate) changed.
+- **Code:** tag `AlcaRecoGun_v1.3` on **both forks** (until PR #36 and the cmssw-side
+  PR are merged into WMass/*; then the same tag is made centrally). v1.1-v1.3 are
+  identical to v1.0 in output content — only submission tooling (labels, area
+  protocol, gate) changed.
   - `emanca/WMassNanoProduction`, branch `NanoV9_CMSSW_10_6` (this repo),
   - `emanca/cmssw`, branch `from-CMSSW_10_6_17_patch1`
     (plugins `GunAlcaReco/GenTrackMatch` + fragments `Configuration/GenProduction/python/`
@@ -53,7 +53,7 @@ ever used for submission (see `coordination.md`).
 
 ```sh
 mkdir -p /work/submit/$USER/AlcaRecoGun && cd /work/submit/$USER/AlcaRecoGun
-TAG=AlcaRecoGun_v1.2
+TAG=AlcaRecoGun_v1.3
 git clone --branch $TAG https://github.com/emanca/cmssw.git cmssw-src
 git clone --branch $TAG https://github.com/emanca/WMassNanoProduction.git nanoproduction
 ```
@@ -108,8 +108,29 @@ cd build_area/CMSSW_10_6_17_patch1/src && cmsenv && cd -
 export PYTHONPATH=/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.260630.00/lib:${PYTHONPATH}
 unset RUCIO_HOME
 alias crab='python3 /cvmfs/cms.cern.ch/share/cms/crab-prod/v3.260630.00/bin/crab.py'
-crab checkwrite --site=T3_US_MIT --lfn=/store/group/zmass/   # must print Success
 ```
+
+**2d. Pre-create the round root** — REQUIRED before the first CRAB submission of the
+round, by either owner, on the submit node:
+
+```sh
+CEPH=/ceph/submit/data/group/cms/store/group/zmass
+mkdir -p $CEPH/MuKPiGun_UL16_Premix_<campaign>      # campaign name for the round
+chmod 2775 $CEPH/MuKPiGun_UL16_Premix_<campaign>    # drwxrwsr-x = must match
+ls -ld $CEPH/MuKPiGun_UL16_Premix_<campaign>
+crab checkwrite --site=T3_US_MIT --lfn=/store/group/zmass/MuKPiGun_UL16_Premix_<campaign>/
+```
+
+Why: CRAB creates every LFN dir through the WebDAV door as the submitter's local
+account (pool `cmsuser` for emanca, personal `pmlugato` for pmlugato), mode `0755`.
+A campaign root created by the first submitter's CRAB bootstrap is therefore owned
+by ONE identity and locked to the second (learned the hard way — v1p0_pilot refused
+pmlugato's MuGun with MAKE_PARENT 403). Because `/store/group/zmass` itself is
+group-writable, either of us can pre-create the round root under our own account
+and grant both identities write with `2775`; CRAB then only fills the species dirs
+one level below. The checkwrite must target the CAMPAIGN root — probing
+`/store/group/zmass/` one level up cannot detect this failure class (it passed 3x
+for the refused task). Report the created root in the issue at creation time.
 
 ## 3. Submit (pilot first, always)
 
@@ -127,10 +148,12 @@ crab submit -c /work/submit/$USER/AlcaRecoGun/campaign/crab_MuGun.py   # species
 - Edit `VERSION` / `CAMPAIGN` in `crab_pilot_guns.py` **before every round**
   (one bump per round; current rounds and labels are logged in the issue and
   `CAMPAIGN_NOTES.md`). The three `crab_<Species>.py` wrappers are version-free;
-  the bump lives in one place. Label for this round: `v1p0_pilot`.
-- Submission sharing: either of us may submit any species; the point of sharing is
-  computing resources, not ownership. Tasks carry the submitter's CRAB prefix
-  (`emanca_crab_*` / `plugato_crab_*`); both names go in the issue table.
+  the bump lives in one place. Label for this round: `v1p1_pilot`.
+- Submission sharing: either of us may submit any species, in any order — step 2d
+  exists precisely so order no longer selects the second owner out (the v1p0_pilot
+  lesson: whoever's CRAB creates the root first wins write access to it).
+  Tasks carry the submitter's CRAB prefix (`emanca_crab_*` / `plugato_crab_*`);
+  both names go in the issue table.
 - Post task names in the issue at submission (`2610xx_xxxxx:<user>_crab_<task>`).
 
 ## 4. Monitor

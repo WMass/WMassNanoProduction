@@ -9,7 +9,7 @@ the loop on this campaign.
 ## Source of truth
 
 Until PR #36 (WMassNanoProduction) and the cmssw-side PR merge into `WMass/*`,
-the truth lives on the two forks, tagged together per round (`AlcaRecoGun_v1.2` now):
+the truth lives on the two forks, tagged together per round (`AlcaRecoGun_v1.3` now):
 
 - `emanca/cmssw : from-CMSSW_10_6_17_patch1` - plugins, fragments, campaign cfgs
   (`Generation/GunAlcaReco/Production/MuKPiGun_UL16_Premix/`).
@@ -45,10 +45,21 @@ keep both forks remotes handy and both must be able to:
    prefix; whoever submits posts the task names at submission time and owns the
    daily monitoring comment for as long as they have capacity - not as a fixed
    roster, whoever posted last keeps the watch until they hand it off in writing.
-5. **Witness readback after pilots.** At least one ALCARECO file per species is
+5. **Round roots are hand-made (2775), before the first submission of that round.**
+   CRAB creates LFN dirs as the submitters' local accounts (pool cmsuser for
+   emanca, personal pmlugato) at 0755, so a CRAB-created campaign root locks the
+   second owner out (v1p0_pilot SUBMITREFUSED, 2026-10-24: pmlugato's MuGun refused
+   at MAKE_PARENT). Either owner pre-creates the round root on ceph under their own
+   account - zmass is group-writable, the resulting dir is ours to chmod - and
+   witnesses the mode in the issue; `crab checkwrite` must target the CAMPAIGN
+   root, not the zmass root one level up (the latter cannot catch this class).
+   Cost rule: if a root ever escapes this step and locks the second owner, the
+   round moves to a new version root - never admin chmods, never
+   family-splitting LFN hacks.
+6. **Witness readback after pilots.** At least one ALCARECO file per species is
    read back (branch list + event count) before any scale-up is discussed.
    Pilot scale for infrastructure tests: 1000 ev/job, 2 jobs/species (~40 min).
-6. **Outputs are shared infrastructure.** LFN family
+7. **Outputs are shared infrastructure.** LFN family
    `/store/group/zmass/MuKPiGun_UL16_Premix_*`; both owners must be able to read
    (ceph `drwxr-sr-x` chain), both submit under their own account name, and DAS
    publication is decided on the issue before it is touched.

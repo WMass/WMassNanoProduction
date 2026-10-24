@@ -101,3 +101,22 @@
   are identical in output content, so v13/v14 pilot outputs stay valid.
 - run_chain.sh local mode: ALCArequest default for LOCAL_RELEASE_DIR dropped;
   local=1 now requires CHAIN_CMSSW_DIR explicitly (decision from #37 review round).
+
+## v1.3 tag: round-root ownership fix + v1p1_pilot (2026-10-24)
+- v1p0_pilot round-0 blocker: pmlugato's MuGun submission came back
+  SUBMITREFUSED (MAKE_PARENT 403). Root cause: CRAB/WebDAV creates LFN dirs as
+  the submitter's LOCAL account (pool cmsuser for emanca, personal pmlugato for
+  pmlugato) at 0755; the first-submitter CRAB-created campaign root
+  MuKPiGun_UL16_Premix_v1p0_pilot (cmsuser-owned) therefore locked out the
+  second submitter. gfal-chmod over davs: protocol not supported. Admin chmod
+  (zmass maintainer) was available but rejected: policy is no third-party
+  mediation and root ownership would recur every round.
+- Durable fix (pmlugato's step-2d proposal, adopted): pre-create the round root
+  on ceph by hand (2775) before the first CRAB submission; checkwrite retargeted
+  at the CAMPAIGN root. Coordination rule #5; README step 2d. Cost rule versioned
+  in: a locked root => new version round, never admin chmod, never LFN hacks.
+- Round labels bumped for the fresh root: CAMPAIGN=v1p1_pilot,
+  VERSION=v1p1_pilot_20261024. Round-0 (v1p0_pilot PiGun+KGun in flight) runs to
+  completion untouched as alpha material.
+- AlcaRecoGun_v1.3 on both forks (cmssw side unchanged since v1.0). v1.1-v1.3
+  all content-identical in output terms; v13/v14 practicality unaffected.
