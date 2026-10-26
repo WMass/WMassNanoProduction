@@ -120,3 +120,25 @@
   completion untouched as alpha material.
 - AlcaRecoGun_v1.3 on both forks (cmssw side unchanged since v1.0). v1.1-v1.3
   all content-identical in output terms; v13/v14 practicality unaffected.
+
+## v2.0 tag: hit-rich ALCARECO content (X bump, 2026-10-26)
+- pmlugato's witness readback of v1p1_pilot (issue #37, 2026-10-26) found that
+  track.extra() dangled on all v1p1 files: the keep list carried matched-track
+  clones only, and the clones' TrackExtra refs pointed at products never kept.
+  Root = porting miss, not selector absence: the upstream ALCARECO selector
+  (AlignmentTrackSelectorModule / ObjectSelectorStream) ALWAYS emits the
+  five-product clone family (tracks, TrackExtras, TrackingRecHitsOwned,
+  Si{Pixel,Strip}Clusters with recursively relinked refs) - we just kept the
+  clones' silhouettes. This violated the explicit D*-parity ask.
+- FIX (the stock ALCARECO way): per-species keeps "keep *_genMatchedTracks_*_*"
+  + "keep *_ALCARECO<S>_*_*" (S = Muon/Pion/Kaon). Interim designs that were
+  tried and rejected: pass-through TrackSelector stage (emits track-only in
+  this release; EDFilter/EDProducer mismatch), literal class-name keeps for
+  TrackingRecHitsOwned (keep matching uses actual branch names, not friendly
+  names - resolved by the wildcard line).
+- Validated locally on a 10-event no-PU GENSIM->DIGI->RECO->ALCA chain:
+  Muon.root carries the full 5-product family under the ALCARECOMuon label.
+- v2.0 = first content-changing bump (X). v1.0-v1.3 stays the infra-pilot
+  lineage; its physics completeness caveat is now closed. 150M sizing numbers
+  get re-quoted from the v2.0 pilot (hit-rich content adds per-event overhead
+  which the v1.0-v1.3 file sizes did not include).

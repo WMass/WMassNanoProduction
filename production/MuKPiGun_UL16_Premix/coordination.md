@@ -9,7 +9,7 @@ the loop on this campaign.
 ## Source of truth
 
 Until PR #36 (WMassNanoProduction) and the cmssw-side PR merge into `WMass/*`,
-the truth lives on the two forks, tagged together per round (`AlcaRecoGun_v1.3` now):
+the truth lives on the two forks, tagged together per round (`AlcaRecoGun_v2.0` now):
 
 - `emanca/cmssw : from-CMSSW_10_6_17_patch1` - plugins, fragments, campaign cfgs
   (`Generation/GunAlcaReco/Production/MuKPiGun_UL16_Premix/`).

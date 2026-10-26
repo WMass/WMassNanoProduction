@@ -11,10 +11,12 @@ Coordination rules: [`coordination.md`](coordination.md). Decisions log:
 
 ## 0. What is produced
 
-- **Code:** tag `AlcaRecoGun_v1.3` on **both forks** (until PR #36 and the cmssw-side
-  PR are merged into WMass/*; then the same tag is made centrally). v1.1-v1.3 are
-  identical to v1.0 in output content — only submission tooling (labels, area
-  protocol, gate) changed.
+- **Code:** tag `AlcaRecoGun_v2.0` on **both forks** (until PR #36 and the cmssw-side
+  PR are merged into WMass/*; then the same tag is made centrally). v2.0 is the
+  first content-changing (X) bump: the hit-rich selector family is persisted.
+  v1.1-v1.3 were identical to v1.0 in output content (tooling-only), and that
+  lineage carries the known completeness caveat (matched tracks without hits);
+  v1.1-v1.3 outputs remain valid as infra material, not physics-complete.
   - `emanca/WMassNanoProduction`, branch `NanoV9_CMSSW_10_6` (this repo),
   - `emanca/cmssw`, branch `from-CMSSW_10_6_17_patch1`
     (plugins `GunAlcaReco/GenTrackMatch` + fragments `Configuration/GenProduction/python/`
@@ -53,7 +55,7 @@ ever used for submission (see `coordination.md`).
 
 ```sh
 mkdir -p /work/submit/$USER/AlcaRecoGun && cd /work/submit/$USER/AlcaRecoGun
-TAG=AlcaRecoGun_v1.3
+TAG=AlcaRecoGun_v2.0
 git clone --branch $TAG https://github.com/emanca/cmssw.git cmssw-src
 git clone --branch $TAG https://github.com/emanca/WMassNanoProduction.git nanoproduction
 ```
