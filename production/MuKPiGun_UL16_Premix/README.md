@@ -11,7 +11,7 @@ Coordination rules: [`coordination.md`](coordination.md). Decisions log:
 
 ## 0. What is produced
 
-- **Code:** tag `AlcaRecoGun_v3.0` on **both forks** (until PR #36 and the cmssw-side
+- **Code:** tag `AlcaRecoGun_v3.1` on **both forks** (until PR #36 and the cmssw-side
   PR are merged into WMass/*; then the same tag is made centrally). Version history:
   v1.0–v1.3 infra pilots (tools-only bumps; valid outputs but hit-incomplete),
   v2.0+v2.1 fixed hit-completeness but kept the whole premix-inclusive selector
@@ -64,7 +64,7 @@ ever used for submission (see `coordination.md`).
 
 ```sh
 mkdir -p /work/submit/$USER/AlcaRecoGun && cd /work/submit/$USER/AlcaRecoGun
-TAG=AlcaRecoGun_v3.0
+TAG=AlcaRecoGun_v3.1
 git clone --branch $TAG https://github.com/emanca/cmssw.git cmssw-src
 git clone --branch $TAG https://github.com/emanca/WMassNanoProduction.git nanoproduction
 ```

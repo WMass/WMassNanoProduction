@@ -12,7 +12,7 @@ if [ $# -ne 2 ]; then
 fi
 CMSSW_SRC="$(readlink -f "$1")"
 DEST="$(readlink -f "$2" 2>/dev/null || echo "$2")"
-EXPECTED_TAG="AlcaRecoGun_v3.0"
+EXPECTED_TAG="AlcaRecoGun_v3.1"
 
 # Tag pin: verified on the host (modern git) by assemble_campaign.sh, which must be
 # run first per the runbook. Inside slc7, git 1.8.3 cannot read a modern sparse
@@ -44,8 +44,15 @@ cp -r "$CMSSW_SRC/GunAlcaReco/GenTrackMatch" GunAlcaReco/
 find GunAlcaReco -name '*.pyc' -delete
 
 scram b -j8
-edmPluginHelp -p GenMatchedTrackFilter >/dev/null \
-    && echo "plugin gate OK: pluginGenMatchedTrackFilter.so found" \
-    || { echo "ERROR: pluginGenMatchedTrackFilter.so not discoverable" >&2; exit 1; }
+# Plugin gate. The exit code carries no information here: edmPluginHelp returns 0
+# and prints nothing for a plugin that does not exist (measured), so the old
+# `edmPluginHelp ... && echo OK` form certified nothing -- at v3.0 it still reported
+# "pluginGenMatchedTrackFilter.so found" for a plugin deleted in that very tag.
+# Assert non-empty output, and name the module the cfgs actually instantiate.
+PLUGIN="GenMatchedTrackSelectorModule"
+plugin_help="$(edmPluginHelp -p "$PLUGIN")"
+[ -n "$plugin_help" ] \
+    || { echo "ERROR: $PLUGIN is not discoverable (edmPluginHelp printed nothing)" >&2; exit 1; }
+echo "plugin gate OK: $PLUGIN registered"
 
 echo "Area ready: $DEST"

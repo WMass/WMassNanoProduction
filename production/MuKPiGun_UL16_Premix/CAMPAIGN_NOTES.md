@@ -196,3 +196,26 @@
   (floor 1.6-1.75 TB + matched-only hit content).
 - Replaces GenMatchedTrackFilter (v1.x-era EDFilter, removed with this
   commit) and supersedes the v2.0 keep-list workaround.
+
+## v3.1 tag: the plugin gate was certifying nothing (2026-10-27)
+- Reviewing v3.0 on a real build area showed step 2b passing with
+  `plugin gate OK: pluginGenMatchedTrackFilter.so found` — for a plugin deleted in that
+  same tag. The built library is pluginGenMatchedTrackSelector.so and the registered
+  module is GenMatchedTrackSelectorModule; nothing named GenMatchedTrackFilter exists.
+- Cause: the gate tested `edmPluginHelp`'s exit code, which is 0 whether or not the
+  plugin is there. Measured in CMSSW_10_6_17_patch1:
+    edmPluginHelp -p DefinitelyNotAPluginXYZ    -> exit 0, 0 bytes of output
+    edmPluginHelp -p GenMatchedTrackFilter      -> exit 0, 0 bytes of output
+    edmPluginHelp -p GenMatchedTrackSelectorModule -> exit 0, 292 bytes
+  So the gate has never discriminated; at v1.x-v2.x it passed for a plugin that happened
+  to exist, at v3.0 it passed for one that does not. A build that produced no plugin at
+  all would also have passed.
+- FIXED: the gate captures the output and requires it to be non-empty, and names
+  GenMatchedTrackSelectorModule — the module the cfgs instantiate.
+- Related, on the cmssw side (separate PR): the v3.0 cfgs lost the event veto. The old
+  EDFilter returned eventMatched; ObjectSelector takes it from a bool parameter named
+  `filter` which the genMatchedTracks PSet does not have, and ObjectSelector.h defaults
+  filter_ to false (lines 46, 50-53, 69). Pure-pileup events would have been written
+  instead of dropped, visible at readback only as 1000/1000 instead of 999/1000 events.
+- Versioning: AlcaRecoGun_v3.1, tooling only on this side => Y bump; the cmssw cfg fix
+  that rides with it restores v3.0's intended content rather than changing it.
