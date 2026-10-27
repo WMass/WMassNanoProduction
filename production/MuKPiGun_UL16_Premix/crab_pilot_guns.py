@@ -7,9 +7,9 @@ from CRABClient.UserUtilities import config as crab_config
 
 EVENTS_PER_JOB = 1000
 JOBS_PER_SPECIES = 2
-VERSION = "v2_pilot_20261027"
+VERSION = "v3_pilot_20261027"
 SPECIES = ["MuGun", "PiGun", "KGun"]
-CAMPAIGN = "v2_pilot"
+CAMPAIGN = "v3_pilot"
 
 
 def make_config(species):
