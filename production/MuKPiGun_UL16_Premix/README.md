@@ -55,7 +55,7 @@ ever used for submission (see `coordination.md`).
 
 ```sh
 mkdir -p /work/submit/$USER/AlcaRecoGun && cd /work/submit/$USER/AlcaRecoGun
-TAG=AlcaRecoGun_v2.2
+TAG=AlcaRecoGun_v2.3
 git clone --branch $TAG https://github.com/emanca/cmssw.git cmssw-src
 git clone --branch $TAG https://github.com/emanca/WMassNanoProduction.git nanoproduction
 ```
