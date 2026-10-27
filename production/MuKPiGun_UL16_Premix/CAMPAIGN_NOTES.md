@@ -142,3 +142,15 @@
   lineage; its physics completeness caveat is now closed. 150M sizing numbers
   get re-quoted from the v2.0 pilot (hit-rich content adds per-event overhead
   which the v1.0-v1.3 file sizes did not include).
+
+## Corrections to older note lines (from pmlugato's v1p1 readback, 2026-10-26)
+- Line 41 ("emits dRMatch/dPtRelMatch/genMatched ValueMaps"): STALE wording kept
+  for history. The 2026-10-21 EDFilter decision removed all ValueMap products;
+  files since v14 confirm none are produced. The note above predates it.
+- Line 64 ("streams left AT DEFAULT (single)"): TRUE ONLY FOR THE LOCAL LEG
+  CONFIGS. On the grid the jobs inherit options from the chain env:
+  numberOfThreads=8 with numberOfStreams left at CMSSW default (streams ==
+  threads), which is why v1p1 files show ~8 streams worth of out-of-order
+  event ids (381-433 inversions). Not a premix-mixing bug: mixing is confined
+  to the DIGIPremix leg, and event ids are not an ordering constraint of our
+  analysis. No action; wording updated here so nobody chases a phantom.

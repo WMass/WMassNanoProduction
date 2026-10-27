@@ -188,22 +188,43 @@ crab kill -d campaign/crab_projects/crab_<task>
 crab recover -d campaign/crab_projects/crab_<task>   # creates a new task
 ```
 
-Note the recovery task name in the issue. If `crab recover` refuses, do the
-kill + report + manual resubmission of the complement lisumi bookkeeping by hand and
-post the recipe used. Never `--ignoreLocality` without asking first in the issue.
+What it keys on for THIS workflow: PrivateMC EventBased recovery re-queues failed
+*units by index* — the `(run, lumi)` pair is not a key, which matters because every
+job writes run 1 lumi 1 (`outputFilesDuplicateLumis.json` will always say the lumis
+are duplicated; this is expected by design of PrivateMC, not damage to be repaired).
+Lumi-based recovery in the CRAB sense (`report`'s `notFinishedLumis.json`) cannot
+distinguish which jobs are missing when all carry the same (run, lumi) — do not use
+lumi-mask-style recoveries here.
+
+Note the recovery task name in the issue. If `crab recover` cannot reconstitute the
+task, hand-resubmit the complement as a fresh task with a **different `jobOffset`**
+(scriptArg in crab_pilot_guns.py): our deterministic seeding keys on the chain job
+id, not lumis, so a distinct offset is what keeps seeds unique between attempts.
+Post the recipe used. Never `--ignoreLocality` without asking first in the issue.
 
 ## 6. Completion checks (per task)
 
-1. `crab report -d <dir>`: events read == `Data.totalUnits` (2000 for the pilot
-   across the two jobs; add up `_rec` tasks).
+1. `crab report -d <dir>` is BEST-EFFORT bookkeeping here, not a counting tool:
+   with `scriptExe` + `disableAutomaticOutputCollection` there is no summed FJR, so
+   it returns `Number of events read: n/a` by construction (measured in v1p1_pilot,
+   all species). The campaign's event accounting lives in `monitoring.json`: sum
+   every job's ALCA-leg `outputEvents` and compare against `Data.totalUnits` x
+   (1 - expected gen-match loss). Expected loss is quoted per round (v1p1_pilot:
+   999/1000 events in 6/6 jobs, ~0.1% - an interior anti-matched event each time,
+   consistent with the 0.01 GeV gun floor; investigate if any job shows >1%).
 2. Output readable by everyone:
    `ls -ld /ceph/submit/data/group/cms/store/group/zmass/MuKPiGun_UL16_Premix_*/*/<task>/*`
    must be `drwxr-sr-x`; open with the `find ... -exec chmod 2755 {} +` trick if needed.
 3. Content readback of one file per species (branches: `recoTracks_genMatchedTracks`,
-   `genParticles`, SimTracks/SimVertexs, PV/BS), and event count == 1000.
-4. Record the round in `history/` (task names, payloads' REF hash, job table) and attach
-   to the issue.
-5. Post the completion report in the issue and take the pilot go/no-go decision there.
+   `genParticles`, SimTracks/SimVertexs, PV/BS, `muons`), and ALCA event count ==
+   `monitoring.json` ALCA-leg `outputEvents` for that job (NOT 1000: the filter's
+   ~0.1% loss is quoted, see check 1). v2.0 witness addition: on a matched track,
+   `extra().recHitsSize() > 0` must hold - the hit-rich products are under the
+   `ALCARECO<S>` label (tracks, TrackExtras, TrackingRecHitsOwned, SiPixel+SiStrip
+   clusters) and references from `genMatchedTracks` must resolve.
+4. Record the round in `history/` (task names, payloads' REF hash, job table) and
+   attach to the issue.
+5. Post the completion report in the issue and take the go/no-go decision there.
 
 ## 7. Report
 
