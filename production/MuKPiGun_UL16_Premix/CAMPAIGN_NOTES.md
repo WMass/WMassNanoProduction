@@ -154,3 +154,25 @@
   event ids (381-433 inversions). Not a premix-mixing bug: mixing is confined
   to the DIGIPremix leg, and event ids are not an ordering constraint of our
   analysis. No action; wording updated here so nobody chases a phantom.
+
+## v2.4 tag: locale-pinned payload manifest (2026-10-27)
+- v2_pilot round: emanca logged REF hash bf625f35efed7017, pmlugato bbbad36bb7ffa566, from two
+  assemblies of the SAME tag (nanoproduction c297750 / cmssw cbb1af7b2e3) whose 13 payload members
+  were byte-identical to the tag blobs on both sides. Cause: `prepare_payload.sh` sorted the
+  manifest with a bare `sort`, and collation is locale-dependent. Under C it is byte order, so
+  'P' (0x50) < '_' (0x5F) puts DIGIPremix_cfg.py first; under en_US.UTF-8 punctuation is ignored
+  at the first level, so DIGI_noPU_cfg.py comes first. The two owners run in different locales.
+  Reproduced exactly: the same 13 files hashed through `LC_ALL=C sort` give bf625f35efed7017 and
+  through `LC_ALL=en_US.UTF-8 sort` give bbbad36bb7ffa566.
+- No functional impact: `sha256sum -c` does not care about line order, so every v1.x/v2.x job
+  verified its payload correctly and the v2_pilot round is one payload in content. What broke is
+  the cross-owner REF-hash comparison, i.e. the check we rely on to SEE that it is one payload.
+- FIXED: `LC_ALL=C sort` in prepare_payload.sh. The manifest is now a function of the tag alone,
+  so the existing one-line REF-hash comparison keeps working and no extra bookkeeping ritual
+  (wc -l, second digest) is needed.
+- Also in this tag: README §1 states the credential check is `voms-proxy-info -actimeleft`, not
+  `-timeleft` — an expired VOMS AC under a still-valid proxy makes CRAB stall on the grid
+  passphrase and `crab checkwrite` then prints no verdict line at all (measured 2026-10-27).
+- Versioning: AlcaRecoGun_v2.4, tooling/docs only => Y bump. Payload MEMBERS are unchanged from
+  v2.0-v2.3; only the manifest's line order changes, so v2_pilot outputs stay valid and the
+  round in flight is unaffected.

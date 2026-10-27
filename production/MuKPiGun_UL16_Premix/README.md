@@ -43,6 +43,11 @@ Coordination rules: [`coordination.md`](coordination.md). Decisions log:
 
 - Submit account in `submit-cms`; grid certificate with CMS VO; proxy
   `voms-proxy-init -voms cms -rfc -valid 168:00` at `/tmp/x509up_u$UID` before every CRAB day.
+  The credential check is **`voms-proxy-info -actimeleft`**, not `-timeleft`: the latter is
+  the envelope (the proxy certificate) and can read days while the CMS VOMS attribute
+  certificate is already at zero. When the AC has expired, CRAB silently tries to mint a
+  new proxy and stalls on `Enter GRID pass phrase`, so `crab checkwrite` prints no
+  `Checkwrite Result:` line at all — read a missing verdict as a failure, not as noise.
 - `git config --global user.github <login>`.
 - El9 submit node access; campaign area with ~8 GB free
   (e.g. `/work/submit/$USER/AlcaRecoGun`).
@@ -55,7 +60,7 @@ ever used for submission (see `coordination.md`).
 
 ```sh
 mkdir -p /work/submit/$USER/AlcaRecoGun && cd /work/submit/$USER/AlcaRecoGun
-TAG=AlcaRecoGun_v2.3
+TAG=AlcaRecoGun_v2.4
 git clone --branch $TAG https://github.com/emanca/cmssw.git cmssw-src
 git clone --branch $TAG https://github.com/emanca/WMassNanoProduction.git nanoproduction
 ```
