@@ -11,9 +11,13 @@ Coordination rules: [`coordination.md`](coordination.md). Decisions log:
 
 ## 0. What is produced
 
-- **Code:** tag `AlcaRecoGun_v2.0` on **both forks** (until PR #36 and the cmssw-side
-  PR are merged into WMass/*; then the same tag is made centrally). v2.0 is the
-  first content-changing (X) bump: the hit-rich selector family is persisted.
+- **Code:** tag `AlcaRecoGun_v3.0` on **both forks** (until PR #36 and the cmssw-side
+  PR are merged into WMass/*; then the same tag is made centrally). Version history:
+  v1.0–v1.3 infra pilots (tools-only bumps; valid outputs but hit-incomplete),
+  v2.0+v2.1 fixed hit-completeness but kept the whole premix-inclusive selector
+  family (≈38 TB at 150M — rejected), **v3.0**: gen-match rides the stock
+  ObjectSelectorStream persistence so outputs hold the matched tracks *with their
+  own extras and hits* (refit-capable, ≈2.0–2.3 TB at 150M).
   v1.1-v1.3 were identical to v1.0 in output content (tooling-only), and that
   lineage carries the known completeness caveat (matched tracks without hits);
   v1.1-v1.3 outputs remain valid as infra material, not physics-complete.
@@ -60,7 +64,7 @@ ever used for submission (see `coordination.md`).
 
 ```sh
 mkdir -p /work/submit/$USER/AlcaRecoGun && cd /work/submit/$USER/AlcaRecoGun
-TAG=AlcaRecoGun_v2.4
+TAG=AlcaRecoGun_v3.0
 git clone --branch $TAG https://github.com/emanca/cmssw.git cmssw-src
 git clone --branch $TAG https://github.com/emanca/WMassNanoProduction.git nanoproduction
 ```

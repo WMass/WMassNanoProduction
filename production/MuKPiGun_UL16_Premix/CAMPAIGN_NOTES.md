@@ -176,3 +176,23 @@
 - Versioning: AlcaRecoGun_v2.4, tooling/docs only => Y bump. Payload MEMBERS are unchanged from
   v2.0-v2.3; only the manifest's line order changes, so v2_pilot outputs stay valid and the
   round in flight is unaffected.
+## v3.0 tag: gen-match via ObjectSelectorStream (X bump, 2026-10-27)
+- Final architecture for the matched-track persistence (settled after the
+  v1.1 dangling-extra report and the v2.0 PU-inclusive fallout measured by
+  pmlugato at ~38 TB/150M): the gen-match logic is a UtilAlgos selector
+  functor (GenMatchedTrackSelector) behind ObjectSelectorStream, so the
+  persistence is the stock TkAl clone family (tracks + TrackExtras + owned
+  TrackingRecHits + SiPixel/SiStripClusters, refs recursively re-pointed)
+  under the genMatchedTracks label, on matched tracks only. Filter=True
+  keeps the pure-PU veto semantics of the 2026-10-21 filter decision.
+- Load-bearing quirk: ObjectSelectorStream emits track-only clones unless
+  CommonTools/RecoAlgos/interface/TrackSelector.h is included in the module
+  (the specialization hook lives in that header; the TkAl module documents
+  the same trap). 
+- Validated: local 10-event no-PU chain, products dump complete; FWLite
+  witness on 200 matched tracks gives 200/200 resolvable extra() with >0
+  hits (~18 hits/track) => downstream Kalman refit of matched tracks works,
+  i.e. the D* ALCARECO parity now holds at ~2.0-2.3 TB/150M projected
+  (floor 1.6-1.75 TB + matched-only hit content).
+- Replaces GenMatchedTrackFilter (v1.x-era EDFilter, removed with this
+  commit) and supersedes the v2.0 keep-list workaround.
