@@ -16,7 +16,7 @@ fi
 NANOPROD="$(readlink -f "$1")"
 CMSSW_SRC="$(readlink -f "$2")"
 DEST="$3"
-EXPECTED_TAG="AlcaRecoGun_v2.3"
+EXPECTED_TAG="AlcaRecoGun_v2.4"
 
 for repo in "$NANOPROD" "$CMSSW_SRC"; do
     head="$(git -C "$repo" rev-parse HEAD)"

@@ -13,7 +13,13 @@ if [ ! -f runtime/rewrite_fjr_paths.py ]; then
     trek_rewriter=1
 fi
 trap '[ "$trek_rewriter" = 1 ] && rm -f runtime/rewrite_fjr_paths.py || true' EXIT
-find cfgs runtime -type f -not -path '*/__pycache__/*' | sort | xargs sha256sum > REFERENCE_SHA256SUMS
+# LC_ALL=C: collation is locale-dependent, and the manifest's line ORDER decides the
+# hash of REFERENCE_SHA256SUMS even when every member is byte-identical. Under
+# en_US.UTF-8 punctuation is ignored at the first level, so DIGI_noPU_cfg.py sorts
+# before DIGIPremix_cfg.py; under C it is byte order and 'P' (0x50) < '_' (0x5F), so
+# they swap. Two owners on the same tag then log two different REF hashes with
+# identical payloads (measured, v2_pilot round). Pin the collation here.
+find cfgs runtime -type f -not -path '*/__pycache__/*' | LC_ALL=C sort | xargs sha256sum > REFERENCE_SHA256SUMS
 sha256sum -c REFERENCE_SHA256SUMS >/dev/null
 # __pycache__ is excluded from the hash list above, so it must be excluded from
 # the tar too: otherwise re-running the gate in a campaign dir that has already
