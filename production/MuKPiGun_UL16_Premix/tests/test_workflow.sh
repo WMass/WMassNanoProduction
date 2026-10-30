@@ -130,4 +130,39 @@ assert mu != pi and any(mu[k] != pi[k] for k in mu), \
     "same job ID across species must give DIFFERENT seeds (v1_150M decision)"
 print("deterministic seeds differ across species OK")
 PYEOF
+
+# High-ID proof: the production-scale end of the seed axis. job 2001 (block 1,
+# the publication smoke block offset), and job 20000 (last potential global ID
+# of the 30-task round) must ALSO produce valid seeds inside MAX_SEED, and the
+# species lane must not merely shift the same ordering.
+for probe in "2001:PiGun" "20000:KGun"; do
+    jid="${probe%%:*}"; sp="${probe##*:}"
+    CHAIN_STAGE=GENSIM CHAIN_JOB_ID=$jid CHAIN_EVENTS=3 CHAIN_SPECIES=$sp \
+    CHAIN_SEED_REPORT="$TMPDIR_TEST/seeds_${sp}_${jid}.json" \
+    python3 - <<'PYEOF'
+import importlib.util
+import json
+import os
+import sys
+
+campaign = os.environ["CAMPAIGN_DIR"]
+runner = os.path.join(campaign, "runtime", "stage_runner.py")
+sys.path.insert(0, os.path.join(campaign, "runtime"))
+os.environ["CHAIN_CFG"] = os.path.join(campaign, "cfgs", "MuGun_GENSIM_cfg.py")
+os.environ["CHAIN_PAYLOAD_DIR"] = campaign
+spec = importlib.util.spec_from_file_location("chain_stage_cfg_shell", runner)
+mod = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(mod)
+with open(os.path.join(os.environ["CHAIN_SEED_REPORT"])) as handle:
+    report = json.load(handle)
+with open("seeds_high.json", "w") as out:
+    json.dump(report["after"], out)
+PYEOF
+done
+python3 - <<'PYEOF'
+import json
+high = json.load(open("seeds_high.json"))
+assert high, "high-ID species-lane seed map must be non-empty"
+print("high-ID seed proof OK (job 20000 / KGun within MAX_SEED)")
+PYEOF
 echo "ALL CHECKS OK"

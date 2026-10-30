@@ -67,7 +67,13 @@ def main():
     service = getattr(process, "RandomNumberGeneratorService", None)
     seeds_before = seed_map(service) if service is not None else {}
     species_name = os.environ.get("CHAIN_SPECIES", "")
-    species_index = {"MuGun": 1, "PiGun": 2, "KGun": 3}.get(species_name, 1)
+    try:
+        species_index = {"MuGun": 1, "PiGun": 2, "KGun": 3}[species_name]
+    except KeyError:
+        raise RuntimeError(
+            "unknown CHAIN_SPECIES: {0!r} (needs MuGun/PiGun/KGun; missing values would"
+            " silently take the MuGun seed lane instead of failing loudly)".format(species_name)
+        )
     insert_deterministic_seeds(process, job_id, stage, species_index)
     seeds_after = seed_map(service) if service is not None else {}
 

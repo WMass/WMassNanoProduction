@@ -37,7 +37,7 @@ cp "$SRC_NP"/README.md "$SRC_NP"/CAMPAIGN_NOTES.md "$SRC_NP"/coordination.md "$D
 cp "$SRC_NP"/run_chain.sh "$SRC_NP"/prepare_payload.sh "$SRC_NP"/build_area.sh "$DEST/"
 cp "$SRC_NP"/crab_pilot_guns.py "$SRC_NP"/crab_pset.py "$DEST/"
 cp "$SRC_NP"/crab_MuGun.py "$SRC_NP"/crab_PiGun.py "$SRC_NP"/crab_KGun.py "$DEST/"
-cp "$SRC_NP"/crab_production_guns.py "$DEST/"
+cp "$SRC_NP"/crab_production_guns.py "$SRC_NP"/crab_smoke_guns.py "$DEST/"
 chmod +x "$DEST/run_chain.sh" "$DEST/prepare_payload.sh" "$DEST/build_area.sh"
 mkdir -p "$DEST/history"    # submission logs land here (runbook step 6)
 
@@ -51,6 +51,7 @@ rm -f "$DEST/cfgs"/*.pyc 2>/dev/null || true
 
 cd "$DEST"
 python3 crab_production_guns.py >/dev/null
+python3 crab_smoke_guns.py >/dev/null
 ./prepare_payload.sh
 ./tests/test_workflow.sh
 

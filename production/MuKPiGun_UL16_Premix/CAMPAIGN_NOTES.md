@@ -283,3 +283,14 @@
   of the 150M round halves.
 - README clones point at WMass/* now; next central tag = production_v2 on the
   post-merge tips of both org repos (never move production_v1).
+- Items 1-4 from pmlugato's smoke-readiness hold (2026-10-31): v2 labels end to end
+  in the factories (v2_150M / prod_v2_150M) because labels-as-LFN-mismatch would
+  re-create the v1.0 campaign-lockout class; dedicated crab_smoke_guns.py
+  (2 jobs/species at block 1, publication phys03 ON) committed; CHAIN_SPECIES
+  now raises instead of taking the MuGun lane on typos; high-ID seed proofs
+  at job 2001 and job 20000/KGun added to the gate. Ephemeral-tag-chunched
+  validation kept to throwaway clones; org-tag clones stay for production.
+- Publication contingency: if phys03 listing stays empty after the smoke phase,
+  the fix pre-diagnosed by pmlugato rides the next PR (crab_pset.py declares a
+  formal PoolOutputModule); decided 2026-10-31 to try the ASO path unchanged first
+  and only touch the PSet afterward (user call).
