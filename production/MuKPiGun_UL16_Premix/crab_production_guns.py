@@ -74,7 +74,7 @@ if __name__ == "__main__":
     for species in SPECIES:
         for block in range(BLOCKS_PER_SPECIES):
             tag = "{0}_{1}_block{2}".format(species, VERSION, block)
-            name = os.path.join(here, "crab_prod_{0}.py".format(tag.replace(species + "_", "")))
+            name = os.path.join(here, "crab_prod_{0}.py".format(tag))
             body = header + "config = _make()['{0}']['{1}']\n".format(species, tag)
             with open(name, "w") as f:
                 f.write(body)
