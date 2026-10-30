@@ -11,7 +11,7 @@ Coordination rules: [`coordination.md`](coordination.md). Decisions log:
 
 ## 0. What is produced
 
-- **Code:** tag `AlcaRecoGun_v3.1` on **both forks** (until PR #36 and the cmssw-side
+- **Code:** tag `AlcaRecoGun_v4.0` on **both forks** (until PR #36 and the cmssw-side
   PR are merged into WMass/*; then the same tag is made centrally). Version history:
   v1.0–v1.3 infra pilots (tools-only bumps; valid outputs but hit-incomplete),
   v2.0+v2.1 fixed hit-completeness but kept the whole premix-inclusive selector
@@ -64,7 +64,7 @@ ever used for submission (see `coordination.md`).
 
 ```sh
 mkdir -p /work/submit/$USER/AlcaRecoGun && cd /work/submit/$USER/AlcaRecoGun
-TAG=AlcaRecoGun_v3.1
+TAG=AlcaRecoGun_v4.0
 git clone --branch $TAG https://github.com/emanca/cmssw.git cmssw-src
 git clone --branch $TAG https://github.com/emanca/WMassNanoProduction.git nanoproduction
 ```
@@ -108,8 +108,9 @@ SINGULARITY_BIND=/work,/scratch,/tmp /cvmfs/cms.cern.ch/common/cmssw-el7 \
 
 `build_area.sh` does `cmsrel CMSSW_10_6_17_patch1` in `$PWD/build_area`, copies only
 `GunAlcaReco/GenTrackMatch` from the tagged cmssw clone into the area `src`, runs
-`scram b -j8`, and fails unless `edmPluginHelp -p GenMatchedTrackFilter` finds the
-plugin (stream::EDFilter). From clean, this takes a few minutes.
+`scram b -j8`, then the hardened plugin gate asserts non-empty `edmPluginHelp`
+output for BOTH `GenMatchedTrackSelectorModule` and `AlCaRecoMuonRelinker` — the two
+modules the ALCA cfgs instantiate (the probe is what says so, the exit code never did). From clean, this takes a few minutes.
 
 **2c. CRAB environment** (el9: enter the build area and `cmsenv` FIRST — bare
 `PYTHONPATH` alone gives `No module named 'past'`):
@@ -229,8 +230,11 @@ Post the recipe used. Never `--ignoreLocality` without asking first in the issue
    `monitoring.json` ALCA-leg `outputEvents` for that job (NOT 1000: the filter's
    ~0.1% loss is quoted, see check 1). v2.0 witness addition: on a matched track,
    `extra().recHitsSize() > 0` must hold - the hit-rich products are under the
-   `ALCARECO<S>` label (tracks, TrackExtras, TrackingRecHitsOwned, SiPixel+SiStrip
-   clusters) and references from `genMatchedTracks` must resolve.
+   `genMatchedTracks` label (tracks, TrackExtras, TrackingRecHitsOwned,
+   SiPixel+SiStrip clusters) and references from `genMatchedTracks` must resolve.
+   v4.0 witness additions: `genMatchedMuons` members resolve innerTrack refs;
+   generator/GenRunInfo products, slimmedAddPileupInfo and
+   PSimHits_g4SimHits_TrackerHits* present.
 4. Record the round in `history/` (task names, payloads' REF hash, job table) and
    attach to the issue.
 5. Post the completion report in the issue and take the go/no-go decision there.

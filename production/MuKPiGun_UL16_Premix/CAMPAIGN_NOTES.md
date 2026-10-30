@@ -219,3 +219,25 @@
   instead of dropped, visible at readback only as 1000/1000 instead of 999/1000 events.
 - Versioning: AlcaRecoGun_v3.1, tooling only on this side => Y bump; the cmssw cfg fix
   that rides with it restores v3.0's intended content rather than changing it.
+
+## v4.0 tag: analyzer-complete MC truth (Josh Bendavid's review, X bump, 2026-10-29)
+- Review of WMass/WMassNanoProduction#36 + WMass/cmssw#53 (his branches
+  bendavid/cmssw:alcareco-gun-review merged on top of b0d2c7d6521):
+  (1) ResidualGlobalCorrectionMaker doGen/doSim paths FAIL with ProductNotFound
+  on v3 pilot files -> generator/GenRunInfoProduct/LumiInfo products +
+  slimmedAddPileupInfo (produced in-path) + int_*_bunchSpacing +
+  PSimHits_g4SimHits_TrackerHits* kept. Rationale now explicit: only PSimHits
+  separate the gun track's hits from the pileup companions' at the hit level
+  that ΔR matching cannot reach.
+  (2) full `muons` collection had all track refs dangling; replaced by
+  genMatchedMuons via Alignment/AlCaRecoMuons AlCaRecoMuonRelinker, re-pointed
+  innerTrack to genMatchedTracks (plus the track->muon association product).
+  (3) No HLT leg => doTrigger=False is the downstream contract.
+  (4) Measured cost: 19.3 -> 21.8 kB/ev on a 300-event MuGun production test
+  (i.e. ~2.5 kB/ev, ≈ +0.4 TB at 150M; total target becomes ~2.6-2.9 TB).
+- build_area.sh builds Alignment/AlCaRecoMuons as the second package and the
+  hardened plugin gate now probes BOTH GenMatchedTrackSelectorModule and
+  AlCaRecoMuonRelinker. REFERENCE_SHA256SUMS retired (it was a stale tracked
+  manifest from before cfg moved to cmssw - per-assembly regen stands).
+- README 2b and §6.3 wording aligned (plugin name + genMatchedTracks label for
+  the hit family; labels bumped for the v4_pilot round).
