@@ -241,3 +241,20 @@
   manifest from before cfg moved to cmssw - per-assembly regen stands).
 - README 2b and §6.3 wording aligned (plugin name + genMatchedTracks label for
   the hit family; labels bumped for the v4_pilot round).
+
+## production tag: AlcaRecoGun_production_v1 for the 150M round (2026-10-30)
+- PR #36 (nanoproduction) and WMass/cmssw#53 (gun/D* cfgs) merged on 2026-10-30;
+  both forks fast-forwarded so their branches pinpoint the org branch tips
+  (666bd8559 / 8d6f1a2aa). Tag AlcaRecoGun_production_v1 sits at those synced
+  states on both forks. This is the first tag whose meaning is provenance-to-
+  org rather than provenance-to-fork.
+- Production round structure: 15 block-tasks (3 species x 5 blocks),
+  10M events per task = 4,000 jobs x 2,500 events/job (~1.5-3.5 h/job),
+  8 cores/16 GB, T3_US_MIT, DAS publication phys03 ON (user decision
+  2026-10-30). crab_production_guns.py is the factory; block uniqueness of
+  seeds flows from scriptArg jobOffset = block x EVENTS_PER_TASK (the
+  deterministic seeding keys on CHAIN_JOB_ID). TOTAL ~3.05 TB ALCARECO at
+  20.7 kB/ev measured at v4_pilot; premix xrootd transit 45-90 TB - the
+  largest quantifier of the campaign listed in writing here.
+- Publication smoke plan: first a publication-verify block per species
+  (weekend-scale floor), the rest of the fleet in the same label cadence.

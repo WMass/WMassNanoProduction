@@ -12,7 +12,7 @@ if [ $# -ne 2 ]; then
 fi
 CMSSW_SRC="$(readlink -f "$1")"
 DEST="$(readlink -f "$2" 2>/dev/null || echo "$2")"
-EXPECTED_TAG="AlcaRecoGun_v4.0"
+EXPECTED_TAG="AlcaRecoGun_production_v1"
 
 # Tag pin: verified on the host (modern git) by assemble_campaign.sh, which must be
 # run first per the runbook. Inside slc7, git 1.8.3 cannot read a modern sparse
