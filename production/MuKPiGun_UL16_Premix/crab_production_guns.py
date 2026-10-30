@@ -69,8 +69,11 @@ if __name__ == "__main__":
     header = ("import os, sys\n"
               "sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))\n"
               "from crab_production_guns import make_configs as _make\n")
-    for species, blocks in make_configs().items():
-        for tag, cfg in blocks.items():
+    # Only names are needed here - the configs themselves are built by
+    # make_configs() on the submit host, where CRABClient exists.
+    for species in SPECIES:
+        for block in range(BLOCKS_PER_SPECIES):
+            tag = "{0}_{1}_block{2}".format(species, VERSION, block)
             name = os.path.join(here, "crab_prod_{0}.py".format(tag.replace(species + "_", "")))
             body = header + "config = _make()['{0}']['{1}']\n".format(species, tag)
             with open(name, "w") as f:
