@@ -13,6 +13,7 @@ import os
 
 EVENTS_PER_JOB = 2500
 EVENTS_PER_TASK = 5000000            # 2,000 jobs per task
+JOBS_PER_TASK = EVENTS_PER_TASK // EVENTS_PER_JOB
 BLOCKS_PER_SPECIES = 10
 VERSION = "v1_150M_20261030"
 CAMPAIGN = "prod_v1_150M"
@@ -41,15 +42,15 @@ def make_configs():
             cfg.JobType.scriptArgs = [
                 "events={0}".format(EVENTS_PER_JOB),
                 "species={0}".format(species),
-                "jobOffset={0}".format(block * EVENTS_PER_TASK),
+                "jobOffset={0}".format(block * JOBS_PER_TASK),
             ]
             cfg.JobType.inputFiles = [os.path.join(here, "payload.tar.gz")]
             cfg.JobType.disableAutomaticOutputCollection = True
             cfg.JobType.outputFiles = ["{0}_ALCARECO.root".format(species), "monitoring.json"]
             cfg.JobType.allowUndistributedCMSSW = True
-            cfg.JobType.maxMemoryMB = 16000
+            cfg.JobType.maxMemoryMB = 8000
             cfg.JobType.maxJobRuntimeMin = 600
-            cfg.JobType.numCores = 8
+            cfg.JobType.numCores = 4
             cfg.Data.splitting = "EventBased"
             cfg.Data.unitsPerJob = EVENTS_PER_JOB
             cfg.Data.totalUnits = EVENTS_PER_TASK

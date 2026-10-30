@@ -64,9 +64,9 @@ ever used for submission (see `coordination.md`).
 
 ```sh
 mkdir -p /work/submit/$USER/AlcaRecoGun && cd /work/submit/$USER/AlcaRecoGun
-TAG=AlcaRecoGun_production_v1
-git clone --branch $TAG https://github.com/emanca/cmssw.git cmssw-src
-git clone --branch $TAG https://github.com/emanca/WMassNanoProduction.git nanoproduction
+TAG=AlcaRecoGun_production_v2
+git clone --branch $TAG https://github.com/WMass/cmssw.git cmssw-src
+git clone --branch $TAG https://github.com/WMass/WMassNanoProduction.git nanoproduction
 ```
 
 **2a. Campaign area from the tags (host-side tag gate):**

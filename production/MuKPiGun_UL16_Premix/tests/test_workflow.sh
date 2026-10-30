@@ -72,7 +72,7 @@ eval "$(scramv1 runtime -sh)"
 cd "$TMPDIR_TEST"
 export CAMPAIGN_DIR
 for jid in 17 18; do
-    CHAIN_STAGE=GENSIM CHAIN_JOB_ID=$jid CHAIN_EVENTS=3 \
+    CHAIN_STAGE=GENSIM CHAIN_JOB_ID=$jid CHAIN_EVENTS=3 CHAIN_SPECIES=MuGun \
     CHAIN_SEED_REPORT="$TMPDIR_TEST/seeds_$jid.json" \
     python3 - <<'PYEOF'
 import importlib.util
@@ -95,6 +95,27 @@ with open("seeds_%d_flat.json" % jid, "w") as out:
     json.dump(report["after"], out)
 PYEOF
 done
+CHAIN_STAGE=GENSIM CHAIN_JOB_ID=17 CHAIN_EVENTS=3 CHAIN_SPECIES=PiGun \
+CHAIN_SEED_REPORT="$TMPDIR_TEST/seeds_pigun.json" \
+python3 - <<'PYEOF'
+import importlib.util
+import json
+import os
+import sys
+
+campaign = os.environ["CAMPAIGN_DIR"]
+runner = os.path.join(campaign, "runtime", "stage_runner.py")
+sys.path.insert(0, os.path.join(campaign, "runtime"))
+os.environ["CHAIN_CFG"] = os.path.join(campaign, "cfgs", "MuGun_GENSIM_cfg.py")
+os.environ["CHAIN_PAYLOAD_DIR"] = campaign
+spec = importlib.util.spec_from_file_location("chain_stage_cfg_shell", runner)
+mod = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(mod)
+with open(os.path.join(os.environ["CHAIN_SEED_REPORT"])) as handle:
+    report = json.load(handle)
+with open("seeds_pigun_flat.json", "w") as out:
+    json.dump(report["after"], out)
+PYEOF
 python3 - <<'PYEOF'
 import json
 a = json.load(open("seeds_17_flat.json"))
@@ -103,5 +124,10 @@ assert a and b, "seed maps must be non-empty"
 assert a != b, "job 17 and 18 seeds must differ"
 assert any(a[k] != b[k] for k in a), "per-service seeds must differ"
 print("deterministic seeds differ across job IDs OK")
+mu = json.load(open("seeds_17_flat.json"))
+pi = json.load(open("seeds_pigun_flat.json"))
+assert mu != pi and any(mu[k] != pi[k] for k in mu), \
+    "same job ID across species must give DIFFERENT seeds (v1_150M decision)"
+print("deterministic seeds differ across species OK")
 PYEOF
 echo "ALL CHECKS OK"
