@@ -241,3 +241,45 @@
   manifest from before cfg moved to cmssw - per-assembly regen stands).
 - README 2b and §6.3 wording aligned (plugin name + genMatchedTracks label for
   the hit family; labels bumped for the v4_pilot round).
+
+## production tag: AlcaRecoGun_production_v1 for the 150M round (2026-10-30)
+- PR #36 (nanoproduction) and WMass/cmssw#53 (gun/D* cfgs) merged on 2026-10-30;
+  both forks fast-forwarded so their branches pinpoint the org branch tips
+  (666bd8559 / 8d6f1a2aa). Tag AlcaRecoGun_production_v1 sits at those synced
+  states on both forks. This is the first tag whose meaning is provenance-to-
+  org rather than provenance-to-fork.
+- Production round structure: 15 block-tasks (3 species x 5 blocks),
+  10M events per task = 4,000 jobs x 2,500 events/job (~1.5-3.5 h/job),
+  8 cores/16 GB, T3_US_MIT, DAS publication phys03 ON (user decision
+  2026-10-30). crab_production_guns.py is the factory; block uniqueness of
+  seeds flows from scriptArg jobOffset = block x EVENTS_PER_TASK (the
+  deterministic seeding keys on CHAIN_JOB_ID). TOTAL ~3.05 TB ALCARECO at
+  20.7 kB/ev measured at v4_pilot; premix xrootd transit 45-90 TB - the
+  largest quantifier of the campaign listed in writing here.
+- Publication smoke plan: first a publication-verify block per species
+  (weekend-scale floor), the rest of the fleet in the same label cadence.
+- Block granularity retuned after opening discussion (2026-10-30): 10 blocks
+  per species of 5M events each (2,000 jobs x 2,500 ev/job) = 30 tasks total,
+  instead of 5 blocks x 10M. Same totals, same seed-offset discipline
+  (jobOffset = block x EVENTS_PER_TASK), better failure-cell containment and
+  ASO transfer smoothing. CRAB 10k-job cap stays far off either way.
+
+## pre-salvo fixes riding PR #39 (pmlugato review 2026-10-30, accepted)
+- jobOffset units bug (mine): block x EVENTS_PER_TASK would exceed the seed
+  cap (>~900k) -> 27/30 tasks dead at GENSIM. Fixed: block x JOBS_PER_TASK
+  (jobs, not events). Seed test proofs now also include the species-difference
+  assertions, not only job-index differences.
+- firstLuminosityBlock = job_id at GENSIM (stage_runner): jobs previously
+  shared run1/lumi1, which meant downstream PoolSource checkAllFilesOpened
+  silently skipped files beyond one per (run,lumi) group. Closed on the
+  runner side since the cfgs declare an unconfigured EmptySource.
+- Species seeds now independent: SPECIES_STRIDE=250000 job slots per species
+  in deterministic_seeds._seed_values (species_index from CHAIN_SPECIES,
+  exported by run_chain). Rationale from v4_pilot measurement: 981/998
+  identical gun pT between PiGun and KGun at equal job ids - perfectly
+  correlated ensembles are fine for clean A/B but poison for training sets.
+- Resources rebalanced for the 30-task round: numCores 8->4, maxMemoryMB
+  16000->8000 (pilots peaked 3.6 GB processed, 38% CPU), core-hour estimate
+  of the 150M round halves.
+- README clones point at WMass/* now; next central tag = production_v2 on the
+  post-merge tips of both org repos (never move production_v1).

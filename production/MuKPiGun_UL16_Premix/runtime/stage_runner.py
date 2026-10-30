@@ -66,12 +66,21 @@ def main():
 
     service = getattr(process, "RandomNumberGeneratorService", None)
     seeds_before = seed_map(service) if service is not None else {}
-    insert_deterministic_seeds(process, job_id, stage)
+    species_name = os.environ.get("CHAIN_SPECIES", "")
+    species_index = {"MuGun": 1, "PiGun": 2, "KGun": 3}.get(species_name, 1)
+    insert_deterministic_seeds(process, job_id, stage, species_index)
     seeds_after = seed_map(service) if service is not None else {}
 
     if stage == "GENSIM":
         events = int(os.environ["CHAIN_EVENTS"])
         process.maxEvents.input = cms.untracked.int32(events)
+        # Every job is its own lumi block: downstream multi-file readers on
+        # (run, lumi) keys must not collide across jobs (measured: 996-999
+        # identical (run, lumi, event) keys per file in the pilots, and
+        # PoolSource's checkAllFilesOpened then skips whole files).
+        source = getattr(process, "source", None)
+        if source is not None:
+            source.firstLuminosityBlock = cms.untracked.uint32(job_id)
 
     # Force absolute output paths so the framework job report names the
     # WORK_DIR-prefixed PFN; runtime/rewrite_fjr_paths.py rewrites the prefix
