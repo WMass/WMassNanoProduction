@@ -258,3 +258,8 @@
   largest quantifier of the campaign listed in writing here.
 - Publication smoke plan: first a publication-verify block per species
   (weekend-scale floor), the rest of the fleet in the same label cadence.
+- Block granularity retuned after opening discussion (2026-10-30): 10 blocks
+  per species of 5M events each (2,000 jobs x 2,500 ev/job) = 30 tasks total,
+  instead of 5 blocks x 10M. Same totals, same seed-offset discipline
+  (jobOffset = block x EVENTS_PER_TASK), better failure-cell containment and
+  ASO transfer smoothing. CRAB 10k-job cap stays far off either way.

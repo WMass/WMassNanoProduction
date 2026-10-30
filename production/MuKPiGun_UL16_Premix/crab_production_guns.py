@@ -1,7 +1,7 @@
 import os
 
-# MuKPi gun PRODUCTION round: 150M events in 15 block-tasks.
-# 3 species x 5 blocks. Each block-task: 10M events = 4,000 jobs x 2,500
+# MuKPi gun PRODUCTION round: 150M events in 30 block-tasks.
+# 3 species x 10 blocks. Each block-task: 5M events = 2,000 jobs x 2,500
 # events/job, ~1.5-3.5 h per job (premix xrootd variance), 8 cores/16 GB,
 # ASO to T3_US_MIT with DAS publication (phys03) ON.
 #
@@ -12,8 +12,8 @@ import os
 # import make_configs(); use `python crab_production_guns.py` to (re)create them.
 
 EVENTS_PER_JOB = 2500
-EVENTS_PER_TASK = 10000000            # 4,000 jobs per task
-BLOCKS_PER_SPECIES = 5
+EVENTS_PER_TASK = 5000000            # 2,000 jobs per task
+BLOCKS_PER_SPECIES = 10
 VERSION = "v1_150M_20261030"
 CAMPAIGN = "prod_v1_150M"
 SPECIES = ["MuGun", "PiGun", "KGun"]
