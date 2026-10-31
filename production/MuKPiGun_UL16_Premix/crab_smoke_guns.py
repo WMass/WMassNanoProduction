@@ -11,7 +11,7 @@ import os
 EVENTS_PER_JOB = 2500
 BLOCK_INDEX = 1
 JOBS_PER_TASK = 2
-VERSION = "v2_smoke_20261031"
+VERSION = "v2_smoke_20261031_r1"
 CAMPAIGN = "prod_v2_publication_smoke"
 SPECIES = ["MuGun", "PiGun", "KGun"]
 
