@@ -14,5 +14,9 @@ process.options = cms.untracked.PSet(numberOfThreads=cms.untracked.uint32(4))
 for species in ("MuGun", "PiGun", "KGun"):
     setattr(process, "out_" + species,
             cms.OutputModule("PoolOutputModule",
-                             fileName=cms.untracked.string(species + "_ALCARECO.root")))
+                             fileName=cms.untracked.string(species + "_ALCARECO.root"),
+                             dataset=cms.untracked.PSet(
+                                 dataTier=cms.untracked.string("ALCARECO"),
+                                 filterName=cms.untracked.string(species),
+                             )))
 process.outpath = cms.EndPath(process.out_MuGun + process.out_PiGun + process.out_KGun)
