@@ -41,7 +41,11 @@ def make_configs():
         ]
         cfg.JobType.inputFiles = [os.path.join(here, "payload.tar.gz")]
         cfg.JobType.disableAutomaticOutputCollection = True
-        cfg.JobType.outputFiles = ["{0}_ALCARECO.root".format(species), "monitoring.json"]
+        cfg.JobType.outputFiles = ["{0}_ALCARECO.root".format(species)]
+# WMCore Lexicon: ALL output LFNs of a publishing task must end in .root -
+# monitoring.json trips it at submit time (measured, SUBMITREFUSED 2026-10-31).
+# run_chain.sh echoes the monitoring block into the job log (transferLogs=True),
+# so accounting continues from logs instead.
         cfg.JobType.allowUndistributedCMSSW = True
         cfg.JobType.maxMemoryMB = 8000
         cfg.JobType.maxJobRuntimeMin = 600

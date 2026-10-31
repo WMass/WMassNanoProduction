@@ -294,3 +294,11 @@
   the fix pre-diagnosed by pmlugato rides the next PR (crab_pset.py declares a
   formal PoolOutputModule); decided 2026-10-31 to try the ASO path unchanged first
   and only touch the PSet afterward (user call).
+- Publication-only LFN trap of 2026-10-31: WMCore Lexicon rejects non-.root
+  output LFNs on a PUBLISHING task; our monitoring.json made a required publish
+  fail at SUBMITREFUSED (server-side, silent in crab submit output - protocol
+  tightened afterwards: report SUBMITTED only after the server confirms).
+  Fixes: monitoring.json out of JobType.outputFiles at publication rounds
+  (contents travel in job logs; transferLogs=True), plus PoolOutputModule
+  declarations in the stub crab_pset.py per species so CRAB classifies the
+  ALCARECO output as EDM. Round labels bump per retry round at submit time.
