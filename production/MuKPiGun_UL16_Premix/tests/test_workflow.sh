@@ -72,7 +72,7 @@ eval "$(scramv1 runtime -sh)"
 cd "$TMPDIR_TEST"
 export CAMPAIGN_DIR
 for jid in 17 18; do
-    CHAIN_STAGE=GENSIM CHAIN_JOB_ID=$jid CHAIN_EVENTS=3 \
+    CHAIN_STAGE=GENSIM CHAIN_JOB_ID=$jid CHAIN_EVENTS=3 CHAIN_SPECIES=MuGun \
     CHAIN_SEED_REPORT="$TMPDIR_TEST/seeds_$jid.json" \
     python3 - <<'PYEOF'
 import importlib.util
@@ -95,6 +95,27 @@ with open("seeds_%d_flat.json" % jid, "w") as out:
     json.dump(report["after"], out)
 PYEOF
 done
+CHAIN_STAGE=GENSIM CHAIN_JOB_ID=17 CHAIN_EVENTS=3 CHAIN_SPECIES=PiGun \
+CHAIN_SEED_REPORT="$TMPDIR_TEST/seeds_pigun.json" \
+python3 - <<'PYEOF'
+import importlib.util
+import json
+import os
+import sys
+
+campaign = os.environ["CAMPAIGN_DIR"]
+runner = os.path.join(campaign, "runtime", "stage_runner.py")
+sys.path.insert(0, os.path.join(campaign, "runtime"))
+os.environ["CHAIN_CFG"] = os.path.join(campaign, "cfgs", "MuGun_GENSIM_cfg.py")
+os.environ["CHAIN_PAYLOAD_DIR"] = campaign
+spec = importlib.util.spec_from_file_location("chain_stage_cfg_shell", runner)
+mod = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(mod)
+with open(os.path.join(os.environ["CHAIN_SEED_REPORT"])) as handle:
+    report = json.load(handle)
+with open("seeds_pigun_flat.json", "w") as out:
+    json.dump(report["after"], out)
+PYEOF
 python3 - <<'PYEOF'
 import json
 a = json.load(open("seeds_17_flat.json"))
@@ -103,5 +124,77 @@ assert a and b, "seed maps must be non-empty"
 assert a != b, "job 17 and 18 seeds must differ"
 assert any(a[k] != b[k] for k in a), "per-service seeds must differ"
 print("deterministic seeds differ across job IDs OK")
+mu = json.load(open("seeds_17_flat.json"))
+pi = json.load(open("seeds_pigun_flat.json"))
+assert mu != pi and any(mu[k] != pi[k] for k in mu), \
+    "same job ID across species must give DIFFERENT seeds (v1_150M decision)"
+print("deterministic seeds differ across species OK")
 PYEOF
+
+# High-ID proof: the production-scale end of the seed axis. job 2001 (block 1,
+# the publication smoke block offset), and job 20000 (last potential global ID
+# of the 30-task round) must ALSO produce valid seeds inside MAX_SEED, and the
+# species lane must not merely shift the same ordering.
+for probe in "2001:PiGun" "20000:KGun"; do
+    jid="${probe%%:*}"; sp="${probe##*:}"
+    CHAIN_STAGE=GENSIM CHAIN_JOB_ID=$jid CHAIN_EVENTS=3 CHAIN_SPECIES=$sp \
+    CHAIN_SEED_REPORT="$TMPDIR_TEST/seeds_${sp}_${jid}.json" \
+    python3 - <<'PYEOF'
+import importlib.util
+import json
+import os
+import sys
+
+campaign = os.environ["CAMPAIGN_DIR"]
+runner = os.path.join(campaign, "runtime", "stage_runner.py")
+sys.path.insert(0, os.path.join(campaign, "runtime"))
+os.environ["CHAIN_CFG"] = os.path.join(campaign, "cfgs", "MuGun_GENSIM_cfg.py")
+os.environ["CHAIN_PAYLOAD_DIR"] = campaign
+spec = importlib.util.spec_from_file_location("chain_stage_cfg_shell", runner)
+mod = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(mod)
+with open(os.path.join(os.environ["CHAIN_SEED_REPORT"])) as handle:
+    report = json.load(handle)
+with open("seeds_%s_%s_flat.json" % (os.environ["CHAIN_SPECIES"], os.environ["CHAIN_JOB_ID"]), "w") as out:
+    json.dump(report["after"], out)
+PYEOF
+done
+python3 - <<'PYEOF'
+import json
+import os
+for name in (f"seeds_PiGun_2001_flat.json", "seeds_KGun_20000_flat.json"):
+    assert os.path.exists(name), "expected seed dump missing: " + name
+    data = json.load(open(name))
+    assert data, "probe seed map must be non-empty: " + name
+print("high-ID seed proofs OK (job 2001 / PiGun and job 20000 / KGun within MAX_SEED)")
+PYEOF
+
+# Bare-PFN proof: CRAB publishes an output only if its framework-report PFN is a
+# bare filename (smoke r1 published nothing because run_chain.sh wrote
+# file:/srv/<species>_ALCARECO.root). Run the exact rewrite + guard block of
+# run_chain.sh on a synthetic report, then check the guard rejects an absolute PFN.
+FJR_BLOCK="$(sed -n '/python "\$PAYLOAD_DIR\/runtime\/rewrite_fjr_paths.py"/,/^FJREOF$/p' "$CAMPAIGN_DIR/run_chain.sh")"
+[[ -n "$FJR_BLOCK" ]] || { echo "rewrite block not found in run_chain.sh"; exit 1; }
+fjr_probe() {
+    local WORK_DIR="$1" PAYLOAD_DIR="$CAMPAIGN_DIR"
+    python() { python3 "$@"; }
+    die() { echo "$*" >&2; return 1; }
+    eval "$FJR_BLOCK"
+}
+FJR_WORK="$TMPDIR_TEST/.chain_MuGun_2001_probe"
+mkdir -p "$FJR_WORK"
+cat > "$FJR_WORK/FrameworkJobReport.xml" <<EOF
+<FrameworkJobReport>
+<InputFile><PFN>file:step4_RECO.root</PFN></InputFile>
+<File><PFN>file:$FJR_WORK/MuGun_ALCARECO.root</PFN><OutputModuleClass>PoolOutputModule</OutputModuleClass></File>
+</FrameworkJobReport>
+EOF
+fjr_probe "$FJR_WORK"
+grep -qxF '<File><PFN>file:MuGun_ALCARECO.root</PFN><OutputModuleClass>PoolOutputModule</OutputModuleClass></File>' \
+    "$FJR_WORK/FrameworkJobReport.xml" || { echo "rewritten PFN is not bare"; exit 1; }
+cat > "$FJR_WORK/FrameworkJobReport.xml" <<EOF
+<FrameworkJobReport><File><PFN>file:/srv/$FJR_WORK/MuGun_ALCARECO.root</PFN></File></FrameworkJobReport>
+EOF
+if fjr_probe "$FJR_WORK" 2>/dev/null; then echo "guard accepted an absolute PFN"; exit 1; fi
+echo "framework report bare-PFN rewrite OK"
 echo "ALL CHECKS OK"

@@ -209,6 +209,7 @@ fi
 export CHAIN_PAYLOAD_DIR="$PAYLOAD_DIR"
 export CHAIN_JOB_ID="$JOB_ID"
 export CHAIN_CRAB_JOB_ID="$CRAB_JOB_ID"
+export CHAIN_SPECIES="$SPECIES"
 export CHAIN_OFFSET="$JOB_OFFSET"
 export CHAIN_EVENTS="$EVENTS"
 export CHAIN_CAMPAIGN="$CAMPAIGN"
@@ -265,8 +266,26 @@ PYEOF
 mv "$WORK_DIR/$FINAL_OUTPUT" "$OUTPUT_DIR/$FINAL_OUTPUT"
 mv "$WORK_DIR/$SUMMARY_OUTPUT" "$OUTPUT_DIR/$SUMMARY_OUTPUT"
 if [[ "$LOCAL_MODE" -eq 0 ]]; then
+    # Strip the WORK_DIR prefix entirely: CRAB matches output files by the bare
+    # PFN (PostJob: pfn in tm_edm_outfiles; CMSRunAnalysis computes the PSet hash
+    # only for a pfn matching ^[A-Za-z0-9\-._]+$). An absolute PFN such as
+    # /srv/<species>_ALCARECO.root silently disables publication (smoke r1).
     python "$PAYLOAD_DIR/runtime/rewrite_fjr_paths.py" \
-        "$WORK_DIR/FrameworkJobReport.xml" "$WORK_DIR" "$INITIAL_DIR"
+        "$WORK_DIR/FrameworkJobReport.xml" "$WORK_DIR/" ""
+    python - "$WORK_DIR/FrameworkJobReport.xml" <<'FJREOF' || die "framework report output PFN is not a bare filename"
+import re, sys
+import xml.etree.ElementTree as ET
+bad = []
+for node in ET.parse(sys.argv[1]).getroot().findall("File"):
+    pfn = (node.findtext("PFN") or "").strip()
+    if pfn.startswith("file:"):
+        pfn = pfn[len("file:"):]
+    if not re.match(r"^[A-Za-z0-9\-._]+$", pfn):
+        bad.append(pfn)
+if bad:
+    sys.stderr.write("non-bare output PFN(s) in framework report: %s\n" % bad)
+    sys.exit(1)
+FJREOF
     mv "$WORK_DIR/FrameworkJobReport.xml" "$INITIAL_DIR/FrameworkJobReport.xml"
 else
     rm -f -- "$WORK_DIR/FrameworkJobReport.xml"
