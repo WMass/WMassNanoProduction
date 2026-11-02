@@ -21,4 +21,5 @@
 /QCD_Pt-20_MuEnrichedPt15_TuneCP5_13TeV-pythia8/RunIISummer20UL17RECO-106X_mc2017_realistic_v6-v1/AODSIM
 #/GGToLL_M-5To50_TuneCP5_13TeV-pythia8/RunIISummer20UL17RECO-106X_mc2017_realistic_v6-v2/AODSIM
 #/GGToLL_TuneCP5_13TeV-pythia8/RunIISummer20UL17RECO-106X_mc2017_realistic_v6-v3/AODSIM
-## The QG* datasets do not exist for 2017!
+#/QGToWQToMuNu_TuneCP5_13TeV-pythia8-photos/RunIISummer20UL17RECO-106X_mc2017_realistic_v6-v2/AODSIM
+#/QGToDYQTo2Mu_TuneCP5_13TeV-pythia8-photos/RunIISummer20UL17RECO-106X_mc2017_realistic_v6-v2/AODSIM
