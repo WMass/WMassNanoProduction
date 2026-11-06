@@ -11,6 +11,7 @@ import sys
 import datetime
 import json
 import re
+import glob
 
 def fillTemplatedFile(template_file_name, out_file_name, template_dict):
     with open(template_file_name, "r") as templateFile:
@@ -149,6 +150,87 @@ def writeHistory(path, history_file, inputFile):
         f.write("Git diff of CMSSW is \n%s\n" % gitDiff(cmssw_dir))
         f.write("-"*80+"\n")
 
+# files: inputs: unpublished files on the MIT ceph (e.g. the WMass ALCARECO of WMass/cmssw#54 and the gun
+# ALCARECO), read by the grid jobs through the MIT xrootd door (MIT is not in AAA, so LFNs do not resolve)
+_CEPH_STORE = "/ceph/submit/data/group/cms/store/"
+_MIT_DOOR = "root://submit50.mit.edu//data/group/cms/store/"
+_FILE_INPUT_KEYS = {"campaign", "sample", "customise", "tag", "primary", "cpu", "eventsPerFile"}
+
+def parseFileInput(line):
+    """A files: input line, `files:<glob under /ceph/submit/data/group/cms/store> key=value ...`, with
+    campaign (scripts/campaign.sh), sample (data or mc), customise (the alcareco_nano_cff functions,
+    comma-separated), tag (the output name), primary (the CRAB output primary dataset), and optionally
+    cpu (the sample type of scripts/campaign.sh cpu_per_event_of, default alcareco) and eventsPerFile
+    (default: counted in the first file)."""
+    tokens = line.split()
+    pattern = tokens[0][len("files:"):]
+    meta = dict(t.split("=", 1) for t in tokens[1:])
+    unknown = set(meta) - _FILE_INPUT_KEYS
+    missing = {"campaign", "sample", "customise", "tag", "primary"} - set(meta)
+    if unknown or missing:
+        raise ValueError("%s: unknown keys %s, missing keys %s" % (line, sorted(unknown), sorted(missing)))
+    if meta["sample"] not in ("data", "mc"):
+        raise ValueError("%s: sample must be data or mc" % line)
+    files = sorted(glob.glob(pattern))
+    if not files:
+        raise RuntimeError("%s: no files match %s" % (line, pattern))
+    if not all(f.startswith(_CEPH_STORE) for f in files):
+        raise ValueError("%s: the files must be under %s" % (line, _CEPH_STORE))
+    return files, meta
+
+def eventsInFile(path):
+    out = subprocess.check_output(["edmFileUtil", "file:" + path]).decode()
+    return int(re.search(r"(\d+) events", out).group(1))
+
+def makeFileInputSubmit(path, line, nThreads, doConfig, version, storage, site):
+    """Config and CRAB submit file of a files: input: userInputFiles through the MIT door, FileBased
+    jobs sized by --cpuHoursPerJob (or --filesPerJob), no publication. Returns the submit file."""
+    if args.calib or args.tagAndProbe:
+        raise ValueError("%s: --calib and --tagAndProbe do not apply to files: inputs (the customise of the "
+                         "line selects the version)" % line)
+    files, meta = parseFileInput(line)
+    isData = meta["sample"] == "data"
+    campaign = meta["campaign"]
+    label = "Data" if isData else "MC"
+    name = args.era + meta["tag"] + label + campaignTable("label_of", campaign)
+    urls = [_MIT_DOOR + f[len(_CEPH_STORE):] for f in files]
+
+    config_name = name
+    if doConfig and config_name not in configsMade:
+        script = "./scripts/make%sAlcaReco%s.sh" % (args.era, label)
+        cmd = [script, urls[0], config_name, str(nThreads), campaign, "", meta["customise"]]
+        print(cmd)
+        subprocess.call(cmd, cwd=path)
+        configsMade.append(config_name)
+    config_name += "_cfg.py"
+    if not os.path.isfile("/".join([path, "configs", config_name])):
+        raise RuntimeError("Config file %s does not exist. Rerun with --makeConfig" % config_name)
+
+    outname = "_".join([meta["primary"], meta["tag"], label + campaignTable("label_of", campaign)])
+    fileList = "inputfiles_%s.txt" % outname
+    with open("/".join([path, "crab_submit", fileList]), "w") as f:
+        f.write("\n".join(urls) + "\n")
+
+    if args.filesPerJob > 0:
+        units = args.filesPerJob
+    else:
+        eventsPerFile = int(meta.get("eventsPerFile", 0)) or eventsInFile(files[0])
+        cpuPerEvent = float(campaignTable("cpu_per_event_of", campaign, meta["sample"], meta.get("cpu", "alcareco")))
+        units = max(1, int(round(args.cpuHoursPerJob*3600/(cpuPerEvent*eventsPerFile))))
+        logging.info("%s: %d files, %d events/file, %d files/job at %.3g s CPU/event = %.1f h CPU, %d jobs" % (
+            meta["tag"], len(files), eventsPerFile, units, cpuPerEvent, units*eventsPerFile*cpuPerEvent/3600.,
+            -(-len(files)//units)))
+    if -(-len(files)//units) > _MAX_JOBS_PER_TASK:
+        raise ValueError("%s: more than %d jobs: raise --cpuHoursPerJob or split the glob" % (line, _MAX_JOBS_PER_TASK))
+
+    outfile = "/".join([path, "crab_submit", "submit" + outname + ".py"])
+    fillTemplatedFile("/".join([path, "Templates", "submitCrab%sFilesTemplate" % args.era]), outfile,
+        {"era": name, "threads": nThreads, "memory": nThreads*2000, "name": hashedName("_".join([outname, version])),
+         "config": config_name, "filelist": fileList, "primary": meta["primary"], "units": units,
+         "version": version, "outstorage": storage, "site": site, "whitelist": args.siteWhitelist.split(",")})
+    logging.info("Wrote config file %s and %s" % ("/".join(outfile.split("/")[-2:]), fileList))
+    return outfile
+
 def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, version, storage, site):
     path = os.environ['CMSSW_BASE']+"/src/Configuration/WMassNanoProduction"
     if not os.path.isfile(inputFile):
@@ -168,6 +250,12 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
 
     for i, das in enumerate(inputs):
         if match_expr and not re.match(match_expr, das):
+            continue
+
+        if das.startswith("files:"):
+            outfile = makeFileInputSubmit(path, das, nThreads, doConfig, version, storage, site)
+            if submit[0] >= 1 and i % submit[0] == (submit[1]-1):
+                submitCrab(outfile, history_file, dryRun)
             continue
 
         alcareco = isAlcaReco(das)
@@ -301,6 +389,8 @@ parser.add_argument('--site', default='T2_CH_CERN', type=str, help='Site of the 
 parser.add_argument('--campaign', default='', type=str, help='campaign of every input (scripts/campaign.sh), instead of deriving it from the dataset name; needed for 2025LowPU, which shares its datasets with 2025')
 parser.add_argument('--runRange', default='', type=str, help='CRAB run range for data (default: the campaign\'s, scripts/campaign.sh run_range_of)')
 parser.add_argument('--lumiMask', default='', type=str, help='CRAB lumi mask (JSON file or URL) for data')
+parser.add_argument('--siteWhitelist', default='T2_US_MIT,T2_US_Nebraska,T2_US_Wisconsin,T2_US_Purdue,T2_US_UCSD',
+    type=str, help='execution sites of files: inputs (comma-separated), which the jobs read through the MIT xrootd door')
 
 args = parser.parse_args()
 if args.submit[1] > args.submit[0] or (args.submit[1] == 0 and args.submit[1] != args.submit[0]):

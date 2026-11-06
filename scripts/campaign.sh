@@ -159,9 +159,9 @@ dataset_lumi_mask_of() {
     esac
 }
 
-# cpu_per_event_of <campaign> <data|mc> [nano|alcareco|alcarecocalib]: grid CPU seconds per event of the custom
-# nano with the CVH refit (nano, the default), of the AlCaReco nano (alcareco) or of its calibration version
-# (alcarecocalib, J/psi), 4 threads, cmssw
+# cpu_per_event_of <campaign> <data|mc> [nano|alcareco|alcarecocalib|alcarecogun]: grid CPU seconds per event of
+# the custom nano with the CVH refit (nano, the default), of the AlCaReco nano (alcareco), of its calibration
+# version (alcarecocalib, J/psi) or of the gun AlCaReco nano (alcarecogun, MC), 4 threads, cmssw
 # WmassNanoProd_15_0_19_patch2 with PR #49, from which prepareCrab.py sizes the jobs (README, "Job size").
 # - Measured on submit82 with 2016H data and DY->mumu MC, 2017G data and DY->mumu MC, and 2024G data.
 # - Scaled to the grid by 1.7: the 2017G production's grid CPU time over submit82's for the same code
@@ -177,7 +177,19 @@ dataset_lumi_mask_of() {
 # - AlCaReco nano, calibration version (J/psi, also the two-track refit with the global-fit payload): 3.8x the
 #   AlCaReco nano on the same 2281 J/psi 2016H events on submit82 (0.137 vs 0.036 s/event), so 0.34 for data;
 #   2.41x on the same 2000 UL16 J/psi Pt8toInf events (0.184 vs 0.076 s/event), so 0.46 for MC.
+# - The AlCaReco nano of the WMass ALCARECO of WMass/cmssw#54 (PAT muons and trigger objects in addition) costs
+#   1.2x the central one on the same events (0.185 vs 0.157 s/event on submit82, setup included): it keeps the
+#   alcareco numbers.
+# - Gun AlCaReco nano (MuKPiGun, ~12 refitted tracks per event, two refits): 0.86 (MuGun), 2.3 (PiGun) and
+#   1.9 (KGun) s/event on submit82 (200 events each, setup included); the PiGun one, scaled by 1.7, for all.
 cpu_per_event_of() {
+    if [[ ${3:-nano} == alcarecogun ]]; then
+        case "$2" in
+            mc) echo 3.9 ;;
+            *) echo "cpu_per_event_of: the gun AlCaReco is MC (got '$2')" >&2; return 1 ;;
+        esac
+        return
+    fi
     if [[ ${3:-nano} == alcareco || ${3:-nano} == alcarecocalib ]]; then
         case "$3:$2" in
             alcareco:data)      echo 0.09 ;;

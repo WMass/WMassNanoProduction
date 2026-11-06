@@ -117,6 +117,24 @@ or LFN), era (+ NANO modifier), global tag, campaign-specific customise and outp
   - The central AlCaReco files store the strip clusters at split level 99; the cmssw branch reads them
     correctly (3000 Run2016F events: all 652 branches bit-identical to the output from a split-1 copy).
 
+* **AlCaReco nano of unpublished ALCARECOs** (`files:` lines of an input list, `makeNanoV15AlcaReco{MC,Data}.sh` with
+  an explicit customise): the ALCARECO of WMass/cmssw#54 (`nanoAOD_alcarecoWMass<skim>[Calib]`: TrigObj with the
+  quarkonium path bits, L1 bits, the MiniAOD Muon table on the relinked muons, the stored beam spot, the MiniAOD
+  generator record; inputs `alcareco_wmass_postVFP.txt`, the review pilots of issue #41) and the MuKPiGun gun
+  ALCARECO (`nanoAOD_alcareco{MuGun,PiGun,KGun}`: a `Track` table with the per-species refit; inputs
+  `alcareco_gun_postVFP.txt`, issue #38, and `alcareco_gun_postVFP_test.txt`). A line reads
+  ```
+  files:<glob under /ceph/submit/data/group/cms/store> campaign=<campaign> sample=<data|mc> customise=<f1[,f2]> tag=<name> primary=<dataset> [cpu=<type>] [eventsPerFile=<n>]
+  ```
+  with `customise` the `alcareco_nano_cff` functions (e.g. `nanoAOD_alcarecoWMassTkAlJpsiMuMu,nanoAOD_alcarecoFullGen`),
+  `tag` the output name (`NanoV15<tag>Data<label>`, `NanoV15<tag>MC<label>`), `primary` the CRAB output primary
+  dataset, and `cpu` the sample type of `campaign.sh cpu_per_event_of` (`alcareco`, `alcarecocalib`, `alcarecogun`).
+  `prepareCrab.py` expands the glob at submit time into `crab_submit/inputfiles_<outname>.txt` with the URLs of the
+  MIT xrootd door (`root://submit50.mit.edu//data/...`: MIT is not in AAA, so the LFNs would not resolve), and
+  writes a submit file from `Templates/submitCrabNanoV15FilesTemplate`: `userInputFiles`, FileBased jobs sized by
+  `--cpuHoursPerJob` (or `--filesPerJob`), the US T2 sites of `--siteWhitelist`, no publication. Without a lumi
+  list there is no lumi mask: apply the golden JSON to data in the analysis.
+
 The scripts accept `file:/path/to.root` and `root://...` inputs for local tests.
 
 Example: `./scripts/prepareCrab.py --makeConfig -i inputs/dyMC_v15.txt -v v1 --dryRun`
@@ -183,6 +201,9 @@ runbook and handoffs in `production/<tag>/`.
 | tag | date | content |
 |---|---|---|
 | `NanoV15_v1.0` | 2026-10-16 | 2016 postVFP data and MC; [`production/NanoV15_v1.0/`](production/NanoV15_v1.0/README.md), issue #26 |
+| `NanoV15_v1.1` | 2026-10-20 | data jobs across run boundaries no longer crash; outputs unchanged |
+| `NanoV15_v1.2` | 2026-11-06 | AlCaReco nano of the central 2016 postVFP J/psi and Upsilon AlCaRecos, and its calibration version (WMass/cmssw#51, #31); runbook on the branch `production-NanoV15_v1.2_AlCaReco` |
+| `NanoV15_v1.3` | 2026-11-06 | AlCaReco nano of the ALCARECO of WMass/cmssw#54 and of the gun ALCARECO, `files:` inputs (WMass/cmssw#55); [`production/NanoV15_v1.3_AlCaReco/`](production/NanoV15_v1.3_AlCaReco/README.md) |
 
 # To clone with CMSSW setup
 
