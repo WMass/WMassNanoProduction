@@ -17,10 +17,13 @@ v1.2 (WMass/cmssw#55).
    `CMSSW_TOPIC=WMass:NanoV15_v1.3 PROD_BRANCH=NanoV15_v1.3 bash setup/clone_15_0.sh`, then `cmsenv` and
    `scripts/prepareSandbox.sh` in `Configuration/WMassNanoProduction`.
 2. Configs and submit files:
-   `./scripts/prepareCrab.py --makeConfig -v v1p3 --cpuHoursPerJob 2 --storage /store/group/zmass/NanoAOD --site T3_US_MIT -i inputs/alcareco_wmass_postVFP.txt inputs/alcareco_gun_postVFP_test.txt`
-   (2 CPU hours per job: several jobs per task for these small samples).
-3. Submit in the CRAB environment with a valid proxy: the same command with `--submit 1 1`; the history file
-   `history/<list>_<date>_submit11_<user>.txt` is committed afterwards.
+   `./scripts/prepareCrab.py --makeConfig -v v1p3 --storage /store/group/zmass/NanoAOD --site T3_US_MIT --filesPerJob 10 -i inputs/alcareco_wmass_postVFP.txt`
+   and `./scripts/prepareCrab.py --makeConfig -v v1p3 --cpuHoursPerJob 2 --storage /store/group/zmass/NanoAOD --site T3_US_MIT -i inputs/alcareco_gun_postVFP_test.txt`
+   (7-10 jobs per pilot task, one gun file per job).
+3. Submit in the CRAB environment with a valid proxy: the same commands with `--submit 1 1`; the history file
+   `history/<list>_<date>_submit11_<user>.txt` is committed afterwards. A `crab submit --dryrun` leaves
+   `crab_projects/<task>/local/` with a copy of the field tables, which the sandbox of every later submission
+   packs (over CRAB's 120 MB): move it out of the area before submitting anything else.
 4. Checks when the tasks are done: every input event in the output (Events entries = the ALCARECO events),
    the files readable, the content of WMass/cmssw#55 (TrigObj with the quarkonium bits, PAT muon columns,
    `CvhParm` in the Runs tree of the calibration version, GenPart and Pileup in MC, the `Track` table of the
