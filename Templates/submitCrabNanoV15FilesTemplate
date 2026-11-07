@@ -29,3 +29,7 @@ config.Data.outputDatasetTag = '${era}_${version}'
 
 config.Site.whitelist = ${whitelist}
 config.Site.storageSite = '${site}'
+# no overflow to sites outside the whitelist: the jobs stream their input from the MIT door,
+# and far from it they idle on the network (T2_US_Vanderbilt: 4-11 % CPU, 6 h for a 20-min job)
+config.section_('Debug')
+config.Debug.extraJDL = ['+CMS_ALLOW_OVERFLOW=False']
