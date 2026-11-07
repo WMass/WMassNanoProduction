@@ -11,6 +11,7 @@ import sys
 import datetime
 import json
 import re
+import glob
 
 def fillTemplatedFile(template_file_name, out_file_name, template_dict):
     with open(template_file_name, "r") as templateFile:
@@ -32,11 +33,24 @@ def campaignFromInput(das_path):
         return args.campaign
     return campaignTable("campaign_from_input", das_path)
 
+def isAlcaReco(das_path):
+    """An AlCaReco input: the AlCaReco nano (makeNanoV15AlcaReco*.sh) refits its muon tracks."""
+    return das_path.split(" ")[0].endswith("/ALCARECO")
+
+def isMCInput(das_path):
+    """MC: a *SIM tier (of the last dataset of the line: a weight-fix line ends with the MINIAODSIM), or an
+    ALCARECO of an MC campaign (the processed datasets of data start with the run era, Run2016F-...)."""
+    return "SIM" in das_path[-3:] or (isAlcaReco(das_path) and not re.match(r"Run20\d\d", das_path.split("/")[2]))
+
+def alcarecoSkim(das_path):
+    """The AlCaReco skim of the input (TkAlJpsiMuMu, TkAlUpsilonMuMu), whose tracks the AlCaReco nano refits."""
+    return campaignTable("alcareco_skim_of", das_path.split(" ")[0])
+
 def nameFromInput(das_path, tagAndProbe=False):
     """Data<label> / MC<label> (+TagAndProbe); 2016 keeps its historical order
     (MCTagAndProbePostVFP)."""
     campaign = campaignFromInput(das_path)
-    label = "MC" if "SIM" in das_path[-3:] else "Data"
+    label = "MC" if isMCInput(das_path) else "Data"
     tnp = "TagAndProbe" if tagAndProbe else ""
     if campaign.startswith("2016"):
         return label + tnp + campaignTable("label_of", campaign)
@@ -60,10 +74,12 @@ def hashedName(name, bits=5):
     h = hashlib.sha256(name.encode('utf-8')).hexdigest()
     return name[:(100-bits)] + h[:bits]
 
-def makeConfig(path, era, das, config_name, nThreads, isData, tagAndProbe):
-    # one script per (data/MC, nano/tag-and-probe); the campaign selects the conditions inside it
-    script = "./scripts/make%s%s%s.sh" % (era, "Data" if isData else "MC", "TagAndProbe" if tagAndProbe else "")
-    cmd = [script, *das.split(" "), config_name, str(nThreads), campaignFromInput(das)]
+def makeConfig(path, era, das, config_name, nThreads, isData, tagAndProbe, calib=False):
+    # one script per (nano/AlCaReco nano, data/MC, nano/tag-and-probe); the campaign selects the
+    # conditions inside it, the AlCaReco scripts also the skim, and calib their calibration version
+    script = "./scripts/make%s%s%s%s.sh" % (era, "AlcaReco" if isAlcaReco(das) else "", "Data" if isData else "MC",
+                                            "TagAndProbe" if tagAndProbe else "")
+    cmd = [script, *das.split(" "), config_name, str(nThreads), campaignFromInput(das)] + (["calib"] if calib else [])
     print(cmd)
     subprocess.call(cmd, cwd=path)
 
@@ -134,6 +150,87 @@ def writeHistory(path, history_file, inputFile):
         f.write("Git diff of CMSSW is \n%s\n" % gitDiff(cmssw_dir))
         f.write("-"*80+"\n")
 
+# files: inputs: unpublished files on the MIT ceph (e.g. the WMass ALCARECO of WMass/cmssw#54 and the gun
+# ALCARECO), read by the grid jobs through the MIT xrootd door (MIT is not in AAA, so LFNs do not resolve)
+_CEPH_STORE = "/ceph/submit/data/group/cms/store/"
+_MIT_DOOR = "root://submit50.mit.edu//data/group/cms/store/"
+_FILE_INPUT_KEYS = {"campaign", "sample", "customise", "tag", "primary", "cpu", "eventsPerFile"}
+
+def parseFileInput(line):
+    """A files: input line, `files:<glob under /ceph/submit/data/group/cms/store> key=value ...`, with
+    campaign (scripts/campaign.sh), sample (data or mc), customise (the alcareco_nano_cff functions,
+    comma-separated), tag (the output name), primary (the CRAB output primary dataset), and optionally
+    cpu (the sample type of scripts/campaign.sh cpu_per_event_of, default alcareco) and eventsPerFile
+    (default: counted in the first file)."""
+    tokens = line.split()
+    pattern = tokens[0][len("files:"):]
+    meta = dict(t.split("=", 1) for t in tokens[1:])
+    unknown = set(meta) - _FILE_INPUT_KEYS
+    missing = {"campaign", "sample", "customise", "tag", "primary"} - set(meta)
+    if unknown or missing:
+        raise ValueError("%s: unknown keys %s, missing keys %s" % (line, sorted(unknown), sorted(missing)))
+    if meta["sample"] not in ("data", "mc"):
+        raise ValueError("%s: sample must be data or mc" % line)
+    files = sorted(glob.glob(pattern))
+    if not files:
+        raise RuntimeError("%s: no files match %s" % (line, pattern))
+    if not all(f.startswith(_CEPH_STORE) for f in files):
+        raise ValueError("%s: the files must be under %s" % (line, _CEPH_STORE))
+    return files, meta
+
+def eventsInFile(path):
+    out = subprocess.check_output(["edmFileUtil", "file:" + path]).decode()
+    return int(re.search(r"(\d+) events", out).group(1))
+
+def makeFileInputSubmit(path, line, nThreads, doConfig, version, storage, site):
+    """Config and CRAB submit file of a files: input: userInputFiles through the MIT door, FileBased
+    jobs sized by --cpuHoursPerJob (or --filesPerJob), no publication. Returns the submit file."""
+    if args.calib or args.tagAndProbe:
+        raise ValueError("%s: --calib and --tagAndProbe do not apply to files: inputs (the customise of the "
+                         "line selects the version)" % line)
+    files, meta = parseFileInput(line)
+    isData = meta["sample"] == "data"
+    campaign = meta["campaign"]
+    label = "Data" if isData else "MC"
+    name = args.era + meta["tag"] + label + campaignTable("label_of", campaign)
+    urls = [_MIT_DOOR + f[len(_CEPH_STORE):] for f in files]
+
+    config_name = name
+    if doConfig and config_name not in configsMade:
+        script = "./scripts/make%sAlcaReco%s.sh" % (args.era, label)
+        cmd = [script, urls[0], config_name, str(nThreads), campaign, "", meta["customise"]]
+        print(cmd)
+        subprocess.call(cmd, cwd=path)
+        configsMade.append(config_name)
+    config_name += "_cfg.py"
+    if not os.path.isfile("/".join([path, "configs", config_name])):
+        raise RuntimeError("Config file %s does not exist. Rerun with --makeConfig" % config_name)
+
+    outname = "_".join([meta["primary"], meta["tag"], label + campaignTable("label_of", campaign)])
+    fileList = "inputfiles_%s.txt" % outname
+    with open("/".join([path, "crab_submit", fileList]), "w") as f:
+        f.write("\n".join(urls) + "\n")
+
+    if args.filesPerJob > 0:
+        units = args.filesPerJob
+    else:
+        eventsPerFile = int(meta.get("eventsPerFile", 0)) or eventsInFile(files[0])
+        cpuPerEvent = float(campaignTable("cpu_per_event_of", campaign, meta["sample"], meta.get("cpu", "alcareco")))
+        units = max(1, int(round(args.cpuHoursPerJob*3600/(cpuPerEvent*eventsPerFile))))
+        logging.info("%s: %d files, %d events/file, %d files/job at %.3g s CPU/event = %.1f h CPU, %d jobs" % (
+            meta["tag"], len(files), eventsPerFile, units, cpuPerEvent, units*eventsPerFile*cpuPerEvent/3600.,
+            -(-len(files)//units)))
+    if -(-len(files)//units) > _MAX_JOBS_PER_TASK:
+        raise ValueError("%s: more than %d jobs: raise --cpuHoursPerJob or split the glob" % (line, _MAX_JOBS_PER_TASK))
+
+    outfile = "/".join([path, "crab_submit", "submit" + outname + ".py"])
+    fillTemplatedFile("/".join([path, "Templates", "submitCrab%sFilesTemplate" % args.era]), outfile,
+        {"era": name, "threads": nThreads, "memory": nThreads*2000, "name": hashedName("_".join([outname, version])),
+         "config": config_name, "filelist": fileList, "primary": meta["primary"], "units": units,
+         "version": version, "outstorage": storage, "site": site, "whitelist": args.siteWhitelist.split(",")})
+    logging.info("Wrote config file %s and %s" % ("/".join(outfile.split("/")[-2:]), fileList))
+    return outfile
+
 def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, version, storage, site):
     path = os.environ['CMSSW_BASE']+"/src/Configuration/WMassNanoProduction"
     if not os.path.isfile(inputFile):
@@ -155,8 +252,22 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
         if match_expr and not re.match(match_expr, das):
             continue
 
-        name = era+nameFromInput(das, args.tagAndProbe)
-        isData = "Data" in name
+        if das.startswith("files:"):
+            outfile = makeFileInputSubmit(path, das, nThreads, doConfig, version, storage, site)
+            if submit[0] >= 1 and i % submit[0] == (submit[1]-1):
+                submitCrab(outfile, history_file, dryRun)
+            continue
+
+        alcareco = isAlcaReco(das)
+        if alcareco and args.tagAndProbe:
+            raise ValueError("%s: the tag-and-probe nano runs on AOD, not on an AlCaReco" % das)
+        if args.calib and not (alcareco and alcarecoSkim(das) == "TkAlJpsiMuMu"):
+            raise ValueError("%s: --calib is the calibration version of the J/psi AlCaReco nano (TkAlJpsiMuMu)" % das)
+        # the AlCaReco nano: the skim in the config and output names, NanoV15TkAlJpsiMuMuDataPostVFP, and
+        # Calib for its calibration version, NanoV15TkAlJpsiMuMuCalibDataPostVFP
+        calibLabel = "Calib" if args.calib else ""
+        name = era + (alcarecoSkim(das) + calibLabel if alcareco else "") + nameFromInput(das, args.tagAndProbe)
+        isData = not isMCInput(das)
         config_name = name 
         das_split = das.split(" ")
         if len(das_split) > 1:
@@ -167,7 +278,7 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
             config_name += "_" + sampleTag
 
         if doConfig and config_name not in configsMade:
-            makeConfig(path, era, das, config_name, nThreads, isData, args.tagAndProbe)
+            makeConfig(path, era, das, config_name, nThreads, isData, args.tagAndProbe, args.calib)
             configsMade.append(config_name)
 
         config_name += "_cfg.py"
@@ -182,7 +293,11 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
                 outname += "_" + args.campaign
             if args.tagAndProbe:
                 outname += "_TagAndProbe"
+            if args.calib:
+                outname += "_Calib"
         else:
+            if alcareco:
+                outname += "_" + alcarecoSkim(das) + calibLabel
             outname += "_"+nameFromInput(das)
             # check if it is extension samples, where we need to add the extension number to the label
             matched = re.search("_ext(\d+)", das.split('/')[2])
@@ -216,7 +331,8 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
             splitting, units = ("LumiBased", 10*args.nThreads) if isData else ("FileBased", 2*args.nThreads)
         else:
             splitting = "EventAwareLumiBased"
-            cpuPerEvent = float(campaignTable("cpu_per_event_of", campaignFromInput(das), "data" if isData else "mc"))
+            cpuPerEvent = float(campaignTable("cpu_per_event_of", campaignFromInput(das), "data" if isData else "mc",
+                                              ("alcarecocalib" if args.calib else "alcareco") if alcareco else "nano"))
             units = args.eventsPerJob if args.eventsPerJob > 0 else max(1000, int(round(args.cpuHoursPerJob*3600/cpuPerEvent, -3)))
             logJobSize(das, units, cpuPerEvent, "phys03" if len(das_split) > 1 else "global")
 
@@ -248,6 +364,10 @@ parser.add_argument('-v', '--version', type=str, required=True, help='Version la
 parser.add_argument('--dryRun', action='store_true', help='print submit commands rather than executing them')
 parser.add_argument('--makeConfig', action='store_true', help='run cmsDriver to build config file')
 parser.add_argument('--tagAndProbe', action='store_true', help='Submit tag and probe nano')
+parser.add_argument('--calib', action='store_true',
+    help='the calibration version of the J/psi AlCaReco nano (TkAlJpsiMuMu inputs only): also the two-track '
+         'J/psi refit with the payload from which the module-level corrections are derived; the config, output '
+         'tag and request name get Calib')
 parser.add_argument('-i', '--inputFiles', required=True, type=str, nargs='*', help='inputFiles to process')
 parser.add_argument('-m', '--filterExpr', default='', type=str, help='Expression to filter out files from the input list')
 parser.add_argument('-s', '--submit', type=int, nargs=2, help='Number of splits to make, which split to submit' \
@@ -269,6 +389,8 @@ parser.add_argument('--site', default='T2_CH_CERN', type=str, help='Site of the 
 parser.add_argument('--campaign', default='', type=str, help='campaign of every input (scripts/campaign.sh), instead of deriving it from the dataset name; needed for 2025LowPU, which shares its datasets with 2025')
 parser.add_argument('--runRange', default='', type=str, help='CRAB run range for data (default: the campaign\'s, scripts/campaign.sh run_range_of)')
 parser.add_argument('--lumiMask', default='', type=str, help='CRAB lumi mask (JSON file or URL) for data')
+parser.add_argument('--siteWhitelist', default='T2_US_MIT,T2_US_Nebraska,T2_US_Wisconsin,T2_US_Purdue,T2_US_UCSD',
+    type=str, help='execution sites of files: inputs (comma-separated), which the jobs read through the MIT xrootd door')
 
 args = parser.parse_args()
 if args.submit[1] > args.submit[0] or (args.submit[1] == 0 and args.submit[1] != args.submit[0]):

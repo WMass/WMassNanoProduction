@@ -1,0 +1,15 @@
+# The AlCaReco nano of the WMass ALCARECO of WMass/cmssw#54 (TkAlJpsiMuMu: trigger objects, relinked
+# muons, MiniAOD generator record): the 100k-event review pilots of WMass/WMassNanoProduction#41, 2016
+# postVFP. Unpublished files on the MIT ceph, read through the MIT xrootd door (files: inputs of
+# prepareCrab.py, README "AlCaReco nano"). The data has no lumi mask (userInputFiles carry no lumi list):
+# apply the golden JSON in the analysis.
+# data: Charmonium 2016H RAW, block 57ce9c24 (run 284043), build 7605b6df (@havynanc)
+files:/ceph/submit/data/group/cms/store/group/zmass/JpsiAlcaReview_UL16_Charmonium2016H_100k_20261105/havyn/Charmonium/*/*/0000/TkAlJpsiMuMu_*.root campaign=2016postVFP sample=data customise=nanoAOD_alcarecoWMassTkAlJpsiMuMu tag=JpsiAlcaReviewR1 primary=Charmonium
+files:/ceph/submit/data/group/cms/store/group/zmass/JpsiAlcaReview_UL16_Charmonium2016H_100k_20261105/havyn/Charmonium/*/*/0000/TkAlJpsiMuMu_*.root campaign=2016postVFP sample=data customise=nanoAOD_alcarecoWMassTkAlJpsiMuMuCalib tag=JpsiAlcaReviewR1Calib primary=Charmonium cpu=alcarecocalib
+# the data round on the r3 build (remapper): not produced yet
+#files:/ceph/submit/data/group/cms/store/group/zmass/JpsiAlcaReview_UL16_Charmonium2016H_100k_r3_20261106/havyn/Charmonium/*/*/0000/TkAlJpsiMuMu_*.root campaign=2016postVFP sample=data customise=nanoAOD_alcarecoWMassTkAlJpsiMuMu tag=JpsiAlcaReviewR3 primary=Charmonium
+# MC: prompt J/psi Pythia, 100k generated per round (@emanca): r1c full genParticles (build 7605b6d),
+# r2 the pruned MC truth (408029a), r3 r2 + the leg remapper
+files:/ceph/submit/data/group/cms/store/group/zmass/JpsiAlcaReview_UL16_Pythia100k_r1c_20261105/emanca/JPsiToMuMu_Pt8_Pythia8_UL2016Review/*/*/0000/TkAlJpsiMuMu_*.root campaign=2016postVFP sample=mc customise=nanoAOD_alcarecoWMassTkAlJpsiMuMu,nanoAOD_alcarecoFullGen tag=JpsiAlcaReviewR1c primary=JPsiToMuMu_Pt8_Pythia8_UL2016Review
+files:/ceph/submit/data/group/cms/store/group/zmass/JpsiAlcaReview_UL16_Pythia100k_r2_20261105/emanca/JPsiToMuMu_Pt8_Pythia8_UL2016Review/*/*/0000/TkAlJpsiMuMu_*.root campaign=2016postVFP sample=mc customise=nanoAOD_alcarecoWMassTkAlJpsiMuMu tag=JpsiAlcaReviewR2 primary=JPsiToMuMu_Pt8_Pythia8_UL2016Review
+files:/ceph/submit/data/group/cms/store/group/zmass/JpsiAlcaReview_UL16_Pythia100k_r3_20261106/emanca/JPsiToMuMu_Pt8_Pythia8_UL2016Review/*/*/0000/TkAlJpsiMuMu_*.root campaign=2016postVFP sample=mc customise=nanoAOD_alcarecoWMassTkAlJpsiMuMu tag=JpsiAlcaReviewR3 primary=JPsiToMuMu_Pt8_Pythia8_UL2016Review
