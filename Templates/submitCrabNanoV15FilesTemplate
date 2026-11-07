@@ -29,7 +29,8 @@ config.Data.outputDatasetTag = '${era}_${version}'
 
 config.Site.whitelist = ${whitelist}
 config.Site.storageSite = '${site}'
-# no overflow to sites outside the whitelist: the jobs stream their input from the MIT door,
-# and far from it they idle on the network (T2_US_Vanderbilt: 4-11 % CPU, 6 h for a 20-min job)
+# no overflow to sites outside the whitelist: the v1.3 test jobs that overflowed to T2_US_Vanderbilt
+# ran cmsRun in minutes, as elsewhere, but then spent 5 h in the local stage-out (gfal-copy to the
+# Vanderbilt storage timing out in the SSL handshake) before it went through
 config.section_('Debug')
 config.Debug.extraJDL = ['+CMS_ALLOW_OVERFLOW=False']
