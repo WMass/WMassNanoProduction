@@ -204,6 +204,7 @@ runbook and handoffs in `production/<tag>/`.
 | `NanoV15_v1.1` | 2026-10-20 | data jobs across run boundaries no longer crash; outputs unchanged |
 | `NanoV15_v1.2` | 2026-11-06 | AlCaReco nano of the central 2016 postVFP J/psi and Upsilon AlCaRecos, and its calibration version (WMass/cmssw#51, #31); runbook on the branch `production-NanoV15_v1.2_AlCaReco` |
 | `NanoV15_v1.3` | 2026-11-06 | AlCaReco nano of the ALCARECO of WMass/cmssw#54 and of the gun ALCARECO, `files:` inputs (WMass/cmssw#55); [`production/NanoV15_v1.3_AlCaReco/`](production/NanoV15_v1.3_AlCaReco/README.md) |
+| `NanoV15_v1.4` | 2026-11-09 | `files:` inputs without CRAB overflow outside the whitelist (cmssw as v1.3); the gun AlCaReco nano production, issue #42 |
 
 # To clone with CMSSW setup
 
