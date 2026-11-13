@@ -1,0 +1,9 @@
+# AlCaReco nano (scripts/makeNanoV15AlcaRecoData.sh), 2016 postVFP data of AN-21-131 (v9):
+# J/psi (Charmonium, TkAlJpsiMuMu, UL2016 re-reco) and Upsilon (MuOnia, TkAlUpsilonMuMu, the
+# 31Aug2023_UL2016_WMass re-reco).
+/Charmonium/Run2016F-TkAlJpsiMuMu-21Feb2020_UL2016-v1/ALCARECO
+/Charmonium/Run2016G-TkAlJpsiMuMu-21Feb2020_UL2016-v1/ALCARECO
+/Charmonium/Run2016H-TkAlJpsiMuMu-21Feb2020_UL2016-v1/ALCARECO
+/MuOnia/Run2016F-TkAlUpsilonMuMu-31Aug2023_UL2016_WMass-v1/ALCARECO
+/MuOnia/Run2016G-TkAlUpsilonMuMu-31Aug2023_UL2016_WMass-v1/ALCARECO
+/MuOnia/Run2016H-TkAlUpsilonMuMu-31Aug2023_UL2016_WMass-v1/ALCARECO
