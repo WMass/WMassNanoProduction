@@ -5,13 +5,16 @@
 # (PhysicsTools/NanoAOD/alcareco_nano_cff.py). The NANO step runs its alcarecoNanoSequence
 # instead of the stock nano; nanoAOD_alcareco<skim> selects the skim's tracks. The refit of
 # data uses the OPERA field map, as in the W-mass nano.
-# usage: makeNanoV15AlcaRecoData <das_path or file:/root:...> <name> [nthreads] [campaign] [calib]
+# usage: makeNanoV15AlcaRecoData <das_path or file:/root:...> <name> [nthreads] [campaign] [calib] [customise]
 #   campaign: see scripts/campaign.sh (default: from the dataset name)
 #   the skim comes from the dataset name or file path (scripts/campaign.sh alcareco_skim_of)
 #   calib: the calibration version (TkAlJpsiMuMu only), alcareco_nano_cff calib=True: also the two-track
 #   J/psi refit with the payload from which the module-level corrections are derived
+#   customise: the alcareco_nano_cff functions to apply (comma-separated), instead of the skim's
+#   nanoAOD_alcareco<skim>[Calib]: for an ALCARECO of another format, e.g. that of WMass/cmssw#54
+#   (nanoAOD_alcarecoWMassTkAlJpsiMuMu) or the gun ALCARECO (nanoAOD_alcarecoPiGun); calib must be empty
 if [[ $# -lt 2 ]]; then
-    echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign] [calib]"
+    echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign] [calib] [customise]"
     exit 1
 fi
 source "$(dirname "$0")/campaign.sh"
@@ -30,20 +33,29 @@ case $campaign in
 esac
 era=$(nano_era_of $campaign) || exit 1
 gt=$(gt_of $campaign data) || exit 1
-skim=$(alcareco_skim_of "$1") || exit 1
-custom=nanoAOD_alcareco$skim
-if [[ -n ${5:-} ]]; then
-    if [[ $5 != calib || $skim != TkAlJpsiMuMu ]]; then
-        echo "makeNanoV15AlcaRecoData: the 5th argument is 'calib', for TkAlJpsiMuMu only (got '$5', skim $skim)" >&2
+if [[ -n ${6:-} ]]; then
+    if [[ -n ${5:-} ]]; then
+        echo "makeNanoV15AlcaRecoData: calib and customise are exclusive (the customise selects the version)" >&2
         exit 1
     fi
-    custom=${custom}Calib
+    skim="(customise)"
+    custom=$(echo $6 | sed 's|,|,PhysicsTools/NanoAOD/alcareco_nano_cff.|g')
+else
+    skim=$(alcareco_skim_of "$1") || exit 1
+    custom=nanoAOD_alcareco$skim
+    if [[ -n ${5:-} ]]; then
+        if [[ $5 != calib || $skim != TkAlJpsiMuMu ]]; then
+            echo "makeNanoV15AlcaRecoData: the 5th argument is 'calib', for TkAlJpsiMuMu only (got '$5', skim $skim)" >&2
+            exit 1
+        fi
+        custom=${custom}Calib
+    fi
 fi
 
 config_name=configs/${name}_cfg.py
 outfile=${name}.root
 
-echo "makeNanoV15AlcaRecoData: campaign $campaign, era $era, GT $gt, skim $skim"
+echo "makeNanoV15AlcaRecoData: campaign $campaign, era $era, GT $gt, skim $skim, customise $custom"
 cmsDriver.py NANO --conditions $gt \
     --datatier NANOAOD --eventcontent NANOAOD \
     --era $era \

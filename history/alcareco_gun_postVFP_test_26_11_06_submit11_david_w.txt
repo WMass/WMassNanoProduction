@@ -1,0 +1,57 @@
+Submit log for inputs: inputs/alcareco_gun_postVFP_test.txt
+Auto-generated with command ./scripts/prepareCrab.py -v v1p3 --cpuHoursPerJob 2 --storage /store/group/zmass/NanoAOD --site T3_US_MIT --submit 1 1 -m .*(PiGun|KGun)_v2 -i inputs/alcareco_gun_postVFP_test.txt
+Script ran at 2026-11-06 16:50:26.388679
+Git hash of scripts is "0c6e9970da9a808e5fd092662f8fb2bc2b8e183f"
+Git hash of CMSSW is "ed645c50ca85e8bbfc0dc44baad7eaa5d799f6c0"
+
+Git diff of scripts is 
+
+Git diff of CMSSW is 
+
+--------------------------------------------------------------------------------
+
+Running command: crab submit /work/submit/david_w/ZMass/prod_NanoV15_v1.3_alcareco/CMSSW_15_0_19_patch2/src/Configuration/WMassNanoProduction/crab_submit/submitSinglePiGun_Pt0p01To150_Eta2p4_PiGunV2Test_MCPostVFP.py
+--> Failed to submit file /work/submit/david_w/ZMass/prod_NanoV15_v1.3_alcareco/CMSSW_15_0_19_patch2/src/Configuration/WMassNanoProduction/crab_submit/submitSinglePiGun_Pt0p01To150_Eta2p4_PiGunV2Test_MCPostVFP.py
+Running command: crab submit /work/submit/david_w/ZMass/prod_NanoV15_v1.3_alcareco/CMSSW_15_0_19_patch2/src/Configuration/WMassNanoProduction/crab_submit/submitSingleKGun_Pt0p01To150_Eta2p4_KGunV2Test_MCPostVFP.py
+--> Failed to submit file /work/submit/david_w/ZMass/prod_NanoV15_v1.3_alcareco/CMSSW_15_0_19_patch2/src/Configuration/WMassNanoProduction/crab_submit/submitSingleKGun_Pt0p01To150_Eta2p4_KGunV2Test_MCPostVFP.pySubmit log for inputs: inputs/alcareco_gun_postVFP_test.txt
+Auto-generated with command ./scripts/prepareCrab.py -v v1p3 --cpuHoursPerJob 2 --storage /store/group/zmass/NanoAOD --site T3_US_MIT --submit 1 1 -m .*(PiGun|KGun)_v2 -i inputs/alcareco_gun_postVFP_test.txt
+Script ran at 2026-11-06 16:59:28.375517
+Git hash of scripts is "0c6e9970da9a808e5fd092662f8fb2bc2b8e183f"
+Git hash of CMSSW is "ed645c50ca85e8bbfc0dc44baad7eaa5d799f6c0"
+
+Git diff of scripts is 
+
+Git diff of CMSSW is 
+
+--------------------------------------------------------------------------------
+
+Running command: crab submit /work/submit/david_w/ZMass/prod_NanoV15_v1.3_alcareco/CMSSW_15_0_19_patch2/src/Configuration/WMassNanoProduction/crab_submit/submitSinglePiGun_Pt0p01To150_Eta2p4_PiGunV2Test_MCPostVFP.py
+Will use CRAB configuration file /work/submit/david_w/ZMass/prod_NanoV15_v1.3_alcareco/CMSSW_15_0_19_patch2/src/Configuration/WMassNanoProduction/crab_submit/submitSinglePiGun_Pt0p01To150_Eta2p4_PiGunV2Test_MCPostVFP.py
+Importing CMSSW configuration ../configs/NanoV15PiGunV2TestMCPostVFP_cfg.py
+Finished importing CMSSW configuration ../configs/NanoV15PiGunV2TestMCPostVFP_cfg.py
+You are requesting more than 1 core per job. Please make sure that your multi-threaded code is thread-safe and CPU-efficient, and request the correct amount of memory since the default 'maxMemoryMB' value is meant for single core jobs.
+Sending the request to the server at cmsweb.cern.ch
+Success: Your task has been delivered to the prod CRAB3 server.
+Task name: 261106_220107:dwalter_crab_SinglePiGun_Pt0p01To150_Eta2p4_PiGunV2Test_MCPostVFP_v1p3
+Project dir: crab_projects/crab_SinglePiGun_Pt0p01To150_Eta2p4_PiGunV2Test_MCPostVFP_v1p3
+Please use ' crab status -d crab_projects/crab_SinglePiGun_Pt0p01To150_Eta2p4_PiGunV2Test_MCPostVFP_v1p3 ' to check how the submission process proceeds.
+Log file is /work/submit/david_w/ZMass/prod_NanoV15_v1.3_alcareco/CMSSW_15_0_19_patch2/src/Configuration/WMassNanoProduction/crab_submit/crab_projects/crab_SinglePiGun_Pt0p01To150_Eta2p4_PiGunV2Test_MCPostVFP_v1p3/crab.log
+
+Running command: crab submit /work/submit/david_w/ZMass/prod_NanoV15_v1.3_alcareco/CMSSW_15_0_19_patch2/src/Configuration/WMassNanoProduction/crab_submit/submitSingleKGun_Pt0p01To150_Eta2p4_KGunV2Test_MCPostVFP.py
+Will use CRAB configuration file /work/submit/david_w/ZMass/prod_NanoV15_v1.3_alcareco/CMSSW_15_0_19_patch2/src/Configuration/WMassNanoProduction/crab_submit/submitSingleKGun_Pt0p01To150_Eta2p4_KGunV2Test_MCPostVFP.py
+Importing CMSSW configuration ../configs/NanoV15KGunV2TestMCPostVFP_cfg.py
+Finished importing CMSSW configuration ../configs/NanoV15KGunV2TestMCPostVFP_cfg.py
+You are requesting more than 1 core per job. Please make sure that your multi-threaded code is thread-safe and CPU-efficient, and request the correct amount of memory since the default 'maxMemoryMB' value is meant for single core jobs.
+Sending the request to the server at cmsweb.cern.ch
+Success: Your task has been delivered to the prod CRAB3 server.
+Task name: 261106_220224:dwalter_crab_SingleKGun_Pt0p01To150_Eta2p4_KGunV2Test_MCPostVFP_v1p3
+Project dir: crab_projects/crab_SingleKGun_Pt0p01To150_Eta2p4_KGunV2Test_MCPostVFP_v1p3
+Please use ' crab status -d crab_projects/crab_SingleKGun_Pt0p01To150_Eta2p4_KGunV2Test_MCPostVFP_v1p3 ' to check how the submission process proceeds.
+Log file is /work/submit/david_w/ZMass/prod_NanoV15_v1.3_alcareco/CMSSW_15_0_19_patch2/src/Configuration/WMassNanoProduction/crab_submit/crab_projects/crab_SingleKGun_Pt0p01To150_Eta2p4_KGunV2Test_MCPostVFP_v1p3/crab.log
+
+MuGun (not submitted by the command above, which matched PiGun and KGun only): submitted with
+`crab submit --dryrun submitSingleMuGun_Pt0p01To150_Eta2p4_MuGunV2Test_MCPostVFP.py` and `crab proceed`,
+task 261106_214152:dwalter_crab_SingleMuGun_Pt0p01To150_Eta2p4_MuGunV2Test_MCPostVFP_v1p3 (10 jobs, 1 file each).
+The first submission of the seven other tasks (21:4x) failed at the sandbox upload, before the server: the dry run
+leaves crab_projects/<task>/local/ with a copy of the OPERA field tables, which the next sandboxes packed (228 MB,
+over CRAB's 120 MB). The project directories were moved aside and the tasks resubmitted (the task names above).
