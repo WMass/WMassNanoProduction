@@ -4,8 +4,8 @@ Scripts to run and keep track of the private W-mass NanoAOD production with CMSS
 and the WMass/cmssw branch `WmassNanoProd_15_0_19_patch2` (the stable nano v15 code, PR #48 from
 `davidwalter2:WmassNanoProd_15_0_19_patch2_nanoV15`; `WmassNanoProd_15_0_19_patch2_dev`, PR #46,
 is the development branch).
-`scripts/prepareCrab.py` generates the cmsDriver configs from the four scripts
-`scripts/makeNanoV15{MC,Data}[TagAndProbe].sh` and the crab submit files from
+`scripts/prepareCrab.py` generates the cmsDriver configs from the scripts
+`scripts/makeNanoV15[AlcaReco]{MC,Data}[TagAndProbe].sh` and the crab submit files from
 `Templates/submitCrabNanoV15Template`, splits a production between people and records every
 submission under `history/`.
 
@@ -84,6 +84,38 @@ or LFN), era (+ NANO modifier), global tag, campaign-specific customise and outp
   StandAloneMuon / StandAloneMuonUpdatedAtVtx / MergedStandAloneMuon, IsoTrack, PV/SV,
   TrigObj (with the IsoMu24/IsoTkMu24 bits), L1/HLT; MC adds GenPart/GenVtx/Pileup, the
   grouped LHE weights and the muon gen match. No jets, MET, electrons, photons, taus, no CVH refit.
+* **AlCaReco nano** (`makeNanoV15AlcaReco{MC,Data}.sh`, Run 2 campaigns, taken by `prepareCrab.py` for every
+  `.../ALCARECO` input; inputs `alcareco_{data,mc}_postVFP.txt`): the CVH single-track refit of the W-mass
+  nano (data: OPERA field; MC: default field, plus the ideal-geometry refit) on the muon tracks of the
+  tracker-alignment AlCaReco skims TkAlJpsiMuMu (Charmonium, J/psi MC) and TkAlUpsilonMuMu (MuOnia, Upsilon
+  MC). The code is WMass/cmssw `PhysicsTools/NanoAOD/python/alcareco_nano_cff.py`: the NANO step runs its
+  `alcarecoNanoSequence[MC]` instead of the stock nano
+  (`--step NANO:PhysicsTools/NanoAOD/alcareco_nano_cff.alcarecoNanoSequence[MC]`), and `nanoAOD_alcareco<skim>`
+  selects the skim, which `campaign.sh alcareco_skim_of` reads from the dataset name.
+  - Muon: one row per AlCaReco track (all muon tracks, by the skim's selection) with the Muon columns of the
+    W-mass nano that a track determines, with the same names, types, docs and precisions: kinematics, `ptErr`,
+    `tightCharge`, `dxy`/`dz`/`dxybs`/`ip3d`/`sip3d` (pat::Muon definitions), `bsConstrained*`, hit counts,
+    `highPurity`, the track algorithm, `VXBS_Cov*`, all `cvh*` columns and the Jacobian payload; MC adds
+    `cvhideal*` and `genPartIdx`/`genPartFlav`.
+  - Other tables: PV/OtherPV (without the PF-candidate sums), BeamSpot (from the conditions), HLT bits;
+    data adds the MET-filter bits of the reconstruction and the LHC info; MC adds GenPart, GenVtx, Pileup,
+    Generator, genWeight and GenFilter.
+  - Not in the AlCaReco, so not written: muon ID, isolation and standalone-track columns, jets, MET, taus,
+    e/gamma, IsoTrack, SV, TrigObj, L1 bits, prefiring weights, gen jets/MET/dressed leptons and LHE.
+  - Output tags: `NanoV15<skim>Run<era>Data<label>` and `NanoV15<skim>MC<label>`, e.g.
+    `NanoV15TkAlJpsiMuMuRun2016HDataPostVFP`.
+  - The calibration version (`--calib`, TkAlJpsiMuMu only; `alcareco_nano_cff` `calib=True`) adds what the
+    module-level corrections are derived from, while the default version is what they are applied to:
+    - a Dimuon table with the two-track CVH refit of the opposite-sign track pairs (2.6–3.6 GeV), with the common-vertex
+      and the J/psi mass constraint;
+    - its global-fit payload (the gradient and the factored Hessian wrt the global parameters, their indices,
+      d(mass)/d(parms), the per-leg Jacobians) and the selection quantities of the calibration fit;
+    - the parameter catalog in the Runs tree (`CvhParm_*`).
+    It is read by `aggregategrads.py` of MuonMomentumScaleCalibration. It costs 3.8x (data) and 2.4x (MC) the CPU
+    of the default version, and about 37 kB/event (data) and 43 kB/event (MC) instead of 2.1 and 4.4. Output tags
+    get `Calib`, e.g. `NanoV15TkAlJpsiMuMuCalibRun2016HDataPostVFP`.
+  - The central AlCaReco files store the strip clusters at split level 99; the cmssw branch reads them
+    correctly (3000 Run2016F events: all 652 branches bit-identical to the output from a split-1 copy).
 
 The scripts accept `file:/path/to.root` and `root://...` inputs for local tests.
 
@@ -129,6 +161,14 @@ per-dataset events/sizes, the choices and the alternatives. Lines starting with 
 * 2026 low PU (`*_2026LowPU*.txt`, ~2.1 fb-1, own MC campaign RunIII2026LowPUSummer26): data and
   MC were produced with CMSSW_16_0 and cannot be read by this 15_0 setup; lists kept for reference.
 * Tag-and-probe nano: Run 2 campaigns only, without the CVH refit.
+* AlCaReco lists (`inputs/alcareco_{data,mc}_postVFP.txt`; events, sizes and replicas in
+  `inputs/INVENTORY_ALCARECO_261016.md`): the 2016 postVFP samples of AN-21-131.
+  - Data: Charmonium 2016F-H (`21Feb2020_UL2016`, TkAlJpsiMuMu) and MuOnia 2016F-H (the
+    `31Aug2023_UL2016_WMass` re-reco, TkAlUpsilonMuMu).
+  - MC: the UL16 J/psi samples (Pt0to8, Pt8toInf, with their extensions) and the multi-resonance-filter Upsilon
+    samples (Pt0to8, Pt8to13, Pt13toInf).
+  - Replicas (2026-10-16): Charmonium and the J/psi MC are on disk at T2_CH_CERN. MuOnia and the Upsilon MC are
+    on tape only, and CRAB reads only from disk: they need a recall to a disk site before submission.
 
 # Versions and productions
 
@@ -202,6 +242,8 @@ the 2017G production:
 | 2017LowPU5TeV | 0.094 | 0.19 | 306k / 152k |
 | other Run 2 (2016preVFP, 2016postVFP, 2017, 2017LowPU, 2018) | 0.20 | 0.23 | 144k / 125k |
 | Run 3 | 0.24 | 0.27 | 120k / 107k |
+| AlCaReco nano (Run 2) | 0.09 | 0.19 | 320k / 152k |
+| AlCaReco nano, calibration version (J/psi) | 0.34 | 0.46 | 85k / 63k |
 
 How the table was obtained (all on submit82 with 4 threads; the timing runs are in
 `prevalid_nanoV15_261012/jobsize/` of the validation area):
@@ -213,6 +255,13 @@ How the table was obtained (all on submit82 with 4 threads; the timing runs are 
 - Campaigns that were not measured get the numbers of the more expensive class:
   - 2017LowPU uses the other Run 2 values.
   - Run 3 MC is 2016 DY × 2024/2016 data; the MiniAODv6 MC of Run 3 has no usable strip clusters.
+- AlCaReco nano: J/psi 2016H 0.050, J/psi 2017C 0.052 and Upsilon 2017C 0.045 s/event (data), UL16 J/psi Pt0to8
+  0.111 and Pt8toInf 0.098 s/event (MC, nominal and ideal-geometry refits), from central files on submit82
+  (timing runs in `alcareco_nano_261016/jobsize/` of the validation area); two refitted muons per event,
+  1.7–2.1 GB at 4 threads.
+- AlCaReco nano, calibration version: 3.8x the AlCaReco nano on the same 2281 J/psi 2016H events (0.137 vs
+  0.036 s/event on submit82) and 2.41x on the same 2000 UL16 J/psi Pt8toInf events (0.184 vs 0.076 s/event), timing
+  runs in `alcareco_calib_261022/` of the validation area; 2.1–2.2 GB at 4 threads.
 
 The MC values are for DY→μμ, the sample with the most refitted muons; other MC samples get shorter jobs. With the
 2017G production code, W→μν took 0.5–0.6x and the samples without muons 0.2x of DY→μμ. After the first task of a
