@@ -273,6 +273,28 @@ sample_tag() {
     fi
 }
 
+# parse_output_format <script arguments>: the output format of a makeNanoV15*.sh script.
+# --rntuple, anywhere among the arguments, writes the NanoAOD as RNTuple (NanoAODRNTupleOutputModule,
+# cmsDriver --rntuple_out; needs CMSSW >= 16_0, ROOT >= 6.34) instead of TTree. cmsDriver names an
+# RNTuple output .rntpl; the file keeps the name <name>.root, as the TTree one (ROOT and uproot
+# identify the format from the content, and the file lists and tools downstream expect .root).
+# Sets NANO_ARGS (the other arguments, in order, empty ones kept) and NANO_OUTPUT_ARGS (for cmsDriver.py).
+# In a script, before its positional arguments are read:
+#   parse_output_format "$@"; set -- "${NANO_ARGS[@]}"
+parse_output_format() {
+    NANO_ARGS=()
+    NANO_OUTPUT_ARGS=()
+    local a
+    for a in "$@"; do
+        if [[ $a == --rntuple ]]; then
+            NANO_OUTPUT_ARGS=(--rntuple_out --customise_commands
+                "for _m in process.outputModules_().values(): _m.fileName = _m.fileName.value().replace('.rntpl', '.root')")
+        else
+            NANO_ARGS+=("$a")
+        fi
+    done
+}
+
 # allow `bash campaign.sh <function> <args>` (used by prepareCrab.py)
 if [[ "${BASH_SOURCE[0]}" == "$0" && $# -gt 0 ]]; then
     "$@"

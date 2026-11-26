@@ -6,7 +6,7 @@
 # instead of the stock nano (alcarecoNanoSequenceMC: also the ideal-geometry refit, the gen
 # match and the gen tables); nanoAOD_alcareco<skim> selects the skim's tracks. The refit of
 # MC keeps the default field, the field of the simulation, as in the W-mass nano.
-# usage: makeNanoV15AlcaRecoMC <das_path or file:/root:...> <name> [nthreads] [campaign] [calib] [customise]
+# usage: makeNanoV15AlcaRecoMC <das_path or file:/root:...> <name> [nthreads] [campaign] [calib] [customise] [--rntuple]
 #   campaign: see scripts/campaign.sh (default: from the dataset name)
 #   the skim comes from the dataset name or file path (scripts/campaign.sh alcareco_skim_of)
 #   calib: the calibration version (TkAlJpsiMuMu only), alcareco_nano_cff calib=True: also the two-track
@@ -14,11 +14,12 @@
 #   customise: the alcareco_nano_cff functions to apply (comma-separated), instead of the skim's
 #   nanoAOD_alcareco<skim>[Calib]: for an ALCARECO of another format, e.g. that of WMass/cmssw#54
 #   (nanoAOD_alcarecoWMassTkAlJpsiMuMu) or the gun ALCARECO (nanoAOD_alcarecoPiGun); calib must be empty
+source "$(dirname "$0")/campaign.sh"
+parse_output_format "$@"; set -- "${NANO_ARGS[@]}"
 if [[ $# -lt 2 ]]; then
-    echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign] [calib] [customise]"
+    echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign] [calib] [customise] [--rntuple]"
     exit 1
 fi
-source "$(dirname "$0")/campaign.sh"
 
 input=$1
 if [[ "$input" != file:* && "$input" != root://* ]]; then
@@ -58,6 +59,7 @@ outfile=${name}.root
 
 echo "makeNanoV15AlcaRecoMC: campaign $campaign, era $era, GT $gt, skim $skim, customise $custom"
 cmsDriver.py NANO --conditions $gt \
+    "${NANO_OUTPUT_ARGS[@]}" \
     --datatier NANOAODSIM --eventcontent NANOAODSIM \
     --era $era \
     --step NANO:PhysicsTools/NanoAOD/alcareco_nano_cff.alcarecoNanoSequenceMC \

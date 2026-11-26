@@ -237,6 +237,23 @@ Add ```--submit X Y``` to split the submission into X pieces and submit every Y 
 
 After you submit, a file named ```history/<dataset>_<date>_<submitArgs>_<username>.txt``` is created. Commit this back to this repo for bookkeeping.
 
+## RNTuple output
+
+`./scripts/prepareCrab.py --rntuple ...` (and `--rntuple` anywhere among the arguments of a
+`scripts/makeNanoV15*.sh`) writes the NanoAOD as RNTuple instead of TTree, with the
+`NanoAODRNTupleOutputModule` (cmsDriver `--rntuple_out`). It needs the CMSSW_16_0 branch
+(`WmassNanoProd_16_0_11`: ROOT 6.36, cms-sw/cmssw#51798 + #51832, and the support of the grouped LHE weight
+tables, `std::vector<nanoaod::FlatTable>`); CMSSW_15_0 (ROOT 6.32) cannot write it.
+- The file keeps its `.root` name (cmsDriver would call it `.rntpl`); ROOT (>= 6.34) and uproot (>= 5.7) read it.
+- The config gets `_RNTuple`, the request and output names `_RNTuple`, and the dataset tag `RNTuple`
+  (`NanoV15MCPostVFPRNTuple_<version>`), so an RNTuple and a TTree production of the same samples do not collide.
+- Content: identical to the TTree output of the same job for every column it writes (checked on 2016 DY MC and
+  Run2016H data, incl. the CVH columns). Until the fixes announced on #51832 are in, it does not write the
+  `n<Collection>` counters (use the size of the collection) nor the HLT paths kept by the `Scouting` rule
+  (`DST_*`).
+- Not yet run on the grid: submit one pilot task first and check the stage-out and the publication (the job
+  report names the module `NanoAODRNTupleOutputModule`).
+
 ## Job size
 
 The jobs are sized by CPU time. Each task uses `EventAwareLumiBased` splitting, with the number of events that

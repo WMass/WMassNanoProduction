@@ -6,13 +6,14 @@
 # circular with PAT in the same process; see nanoTP_cff.py); PAT behaves as the
 # UL MiniAODv2 via the run2_miniAOD_UL process modifier.
 # + the sample's own fix, if any (scripts/campaign.sh sample_customise).
-# usage: makeNanoV15MCTagAndProbe <das_path or file:/root:...> <name> [nthreads] [campaign]
+# usage: makeNanoV15MCTagAndProbe <das_path or file:/root:...> <name> [nthreads] [campaign] [--rntuple]
 #   campaign: 2016preVFP | 2016postVFP | 2017 | 2018 | 2017LowPU | 2017LowPU5TeV (default: from the dataset name)
+source "$(dirname "$0")/campaign.sh"
+parse_output_format "$@"; set -- "${NANO_ARGS[@]}"
 if [[ $# -lt 2 ]]; then
-    echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign]"
+    echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign] [--rntuple]"
     exit 1
 fi
-source "$(dirname "$0")/campaign.sh"
 
 input=$1
 if [[ "$input" != file:* && "$input" != root://* ]]; then
@@ -36,6 +37,7 @@ tnp=PhysicsTools/NanoAOD/nanoTP_cff.customizeNANOTP; [[ $campaign == 2017LowPU* 
 fix=$(sample_customise "$1")
 
 cmsDriver.py NANO --conditions $gt \
+    "${NANO_OUTPUT_ARGS[@]}" \
     --datatier NANOAODSIM --eventcontent NANOAODSIM \
     --era $era --procModifiers run2_miniAOD_UL --geometry DB:Extended \
     --customise Configuration/DataProcessing/Utils.addMonitoring,$tnp,PhysicsTools/NanoAOD/nano_cff.nanoGenWmassCustomize${fix:+,$fix} \
