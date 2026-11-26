@@ -4,7 +4,7 @@
 #
 # 1. The CVH refit of DATA uses the OPERA/TOSCA field map 170812
 #    (Analysis/HitAnalyzer/python/cvhOperaField.py). Its merged interpolation
-#    tables are not in the CMSSW_15_0 data package, so they are shipped in
+#    tables are not in the CMSSW_15_0 or 16_0 data package, so they are shipped in
 #    $CMSSW_BASE/external/$SCRAM_ARCH/data (on CMSSW_SEARCH_PATH in the job;
 #    the crab template sets config.JobType.sendExternalFolder = True).
 #    They are taken from a local directory if one is given, else downloaded
