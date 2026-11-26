@@ -278,6 +278,9 @@ sample_tag() {
 # cmsDriver --rntuple_out; needs CMSSW >= 16_0, ROOT >= 6.34) instead of TTree. cmsDriver names an
 # RNTuple output .rntpl; the file keeps the name <name>.root, as the TTree one (ROOT and uproot
 # identify the format from the content, and the file lists and tools downstream expect .root).
+# It is compressed with ZSTD level 9 instead of the LZMA 9 of the TTree output: in RNTuple the two give
+# the same size (ZSTD 9 1-3 % smaller, 2000 events of 2016/2024/2025LowPU data and MC), and ZSTD reads
+# about twice as fast (with TTree ZSTD 9 would be 11 % larger than LZMA 9).
 # Sets NANO_ARGS (the other arguments, in order, empty ones kept) and NANO_OUTPUT_ARGS (for cmsDriver.py).
 # In a script, before its positional arguments are read:
 #   parse_output_format "$@"; set -- "${NANO_ARGS[@]}"
@@ -288,7 +291,7 @@ parse_output_format() {
     for a in "$@"; do
         if [[ $a == --rntuple ]]; then
             NANO_OUTPUT_ARGS=(--rntuple_out --customise_commands
-                "for _m in process.outputModules_().values(): _m.fileName = _m.fileName.value().replace('.rntpl', '.root')")
+                "for _m in process.outputModules_().values(): _m.fileName = _m.fileName.value().replace('.rntpl', '.root'); _m.compressionAlgorithm = 'ZSTD'; _m.compressionLevel = 9")
         else
             NANO_ARGS+=("$a")
         fi

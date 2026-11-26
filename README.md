@@ -254,6 +254,9 @@ After you submit, a file named ```history/<dataset>_<date>_<submitArgs>_<usernam
 (`WmassNanoProd_16_0_11`: ROOT 6.36, cms-sw/cmssw#51798 + #51832, and the support of the grouped LHE weight
 tables, `std::vector<nanoaod::FlatTable>`); CMSSW_15_0 (ROOT 6.32) cannot write it.
 - The file keeps its `.root` name (cmsDriver would call it `.rntpl`); ROOT (>= 6.34) and uproot (>= 5.7) read it.
+- It is compressed with ZSTD level 9 (the TTree output keeps LZMA 9). Same events, 2000 per sample, 2016/2024/2025LowPU
+  data and MC, size of `Events` relative to the v1.4 TTree (LZMA 9): RNTuple ZSTD 9 0.64-0.76 (LZMA 9 0.67-0.76),
+  TTree ZSTD 9 1.09-1.13; reading every column takes about half the CPU of RNTuple LZMA and a third of the TTree.
 - The config gets `_RNTuple`, the request and output names `_RNTuple`, and the dataset tag `RNTuple`
   (`NanoV15MCPostVFPRNTuple_<version>`), so an RNTuple and a TTree production of the same samples do not collide.
 - Content: identical to the TTree output of the same job for every column it writes (checked on 2016 DY MC and
