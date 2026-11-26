@@ -9,12 +9,12 @@
 # (low PU: HI-menu trigger objects; 2017H also the low-PU DeepMET models).
 # + the sample's own fix, if any (scripts/campaign.sh sample_customise: the beamspot of
 # the RunIILowPUSummer20UL17 samples generated with the 2018 vertex smearing).
-# usage: makeNanoV15MC <das_path or file:/root:...> <name> [nthreads] [campaign] [--rntuple]
+# usage: makeNanoV15MC <das_path or file:/root:...> <name> [nthreads] [campaign] [--rntuple|--ttree]
 #   campaign: see scripts/campaign.sh (default: from the dataset name)
 source "$(dirname "$0")/campaign.sh"
-parse_output_format "$@"; set -- "${NANO_ARGS[@]}"
+parse_output_format "$@" || exit 1; set -- "${NANO_ARGS[@]}"
 if [[ $# -lt 2 ]]; then
-    echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign] [--rntuple]"
+    echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign] [--rntuple|--ttree]"
     exit 1
 fi
 

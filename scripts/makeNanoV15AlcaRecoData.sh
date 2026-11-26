@@ -5,7 +5,7 @@
 # (PhysicsTools/NanoAOD/alcareco_nano_cff.py). The NANO step runs its alcarecoNanoSequence
 # instead of the stock nano; nanoAOD_alcareco<skim> selects the skim's tracks. The refit of
 # data uses the OPERA field map, as in the W-mass nano.
-# usage: makeNanoV15AlcaRecoData <das_path or file:/root:...> <name> [nthreads] [campaign] [calib] [customise] [--rntuple]
+# usage: makeNanoV15AlcaRecoData <das_path or file:/root:...> <name> [nthreads] [campaign] [calib] [customise] [--rntuple|--ttree]
 #   campaign: see scripts/campaign.sh (default: from the dataset name)
 #   the skim comes from the dataset name or file path (scripts/campaign.sh alcareco_skim_of)
 #   calib: the calibration version (TkAlJpsiMuMu only), alcareco_nano_cff calib=True: also the two-track
@@ -14,9 +14,9 @@
 #   nanoAOD_alcareco<skim>[Calib]: for an ALCARECO of another format, e.g. that of WMass/cmssw#54
 #   (nanoAOD_alcarecoWMassTkAlJpsiMuMu) or the gun ALCARECO (nanoAOD_alcarecoPiGun); calib must be empty
 source "$(dirname "$0")/campaign.sh"
-parse_output_format "$@"; set -- "${NANO_ARGS[@]}"
+parse_output_format "$@" || exit 1; set -- "${NANO_ARGS[@]}"
 if [[ $# -lt 2 ]]; then
-    echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign] [calib] [customise] [--rntuple]"
+    echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign] [calib] [customise] [--rntuple|--ttree]"
     exit 1
 fi
 

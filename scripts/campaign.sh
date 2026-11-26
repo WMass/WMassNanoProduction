@@ -273,29 +273,52 @@ sample_tag() {
     fi
 }
 
-# parse_output_format <script arguments>: the output format of a makeNanoV15*.sh script.
-# --rntuple, anywhere among the arguments, writes the NanoAOD as RNTuple (NanoAODRNTupleOutputModule,
-# cmsDriver --rntuple_out; needs CMSSW >= 16_0, ROOT >= 6.34) instead of TTree. cmsDriver names an
-# RNTuple output .rntpl; the file keeps the name <name>.root, as the TTree one (ROOT and uproot
-# identify the format from the content, and the file lists and tools downstream expect .root).
+# default_output_format: the NanoAOD format the makeNanoV15*.sh scripts write by default: rntuple in CMSSW >= 16
+# (ROOT >= 6.34 and, in the WMass branch WmassNanoProd_16_0_11, the RNTuple output module of
+# cms-sw/cmssw#51798 + #51832), ttree before (CMSSW_15_0, ROOT 6.32: no usable RNTuple output).
+default_output_format() {
+    local major=${CMSSW_VERSION#CMSSW_}
+    major=${major%%_*}
+    if [[ $major =~ ^[0-9]+$ ]] && (( major >= 16 )); then
+        echo rntuple
+    else
+        echo ttree
+    fi
+}
+
+# parse_output_format <script arguments>: the output format of a makeNanoV15*.sh script, by default
+# default_output_format; --rntuple or --ttree, anywhere among the arguments, select it explicitly (--rntuple
+# fails before CMSSW 16).
+# RNTuple: NanoAODRNTupleOutputModule (cmsDriver --rntuple_out). cmsDriver names an RNTuple output .rntpl;
+# the file keeps the name <name>.root, as the TTree one (ROOT and uproot identify the format from the
+# content, and the file lists and tools downstream expect .root).
 # It is compressed with ZSTD level 9 instead of the LZMA 9 of the TTree output: in RNTuple the two give
 # the same size (ZSTD 9 1-3 % smaller, 2000 events of 2016/2024/2025LowPU data and MC), and ZSTD reads
 # about twice as fast (with TTree ZSTD 9 would be 11 % larger than LZMA 9).
-# Sets NANO_ARGS (the other arguments, in order, empty ones kept) and NANO_OUTPUT_ARGS (for cmsDriver.py).
-# In a script, before its positional arguments are read:
-#   parse_output_format "$@"; set -- "${NANO_ARGS[@]}"
+# Sets NANO_OUTPUT_FORMAT (rntuple or ttree), NANO_ARGS (the other arguments, in order, empty ones kept)
+# and NANO_OUTPUT_ARGS (for cmsDriver.py). In a script, before its positional arguments are read:
+#   parse_output_format "$@" || exit 1; set -- "${NANO_ARGS[@]}"
 parse_output_format() {
     NANO_ARGS=()
     NANO_OUTPUT_ARGS=()
+    NANO_OUTPUT_FORMAT=$(default_output_format)
     local a
     for a in "$@"; do
-        if [[ $a == --rntuple ]]; then
-            NANO_OUTPUT_ARGS=(--rntuple_out --customise_commands
-                "for _m in process.outputModules_().values(): _m.fileName = _m.fileName.value().replace('.rntpl', '.root'); _m.compressionAlgorithm = 'ZSTD'; _m.compressionLevel = 9")
-        else
-            NANO_ARGS+=("$a")
-        fi
+        case $a in
+            --rntuple) NANO_OUTPUT_FORMAT=rntuple ;;
+            --ttree) NANO_OUTPUT_FORMAT=ttree ;;
+            *) NANO_ARGS+=("$a") ;;
+        esac
     done
+    if [[ $NANO_OUTPUT_FORMAT == rntuple ]]; then
+        if [[ $(default_output_format) != rntuple ]]; then
+            echo "the RNTuple NanoAOD output needs CMSSW >= 16 (this is ${CMSSW_VERSION:-no CMSSW environment}); use --ttree" >&2
+            return 1
+        fi
+        NANO_OUTPUT_ARGS=(--rntuple_out --customise_commands
+            "for _m in process.outputModules_().values(): _m.fileName = _m.fileName.value().replace('.rntpl', '.root'); _m.compressionAlgorithm = 'ZSTD'; _m.compressionLevel = 9")
+    fi
+    echo "output format: $NANO_OUTPUT_FORMAT"
 }
 
 # allow `bash campaign.sh <function> <args>` (used by prepareCrab.py)

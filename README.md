@@ -5,7 +5,7 @@ and the WMass/cmssw branch `WmassNanoProd_15_0_19_patch2` (the stable nano v15 c
 `davidwalter2:WmassNanoProd_15_0_19_patch2_nanoV15`; `WmassNanoProd_15_0_19_patch2_dev`, PR #46,
 is the development branch). From `NanoV15_v1.5` the same code runs on CMSSW_16_0_11, branch
 `WmassNanoProd_16_0_11` (the history of `WmassNanoProd_15_0_19_patch2` replayed on 16_0_11, with the RNTuple
-output of cms-sw/cmssw#51798 + #51832); it also writes the NanoAOD as RNTuple (`--rntuple`, see "RNTuple output").
+output of cms-sw/cmssw#51798 + #51832); there the NanoAOD is written as RNTuple by default (`--ttree` for TTree, see "RNTuple output").
 `scripts/prepareCrab.py` generates the cmsDriver configs from the scripts
 `scripts/makeNanoV15[AlcaReco]{MC,Data}[TagAndProbe].sh` and the crab submit files from
 `Templates/submitCrabNanoV15Template`, splits a production between people and records every
@@ -207,7 +207,7 @@ runbook and handoffs in `production/<tag>/`.
 | `NanoV15_v1.2` | 2026-11-06 | AlCaReco nano of the central 2016 postVFP J/psi and Upsilon AlCaRecos, and its calibration version (WMass/cmssw#51, #31); runbook on the branch `production-NanoV15_v1.2_AlCaReco` |
 | `NanoV15_v1.3` | 2026-11-06 | AlCaReco nano of the ALCARECO of WMass/cmssw#54 and of the gun ALCARECO, `files:` inputs (WMass/cmssw#55); [`production/NanoV15_v1.3_AlCaReco/`](production/NanoV15_v1.3_AlCaReco/README.md) |
 | `NanoV15_v1.4` | 2026-11-09 | `files:` inputs without CRAB overflow outside the whitelist (cmssw as v1.3); the gun AlCaReco nano production, issue #42 |
-| `NanoV15_v1.5` | 2026-11-26 | CMSSW_16_0_11 (WMass/cmssw `WmassNanoProd_16_0_11`, `setup/clone_16_0.sh`) and the RNTuple output (`--rntuple`); validated against v1.4 on 2016 DY MC and Run2016H data: CVH muons of good fits agree to 1e-7 (MC) / 8e-6 rms (data), stock content changes of 16_0 (`TrackGenJetAK4`, `GenProton`) |
+| `NanoV15_v1.5` | 2026-11-26 | CMSSW_16_0_11 (WMass/cmssw `WmassNanoProd_16_0_11`, `setup/clone_16_0.sh`) and the RNTuple output (the default there; `--ttree` for TTree); validated against v1.4 on 2016 DY MC and Run2016H data: CVH muons of good fits agree to 1e-7 (MC) / 8e-6 rms (data), stock content changes of 16_0 (`TrackGenJetAK4`, `GenProton`) |
 
 # To clone with CMSSW setup
 
@@ -248,17 +248,19 @@ After you submit, a file named ```history/<dataset>_<date>_<submitArgs>_<usernam
 
 ## RNTuple output
 
-`./scripts/prepareCrab.py --rntuple ...` (and `--rntuple` anywhere among the arguments of a
-`scripts/makeNanoV15*.sh`) writes the NanoAOD as RNTuple instead of TTree, with the
-`NanoAODRNTupleOutputModule` (cmsDriver `--rntuple_out`). It needs the CMSSW_16_0 branch
-(`WmassNanoProd_16_0_11`: ROOT 6.36, cms-sw/cmssw#51798 + #51832, and the support of the grouped LHE weight
-tables, `std::vector<nanoaod::FlatTable>`); CMSSW_15_0 (ROOT 6.32) cannot write it.
+**In a CMSSW_16_0 area the NanoAOD is written as RNTuple by default**, with the `NanoAODRNTupleOutputModule`
+(cmsDriver `--rntuple_out`); in a CMSSW_15_0 area it stays TTree. `--ttree` / `--rntuple`, for
+`prepareCrab.py` or anywhere among the arguments of a `scripts/makeNanoV15*.sh`, select the format
+explicitly (`scripts/campaign.sh default_output_format`, `parse_output_format`). RNTuple needs the CMSSW_16_0
+branch (`WmassNanoProd_16_0_11`: ROOT 6.36, cms-sw/cmssw#51798 + #51832, and the support of the grouped LHE
+weight tables, `std::vector<nanoaod::FlatTable>`); in CMSSW_15_0 (ROOT 6.32) `--rntuple` fails.
 - The file keeps its `.root` name (cmsDriver would call it `.rntpl`); ROOT (>= 6.34) and uproot (>= 5.7) read it.
 - It is compressed with ZSTD level 9 (the TTree output keeps LZMA 9). Same events, 2000 per sample, 2016/2024/2025LowPU
   data and MC, size of `Events` relative to the v1.4 TTree (LZMA 9): RNTuple ZSTD 9 0.64-0.76 (LZMA 9 0.67-0.76),
   TTree ZSTD 9 1.09-1.13; reading every column takes about half the CPU of RNTuple LZMA and a third of the TTree.
 - The config gets `_RNTuple`, the request and output names `_RNTuple`, and the dataset tag `RNTuple`
-  (`NanoV15MCPostVFPRNTuple_<version>`), so an RNTuple and a TTree production of the same samples do not collide.
+  (`NanoV15MCPostVFPRNTuple_<version>`), so an RNTuple and a TTree production of the same samples do not collide;
+  the TTree output keeps the names of the earlier productions.
 - Content: identical to the TTree output of the same job for every column it writes (checked on 2016 DY MC and
   Run2016H data, incl. the CVH columns). Until the fixes announced on #51832 are in, it does not write the
   `n<Collection>` counters (use the size of the collection) nor the HLT paths kept by the `Scouting` rule

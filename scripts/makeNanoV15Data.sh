@@ -6,12 +6,12 @@
 # + the CVH muon refit (nanoAOD_addCvhMuon, every campaign; the CMSSW defaults keep the
 # pixel edge / single-column hits with their class corrections) + the campaign's own
 # customise (low PU: HI-menu trigger objects; 2017H also the low-PU DeepMET models).
-# usage: makeNanoV15Data <das_path or file:/root:...> <name> [nthreads] [campaign] [--rntuple]
+# usage: makeNanoV15Data <das_path or file:/root:...> <name> [nthreads] [campaign] [--rntuple|--ttree]
 #   campaign: see scripts/campaign.sh (default: from the dataset name)
 source "$(dirname "$0")/campaign.sh"
-parse_output_format "$@"; set -- "${NANO_ARGS[@]}"
+parse_output_format "$@" || exit 1; set -- "${NANO_ARGS[@]}"
 if [[ $# -lt 2 ]]; then
-    echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign] [--rntuple]"
+    echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign] [--rntuple|--ttree]"
     exit 1
 fi
 
