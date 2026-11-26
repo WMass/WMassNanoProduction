@@ -1,0 +1,40 @@
+Submit log for inputs: inputs/qgMuMC_v9.txt
+Auto-generated with command scripts/prepareCrab.py -j1 -i inputs/qgMuMC_v9.txt -v TrackFitV722_NanoProdv6 --submit 1 1
+Script ran at 2026-10-22 16:34:24.738305
+Git hash of scripts is "3403a4d46e95c4b5be8609b007eaad3684d178a7"
+Git hash of CMSSW is "267efac48a26c27343fa54117e8237efc374f848"
+
+Git diff of scripts is 
+
+Git diff of CMSSW is 
+
+--------------------------------------------------------------------------------
+
+Running command: crab submit /work/submit/david_w/ZMass/prod_NanoV9_qg_261022/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/crab_submit/submitQGToWQToMuNu_TuneCP5_13TeV-pythia8-photos_MCPostVFP.py
+Will use CRAB configuration file /work/submit/david_w/ZMass/prod_NanoV9_qg_261022/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/crab_submit/submitQGToWQToMuNu_TuneCP5_13TeV-pythia8-photos_MCPostVFP.py
+Importing CMSSW configuration ../configs/NanoV9MCPostVFP_cfg.py
+Will recalculate the following discriminators on AK8 jets: pfParticleNetMassRegressionJetTags:mass
+add PV Robust version of DeepMET
+Finished importing CMSSW configuration ../configs/NanoV9MCPostVFP_cfg.py
+Sending the request to the server at cmsweb.cern.ch
+Success: Your task has been delivered to the prod CRAB3 server.
+Task name: 261022_203641:dwalter_crab_QGToWQToMuNu_TuneCP5_13TeV-pythia8-photos_MCPostVFP_TrackFitV722_NanoProdv6
+Project dir: crab_projects/crab_QGToWQToMuNu_TuneCP5_13TeV-pythia8-photos_MCPostVFP_TrackFitV722_NanoProdv6
+Please use ' crab status -d crab_projects/crab_QGToWQToMuNu_TuneCP5_13TeV-pythia8-photos_MCPostVFP_TrackFitV722_NanoProdv6 ' to check how the submission process proceeds.
+Log file is /work/submit/david_w/ZMass/prod_NanoV9_qg_261022/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/crab_submit/crab_projects/crab_QGToWQToMuNu_TuneCP5_13TeV-pythia8-photos_MCPostVFP_TrackFitV722_NanoProdv6/crab.log
+
+Running command: crab submit /work/submit/david_w/ZMass/prod_NanoV9_qg_261022/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/crab_submit/submitQGToDYQTo2Mu_TuneCP5_13TeV-pythia8-photos_MCPostVFP.py
+Will use CRAB configuration file /work/submit/david_w/ZMass/prod_NanoV9_qg_261022/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/crab_submit/submitQGToDYQTo2Mu_TuneCP5_13TeV-pythia8-photos_MCPostVFP.py
+Importing CMSSW configuration ../configs/NanoV9MCPostVFP_cfg.py
+Will recalculate the following discriminators on AK8 jets: pfParticleNetMassRegressionJetTags:mass
+add PV Robust version of DeepMET
+Finished importing CMSSW configuration ../configs/NanoV9MCPostVFP_cfg.py
+Sending the request to the server at cmsweb.cern.ch
+Success: Your task has been delivered to the prod CRAB3 server.
+Task name: 261022_203836:dwalter_crab_QGToDYQTo2Mu_TuneCP5_13TeV-pythia8-photos_MCPostVFP_TrackFitV722_NanoProdv6
+Project dir: crab_projects/crab_QGToDYQTo2Mu_TuneCP5_13TeV-pythia8-photos_MCPostVFP_TrackFitV722_NanoProdv6
+Please use ' crab status -d crab_projects/crab_QGToDYQTo2Mu_TuneCP5_13TeV-pythia8-photos_MCPostVFP_TrackFitV722_NanoProdv6 ' to check how the submission process proceeds.
+Log file is /work/submit/david_w/ZMass/prod_NanoV9_qg_261022/CMSSW_10_6_26/src/Configuration/WMassNanoProduction/crab_submit/crab_projects/crab_QGToDYQTo2Mu_TuneCP5_13TeV-pythia8-photos_MCPostVFP_TrackFitV722_NanoProdv6/crab.log
+
+
+Resubmission 2026-10-22 21:20 UTC: the failed jobs of both tasks with crab resubmit --maxmemory 3500 (the jobs were killed at 2.0-2.3 GB RSS with the template's 2000 MB, exit 50660).
