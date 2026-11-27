@@ -4,6 +4,7 @@
 /Analysis/HitAnalyzer/
 /CalibTracker/SiPixelESProducers/
 /CommonTools/PileupAlgos/
+/Configuration/Applications/
 /DataFormats/NanoAOD/
 /DataFormats/SiStripCluster/
 /DetectorDescription/DDCMS/

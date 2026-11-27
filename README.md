@@ -254,17 +254,17 @@ After you submit, a file named ```history/<dataset>_<date>_<submitArgs>_<usernam
 explicitly (`scripts/campaign.sh default_output_format`, `parse_output_format`). RNTuple needs the CMSSW_16_0
 branch (`WmassNanoProd_16_0_11`: ROOT 6.36, cms-sw/cmssw#51798 + #51832, and the support of the grouped LHE
 weight tables, `std::vector<nanoaod::FlatTable>`); in CMSSW_15_0 (ROOT 6.32) `--rntuple` fails.
-- The file keeps its `.root` name (cmsDriver would call it `.rntpl`); ROOT (>= 6.34) and uproot (>= 5.7) read it.
-- It is compressed with ZSTD level 9 (the TTree output keeps LZMA 9). Same events, 2000 per sample, 2016/2024/2025LowPU
+- The cmsDriver of the cmssw branch keeps its `.root` name (stock cmsDriver would call it `.rntpl`) and compresses it
+  with ZSTD level 9 (the TTree output keeps LZMA 9); ROOT (>= 6.34) and uproot (>= 5.7) read it. Same events, 2000 per sample, 2016/2024/2025LowPU
   data and MC, size of `Events` relative to the v1.4 TTree (LZMA 9): RNTuple ZSTD 9 0.64-0.76 (LZMA 9 0.67-0.76),
   TTree ZSTD 9 1.09-1.13; reading every column takes about half the CPU of RNTuple LZMA and a third of the TTree.
 - The config gets `_RNTuple`, the request and output names `_RNTuple`, and the dataset tag `RNTuple`
   (`NanoV15MCPostVFPRNTuple_<version>`), so an RNTuple and a TTree production of the same samples do not collide;
   the TTree output keeps the names of the earlier productions.
 - Content: identical to the TTree output of the same job for every column it writes (checked on 2016 DY MC and
-  Run2016H data, incl. the CVH columns). Until the fixes announced on #51832 are in, it does not write the
-  `n<Collection>` counters (use the size of the collection) nor the HLT paths kept by the `Scouting` rule
-  (`DST_*`).
+  Run2016H data, incl. the CVH columns). The `n<Collection>` counters are projected from the collection sizes (as in the TTree, but
+  unsigned: `std::uint32_t` instead of `Int_t`). Until the fix announced on #51832 is in, it does not write the HLT
+  paths kept by the `Scouting` rule (`DST_*`, `Dataset_*Scouting*`, ...).
 - Not yet run on the grid: submit one pilot task first and check the stage-out and the publication (the job
   report names the module `NanoAODRNTupleOutputModule`).
 
