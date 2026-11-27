@@ -8,8 +8,6 @@
 /DataFormats/NanoAOD/
 /DataFormats/SiStripCluster/
 /DetectorDescription/DDCMS/
-/FWCore/Services/
-/L1Trigger/L1TGlobal/
 /MagneticField/Engine/
 /MagneticField/GeomBuilder/
 /MagneticField/ParametrizedEngine/
