@@ -6,13 +6,14 @@
 # + the CVH muon refit (nanoAOD_addCvhMuon, every campaign; the CMSSW defaults keep the
 # pixel edge / single-column hits with their class corrections) + the campaign's own
 # customise (low PU: HI-menu trigger objects; 2017H also the low-PU DeepMET models).
-# usage: makeNanoV15Data <das_path or file:/root:...> <name> [nthreads] [campaign]
+# usage: makeNanoV15Data <das_path or file:/root:...> <name> [nthreads] [campaign] [--rntuple|--ttree]
 #   campaign: see scripts/campaign.sh (default: from the dataset name)
+source "$(dirname "$0")/campaign.sh"
+parse_output_format "$@" || exit 1; set -- "${NANO_ARGS[@]}"
 if [[ $# -lt 2 ]]; then
-    echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign]"
+    echo "usage: $0 <das_path or file:path> <name> [nthreads] [campaign] [--rntuple|--ttree]"
     exit 1
 fi
-source "$(dirname "$0")/campaign.sh"
 
 input=$1
 if [[ "$input" != file:* && "$input" != root://* ]]; then
@@ -35,6 +36,7 @@ customise=$customise,PhysicsTools/NanoAOD/nano_cff.nanoAOD_addCvhMuon
 
 echo "makeNanoV15Data: campaign $campaign, era $era, GT $gt"
 cmsDriver.py NANO --conditions $gt \
+    "${NANO_OUTPUT_ARGS[@]}" \
     --datatier NANOAOD --eventcontent NANOAOD \
     --era $era \
     --customise $customise \

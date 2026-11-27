@@ -56,6 +56,20 @@ def nameFromInput(das_path, tagAndProbe=False):
         return label + tnp + campaignTable("label_of", campaign)
     return label + campaignTable("label_of", campaign) + tnp
 
+def outputFormat():
+    """rntuple or ttree: --rntuple / --ttree, else the default of the CMSSW release (scripts/campaign.sh
+    default_output_format: rntuple from CMSSW 16)."""
+    if args.rntuple:
+        return "rntuple"
+    if args.ttree:
+        return "ttree"
+    return campaignTable("default_output_format")
+
+def rntupleLabel():
+    """Marks the RNTuple output in the output dataset tag, NanoV15MCPostVFPRNTuple_<version>; the TTree
+    output keeps the names of the earlier productions."""
+    return "RNTuple" if outputFormat() == "rntuple" else ""
+
 def gitHash(path):
     return subprocess.check_output(['git', 'log', '-1', '--format="%H"'], cwd=path).decode('UTF-8')
 
@@ -80,6 +94,7 @@ def makeConfig(path, era, das, config_name, nThreads, isData, tagAndProbe, calib
     script = "./scripts/make%s%s%s%s.sh" % (era, "AlcaReco" if isAlcaReco(das) else "", "Data" if isData else "MC",
                                             "TagAndProbe" if tagAndProbe else "")
     cmd = [script, *das.split(" "), config_name, str(nThreads), campaignFromInput(das)] + (["calib"] if calib else [])
+    cmd.append("--" + outputFormat())
     print(cmd)
     subprocess.call(cmd, cwd=path)
 
@@ -192,13 +207,14 @@ def makeFileInputSubmit(path, line, nThreads, doConfig, version, storage, site):
     isData = meta["sample"] == "data"
     campaign = meta["campaign"]
     label = "Data" if isData else "MC"
-    name = args.era + meta["tag"] + label + campaignTable("label_of", campaign)
+    name = args.era + meta["tag"] + label + campaignTable("label_of", campaign) + rntupleLabel()
     urls = [_MIT_DOOR + f[len(_CEPH_STORE):] for f in files]
 
     config_name = name
     if doConfig and config_name not in configsMade:
         script = "./scripts/make%sAlcaReco%s.sh" % (args.era, label)
         cmd = [script, urls[0], config_name, str(nThreads), campaign, "", meta["customise"]]
+        cmd.append("--" + outputFormat())
         print(cmd)
         subprocess.call(cmd, cwd=path)
         configsMade.append(config_name)
@@ -207,6 +223,8 @@ def makeFileInputSubmit(path, line, nThreads, doConfig, version, storage, site):
         raise RuntimeError("Config file %s does not exist. Rerun with --makeConfig" % config_name)
 
     outname = "_".join([meta["primary"], meta["tag"], label + campaignTable("label_of", campaign)])
+    if outputFormat() == "rntuple":
+        outname += "_RNTuple"
     fileList = "inputfiles_%s.txt" % outname
     with open("/".join([path, "crab_submit", fileList]), "w") as f:
         f.write("\n".join(urls) + "\n")
@@ -276,6 +294,8 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
         sampleTag = "" if isData else campaignTable("sample_tag", das_split[0])
         if sampleTag:
             config_name += "_" + sampleTag
+        if outputFormat() == "rntuple":
+            config_name += "_RNTuple"
 
         if doConfig and config_name not in configsMade:
             makeConfig(path, era, das, config_name, nThreads, isData, args.tagAndProbe, args.calib)
@@ -314,6 +334,10 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
         run_match = re.search("(Run20\d\d[A-Z])", das)
         if isData and run_match:
             name = name.replace("Data", f"{run_match.group(1)}Data")
+        # the RNTuple output: its own request, output directory and published dataset
+        name += rntupleLabel()
+        if outputFormat() == "rntuple":
+            outname += "_RNTuple"
 
         requestName = hashedName("_".join([outname, version]))
         outfile = "/".join([path, "crab_submit", "submit"+outname+".py"])
@@ -368,6 +392,12 @@ parser.add_argument('--calib', action='store_true',
     help='the calibration version of the J/psi AlCaReco nano (TkAlJpsiMuMu inputs only): also the two-track '
          'J/psi refit with the payload from which the module-level corrections are derived; the config, output '
          'tag and request name get Calib')
+_format = parser.add_mutually_exclusive_group()
+_format.add_argument('--rntuple', action='store_true',
+    help='write the NanoAOD as RNTuple (the default from CMSSW 16; fails before): the config gets _RNTuple, the '
+         'request and output names _RNTuple and the dataset tag RNTuple')
+_format.add_argument('--ttree', action='store_true',
+    help='write the NanoAOD as TTree (the default before CMSSW 16), with the names of the earlier productions')
 parser.add_argument('-i', '--inputFiles', required=True, type=str, nargs='*', help='inputFiles to process')
 parser.add_argument('-m', '--filterExpr', default='', type=str, help='Expression to filter out files from the input list')
 parser.add_argument('-s', '--submit', type=int, nargs=2, help='Number of splits to make, which split to submit' \
